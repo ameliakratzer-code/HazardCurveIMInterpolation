@@ -28,14 +28,14 @@ with connection.cursor() as cursor:
     # Use query1 value - the run_Id as WHERE Hazard_Curves.Run_ID = query1
     # Convert period to number
     period = int(args.period) if args.period != '7.5' else float(args.period)
-    query2 = f'''SELECT * FROM Hazard_Curve_Points
+    query2 = '''SELECT * FROM Hazard_Curve_Points
            INNER JOIN Hazard_Curves
            ON Hazard_Curve_Points.Hazard_Curve_ID = Hazard_Curves.Hazard_Curve_ID
            INNER JOIN IM_Types
            ON Hazard_Curves.IM_Type_ID = IM_Types.IM_Type_ID
-           WHERE Hazard_Curves.Run_ID = %s AND IM_Types.IM_Type_Value = {period} AND IM_Types.IM_Type_Component='RotD50'
+           WHERE Hazard_Curves.Run_ID = %s AND IM_Types.IM_Type_Value = %s AND IM_Types.IM_Type_Component='RotD50'
            '''
-    cursor.execute(query2, (runID))
+    cursor.execute(query2, (runID,period))
     result = cursor.fetchall()
 connection.close()
 
