@@ -1,4 +1,11 @@
 import pymysql
+import argparse
+
+# Handle command line arguments
+# By default, arguments are strings
+parser = argparse.ArgumentParser('Allow user to input site name, period')
+parser.add_argument('--sitename')
+args = parser.parse_args()
 
 # Connect to the database 
 connection = pymysql.connect(host = 'moment.usc.edu',
@@ -8,17 +15,17 @@ connection = pymysql.connect(host = 'moment.usc.edu',
 
 with connection.cursor() as cursor:
     # Queries to get hazard curve information
-    #change WHERE Site_Name to command line argument
+    # Change WHERE Site_Name to command line argument
     query1 = '''SELECT CyberShake_Runs.Run_ID FROM CyberShake_Sites
                 INNER JOIN CyberShake_Runs
                 ON CyberShake_Sites.CS_Site_ID = CyberShake_Runs.Site_ID
                 INNER JOIN Studies
                 ON CyberShake_Runs.Study_ID = Studies.Study_ID
-                WHERE CyberShake_Sites.CS_Site_Name = 'Pasadena' AND Studies.Study_Name = 'Study 22.12 LF';
+                WHERE CyberShake_Sites.CS_Site_Name = {args.sitename} AND Studies.Study_Name = 'Study 22.12 LF';
     '''
     cursor.execute(query1)
-    runID = cursor.fetchone()
-    #figure out how to use query1 value - the run_Id as WHERE Hazard_Curves.Run_ID = query1
+    runID = cursor.fetchall()
+    # Use query1 value - the run_Id as WHERE Hazard_Curves.Run_ID = query1
     query2 = '''SELECT * FROM Hazard_Curve_Points
            INNER JOIN Hazard_Curves
            ON Hazard_Curve_Points.Hazard_Curve_ID = Hazard_Curves.Hazard_Curve_ID
@@ -28,8 +35,10 @@ with connection.cursor() as cursor:
            '''
     cursor.execute(query2, (runID))
     result = cursor.fetchall()
-    for row in result:
-        print(row)
+
+# Print out result
+for row in result:
+    print(row)
 
 connection.close()
 
