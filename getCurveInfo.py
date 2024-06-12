@@ -26,7 +26,8 @@ with connection.cursor() as cursor:
     cursor.execute(query1)
     runID = cursor.fetchall()
     # Use query1 value - the run_Id as WHERE Hazard_Curves.Run_ID = query1
-    period = int(args.period)
+    # Convert period to number
+    period = int(args.period) if args.period != '7.5' else float(args.period)
     query2 = f'''SELECT * FROM Hazard_Curve_Points
            INNER JOIN Hazard_Curves
            ON Hazard_Curve_Points.Hazard_Curve_ID = Hazard_Curves.Hazard_Curve_ID
@@ -45,7 +46,7 @@ plt.yscale('log')
 plt.ylim(1e-6,1)
 plt.xlabel('Accel (g)')
 plt.ylabel('Prob')
-plt.title('PAS Hazard Curve')
+plt.title('Hazard Curve')
 #get list of x and y coordinates from result tuple
 xCoords = []
 yCoords = []
