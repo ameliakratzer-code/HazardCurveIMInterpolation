@@ -36,6 +36,7 @@ with connection.cursor() as cursor:
            '''
     cursor.execute(query2, (runID))
     result = cursor.fetchall()
+connection.close()
 
 # plot of hazard curve using matplotlib
 plt.xscale('linear')
@@ -54,5 +55,3 @@ for row in result:
 plt.plot(xCoords, yCoords, marker='^')
 plt.grid(axis = 'y')
 plt.show()
-
-connection.close()
