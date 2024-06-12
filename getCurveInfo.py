@@ -2,9 +2,9 @@ import pymysql
 
 # Connect to the database 
 connection = pymysql.connect(host = 'moment.usc.edu',
-                             user = 'cybershake_ro',
+                             user = 'cybershk_ro',
                              password = 'CyberShake2007',
-                             database = 'myDB')
+                             database = 'CyberShake')
 
 with connection.cursor() as cursor:
     # Queries to get hazard curve information
@@ -24,7 +24,8 @@ with connection.cursor() as cursor:
            ON Hazard_Curve_Points.Hazard_Curve_ID = Hazard_Curves.Hazard_Curve_ID
            INNER JOIN IM_Types
            ON Hazard_Curves.IM_Type_ID = IM_Types.IM_Type_ID
-           WHERE Hazard_Curves.Run_ID = %s AND IM_Types.IM_Type_Value = 2 AND IM_Types.IM_Type_Component=’RotD50’'''
+           WHERE Hazard_Curves.Run_ID = %s AND IM_Types.IM_Type_Value = 2 AND IM_Types.IM_Type_Component='RotD50'
+           '''
     cursor.execute(query2, (runID))
     result = cursor.fetchall()
     for row in result:
