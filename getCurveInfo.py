@@ -15,13 +15,12 @@ connection = pymysql.connect(host = 'moment.usc.edu',
 
 with connection.cursor() as cursor:
     # Queries to get hazard curve information
-    # Change WHERE Site_Name to command line argument
-    query1 = '''SELECT CyberShake_Runs.Run_ID FROM CyberShake_Sites
+    query1 = f'''SELECT CyberShake_Runs.Run_ID FROM CyberShake_Sites
                 INNER JOIN CyberShake_Runs
                 ON CyberShake_Sites.CS_Site_ID = CyberShake_Runs.Site_ID
                 INNER JOIN Studies
                 ON CyberShake_Runs.Study_ID = Studies.Study_ID
-                WHERE CyberShake_Sites.CS_Site_Name = {args.sitename} AND Studies.Study_Name = 'Study 22.12 LF';
+                WHERE CyberShake_Sites.CS_Short_Name = '{args.sitename}' AND Studies.Study_Name = 'Study 22.12 LF';
     '''
     cursor.execute(query1)
     runID = cursor.fetchall()
@@ -39,6 +38,7 @@ with connection.cursor() as cursor:
 # Print out result
 for row in result:
     print(row)
+print(len(result))
 
 connection.close()
 
