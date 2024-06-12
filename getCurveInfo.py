@@ -46,7 +46,7 @@ plt.ylim(1e-6,1)
 plt.xlabel('Accel (g)')
 plt.ylabel('Prob')
 plt.title('PAS Hazard Curve')
-#get list of x and y coordinates
+#get list of x and y coordinates from result tuple
 xCoords = []
 yCoords = []
 for row in result:
