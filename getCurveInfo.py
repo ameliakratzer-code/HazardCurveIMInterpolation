@@ -10,6 +10,12 @@ parser.add_argument('--period')
 parser.add_argument('--outputName')
 args = parser.parse_args()
 
+# Connect to the database
+connection = pymysql.connect(host = 'moment.usc.edu',
+                            user = 'cybershk_ro',
+                            password = 'CyberShake2007',
+                            database = 'CyberShake')
+
 def downloadHazardCurve():
     # Check arguments
     if args.sitename == None and args.period == None:
@@ -21,13 +27,6 @@ def downloadHazardCurve():
     elif args.period == None:
         print('A period is required in addition to the sitename.')
         exit()
-
-    # Connect to the database 
-    connection = pymysql.connect(host = 'moment.usc.edu',
-                                user = 'cybershk_ro',
-                                password = 'CyberShake2007',
-                                database = 'CyberShake')
-
     with connection.cursor() as cursor:
         # Queries to get hazard curve information
         query1 = '''SELECT CyberShake_Runs.Run_ID FROM CyberShake_Sites
@@ -49,7 +48,6 @@ def downloadHazardCurve():
             WHERE Hazard_Curves.Run_ID = %s AND IM_Types.IM_Type_Value = %s AND IM_Types.IM_Type_Component='RotD50';'''
         cursor.execute(query2, (runID, period))
         result = cursor.fetchall()
-    connection.close()
 
     # plot of hazard curve using matplotlib
     plt.xscale('linear')
@@ -79,10 +77,6 @@ def downloadHazardCurve():
 # Convert from lat/lon to UTM
 def getUTM():
     #get lat lon of site
-    connection = pymysql.connect(host = 'moment.usc.edu',
-                                user = 'cybershk_ro',
-                                password = 'CyberShake2007',
-                                database = 'CyberShake')
     with connection.cursor() as cursor:
         query3 = '''SELECT CS_Site_Lat, CS_Site_Lon FROM CyberShake_Sites
                     WHERE CS_Short_Name = %s
@@ -90,6 +84,7 @@ def getUTM():
         cursor.execute(query3, (args.sitename))
         location = cursor.fetchall()
         lat, lon = location[0][0], location[0][1]
+    connection.close()
     myProj = pyproj.Proj(proj ='utm', zone = 11, ellps = 'WGS84', preserve_units=True)
     x, y = myProj(lon, lat)
     return x, y
