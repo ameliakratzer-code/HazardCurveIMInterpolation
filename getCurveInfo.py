@@ -85,7 +85,7 @@ def getUTM():
         location = cursor.fetchall()
         lat, lon = location[0][0], location[0][1]
     connection.close()
-    myProj = pyproj.Proj(proj ='utm', zone = 11, ellps = 'WGS84', preserve_units=True)
+    myProj = pyproj.Proj(proj ='utm', zone = 11, ellps = 'WGS84')
     x, y = myProj(lon, lat)
     return x, y
 
