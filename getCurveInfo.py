@@ -6,8 +6,9 @@ import pyproj
 # Handle command line arguments
 parser = argparse.ArgumentParser('Allow user to input site name, period')
 parser.add_argument('--sitename')
-parser.add_argument('--period')
-parser.add_argument('--outputName')
+# Include default value of 2 for the period
+parser.add_argument('--period', default=2)
+parser.add_argument('--output')
 args = parser.parse_args()
 
 # Connect to the database
@@ -18,14 +19,8 @@ connection = pymysql.connect(host = 'moment.usc.edu',
 
 def downloadHazardCurve():
     # Check arguments
-    if args.sitename == None and args.period == None:
-        print('A sitename and period are required.')
-        exit()
-    elif args.sitename == None:
-        print('A sitename is required in addition to the period.')
-        exit()
-    elif args.period == None:
-        print('A period is required in addition to the sitename.')
+    if args.sitename == None:
+        print('A sitename is required.')
         exit()
     with connection.cursor() as cursor:
         # Queries to get hazard curve information
@@ -66,9 +61,9 @@ def downloadHazardCurve():
     plt.plot(xCoords, yCoords, marker='^')
     plt.grid(axis = 'y')
 
-    # If outputName provided, save the plot to the given name
-    if args.outputName != None:
-        plt.savefig(args.outputName + '.png')
+    # If any output argument is provided, store the image under the site name, period
+    if args.output != None:
+        plt.savefig(f'{args.sitename}' + str(args.period) + '.png')
     else:
         plt.show(block=False)
         plt.pause(5)
@@ -91,6 +86,5 @@ def getUTM():
 
 def main():
     downloadHazardCurve()
-    print(getUTM())
 
 main()
