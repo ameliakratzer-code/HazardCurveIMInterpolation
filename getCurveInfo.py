@@ -9,6 +9,17 @@ parser.add_argument('--period')
 parser.add_argument('--outputName')
 args = parser.parse_args()
 
+# Check arguments
+if args.sitename == None and args.period == None:
+    print('A sitename and period are required.')
+    exit()
+elif args.sitename == None:
+    print('A sitename is required in addition to the period.')
+    exit()
+elif args.period == None:
+    print('A period is required in addition to the sitename.')
+    exit()
+
 # Connect to the database 
 connection = pymysql.connect(host = 'moment.usc.edu',
                              user = 'cybershk_ro',
