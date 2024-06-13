@@ -74,13 +74,6 @@ def downloadHazardCurve():
     else:
         plt.show()
 
-# Convert from lat/lon to UTM
-def getUTM(site):
-    lon = 2
-    lat = 2
-    myProj = pyproj.Proj(proj ='utm', zone = 11, ellps = 'WGS84', preserve_units=True)
-    return myProj(lon, lat)
-
 def main():
     downloadHazardCurve()
 
