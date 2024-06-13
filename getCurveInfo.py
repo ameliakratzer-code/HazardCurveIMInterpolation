@@ -3,14 +3,14 @@ import argparse
 import matplotlib.pyplot as plt
 import pyproj
 
-def downloadHazardCurve():
-    # Handle command line arguments
-    parser = argparse.ArgumentParser('Allow user to input site name, period')
-    parser.add_argument('--sitename')
-    parser.add_argument('--period')
-    parser.add_argument('--outputName')
-    args = parser.parse_args()
+# Handle command line arguments
+parser = argparse.ArgumentParser('Allow user to input site name, period')
+parser.add_argument('--sitename')
+parser.add_argument('--period')
+parser.add_argument('--outputName')
+args = parser.parse_args()
 
+def downloadHazardCurve():
     # Check arguments
     if args.sitename == None and args.period == None:
         print('A sitename and period are required.')
@@ -72,9 +72,30 @@ def downloadHazardCurve():
     if args.outputName != None:
         plt.savefig(args.outputName + '.png')
     else:
-        plt.show()
+        plt.show(block=False)
+        plt.pause(5)
+        plt.close()
+
+# Convert from lat/lon to UTM
+def getUTM():
+    #get lat lon of site
+    connection = pymysql.connect(host = 'moment.usc.edu',
+                                user = 'cybershk_ro',
+                                password = 'CyberShake2007',
+                                database = 'CyberShake')
+    with connection.cursor() as cursor:
+        query3 = '''SELECT CS_Site_Lat, CS_Site_Lon FROM CyberShake_Sites
+                    WHERE CS_Short_Name = %s
+        '''
+        cursor.execute(query3, (args.sitename))
+        location = cursor.fetchall()
+        lat, lon = location[0][0], location[0][1]
+    myProj = pyproj.Proj(proj ='utm', zone = 11, ellps = 'WGS84', preserve_units=True)
+    x, y = myProj(lon, lat)
+    return x, y
 
 def main():
     downloadHazardCurve()
+    print(getUTM())
 
 main()
