@@ -1,6 +1,7 @@
 import pymysql
 import argparse
 import matplotlib.pyplot as plt
+import pyproj
 
 def downloadHazardCurve():
     # Handle command line arguments
@@ -72,6 +73,13 @@ def downloadHazardCurve():
         plt.savefig(args.outputName + '.png')
     else:
         plt.show()
+
+# Convert from lat/lon to UTM
+def getUTM(site):
+    lon =
+    lat = 
+    myProj = pyproj.Proj(proj ='utm', zone = 11, ellps = 'WGS84', preserve_units=True)
+    return myProj(lon, lat)
 
 def main():
     downloadHazardCurve()
