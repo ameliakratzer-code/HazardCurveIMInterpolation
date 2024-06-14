@@ -53,17 +53,9 @@ def downloadHazardCurve(nameSite):
     return xCoords, yCoords
     
 def plotHazardCurve(xVals, yVals, nameSite):
-    plt.figure()
     # plot of hazard curve using matplotlib
-    plt.xscale('linear')
-    plt.xlim(0, 2)
-    plt.yscale('log')
-    plt.ylim(1e-6,1)
-    plt.xlabel('Accel (g)')
-    plt.ylabel('Prob')
-    plt.title(f'Hazard Curve {nameSite}')
+    plotFeatures()
     plt.plot(xVals, yVals, marker='^')
-    plt.grid(axis = 'y')
     # If any output argument is provided, store the image under the site name, period
     if args.output == 'y':
         plt.savefig(f'{nameSite}' + 'per' + str(args.period) + '.png')
@@ -71,6 +63,17 @@ def plotHazardCurve(xVals, yVals, nameSite):
         plt.show(block=False)
         plt.pause(5)
         plt.close()
+
+def plotFeatures():
+    plt.figure()
+    plt.xscale('linear')
+    plt.xlim(0, 2)
+    plt.yscale('log')
+    plt.ylim(1e-6,1)
+    plt.xlabel('Accel (g)')
+    plt.ylabel('Prob')
+    plt.title(f'Hazard Curve Overlayed')
+    plt.grid(axis = 'y')
 
 def getUTM(sitename):
     #get lat lon of site
@@ -99,9 +102,13 @@ def linearinterpolation(s0, s1, sI):
     for i in range(51):
         interpVal = (probCoords0[i] * abs(x1 - x) + probCoords1[i] * abs(x - x1)) * (1 / abs(x1 - x0))
         interpolatedProbs.append(interpVal)
-    print(interpolatedProbs)
     plotHazardCurve(xCoords,interpolatedProbs, sI+' Interpolated')
-    downloadHazardCurve(sI)
+    xActual, yActual = downloadHazardCurve(sI)
+    # Plot with the interpolated curve and actual curve them overlayed
+    plotFeatures()
+    plt.plot(xActual, yActual, color='green', linewidth = 2)
+    plt.plot(xActual, interpolatedProbs, color='pink', linewidth = 1.5)
+    plt.savefig(f'Overlayed' + 'per' + str(args.period) + '.png')
 
 def main():
     #break apart sites from list provided
