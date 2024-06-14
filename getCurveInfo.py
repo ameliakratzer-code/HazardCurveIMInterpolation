@@ -106,7 +106,7 @@ def linearinterpolation(s0, s1, sI):
     x, y = getUTM(sI)
     # Loop through x values on hazard Curve
     for i in range(len(xCoords)):
-        interpVal = (probCoords0[i] * abs(x1 - x) + probCoords1[i] * abs(x - x1)) * (1 / abs(x1 - x0))
+        interpVal = (probCoords0[i] * abs(x1 - x) + probCoords1[i] * abs(x - x0)) * (1 / abs(x1 - x0))
         interpolatedProbs.append(interpVal)
     plotInterpolated(xCoords, sI, interpolatedProbs)
 
@@ -119,14 +119,12 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     x2, y2 = getUTM(s2)
     x3, y3 = getUTM(s3)
     x, y = getUTM(sI)
+    x0avg, x2avg, y0avg, y2avg = (x0 + x3) / 2, (x1 + x2) / 2, (y0 + y1) / 2, (y2 + y3) / 2
+    x, y = getUTM(sI)
     for i in range(len(xCoords)):
-        interpVal = (
-        (abs((x2-x)*(y2-y))*probCoords0[i] + 
-        abs((x-x1)*(y2-y))*probCoords1[i] + 
-        abs((x2-x)*(y-y1))*probCoords2[i] + 
-        abs((x-x1)*(y-y1))*probCoords1[i]) * 
-        (1 / (abs(x2-x1)*abs(y2-y1)))
-        )
+        R1 = (probCoords0[i] * abs(x2avg - x) + probCoords1[i] * abs(x - x0avg)) * (1 / abs(x2avg - x0avg))
+        R2 = (probCoords2[i] * abs(x0avg - x) + probCoords3[i] * abs(x - x2avg)) * (1 / abs(x2avg - x0avg))
+        interpVal = (R1 * abs(y0avg - y) + R2 * abs(y - y2avg)) * (1 / abs(y2avg - y0avg))
         interpolatedProbs.append(interpVal)
     plotInterpolated(xCoords, sI, interpolatedProbs)
 
