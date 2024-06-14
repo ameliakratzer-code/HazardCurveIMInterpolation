@@ -119,6 +119,7 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     x2, y2 = getUTM(s2)
     x3, y3 = getUTM(s3)
     x, y = getUTM(sI)
+    # Get rectangular grid points
     x0avg, x2avg, y0avg, y2avg = (x0 + x3) / 2, (x1 + x2) / 2, (y0 + y1) / 2, (y2 + y3) / 2
     x, y = getUTM(sI)
     for i in range(len(xCoords)):
