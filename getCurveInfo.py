@@ -96,7 +96,7 @@ def getUTM(sitename):
     return x, y
 
 def linearinterpolation(s0, s1, sI):
-    #prob values for two known sites
+    # Prob values for two known sites
     xCoords, probCoords0 = (downloadHazardCurve(s0))
     probCoords1 = (downloadHazardCurve(s1))[1]
     interpolatedProbs = []
@@ -105,13 +105,36 @@ def linearinterpolation(s0, s1, sI):
     x1, y1 = getUTM(s1)
     x, y = getUTM(sI)
     # Loop through x values on hazard Curve
-    # Apply formula
     for i in range(len(xCoords)):
         interpVal = (probCoords0[i] * abs(x1 - x) + probCoords1[i] * abs(x - x1)) * (1 / abs(x1 - x0))
         interpolatedProbs.append(interpVal)
+    plotInterpolated(xCoords, sI, interpolatedProbs)
+
+def bilinearinterpolation(s0, s1, s2, s3, sI):
+    xCoords, probCoords0 = (downloadHazardCurve(s0))
+    probCoords1, probCoords2, probCoords3 = (downloadHazardCurve(s1))[1], (downloadHazardCurve(s2))[1], (downloadHazardCurve(s3))[1]
+    interpolatedProbs = []
+    x0, y0 = getUTM(s0)
+    x1, y1 = getUTM(s1)
+    x2, y2 = getUTM(s2)
+    x3, y3 = getUTM(s3)
+    x, y = getUTM(sI)
+    for i in range(len(xCoords)):
+        interpVal = (
+        (abs((x2-x)*(y2-y))*probCoords0[i] + 
+        abs((x-x1)*(y2-y))*probCoords1[i] + 
+        abs((x2-x)*(y-y1))*probCoords2[i] + 
+        abs((x-x1)*(y-y1))*probCoords1[i]) * 
+        (1 / (abs(x2-x1)*abs(y2-y1)))
+        )
+        interpolatedProbs.append(interpVal)
+    plotInterpolated(xCoords, sI, interpolatedProbs)
+
+# Plot with the interpolated curve and actual curve them overlayed
+# Used in linear and bilinear interpolation
+def plotInterpolated(xCoords, sI, interpolatedProbs):
     plotHazardCurve(xCoords,interpolatedProbs, sI+' Interpolated')
     xActual, yActual = downloadHazardCurve(sI)
-    # Plot with the interpolated curve and actual curve them overlayed
     plotFeatures()
     plt.title(f'Overlayed {sI}')
     plt.plot(xActual, yActual, color='green', linewidth = 2, label = "Actual")
@@ -119,9 +142,6 @@ def linearinterpolation(s0, s1, sI):
     plt.legend()
     path = os.path.join(f"/Users/ameliakratzer/Desktop/LinInterpolation/{args.output}", 'Overlayed' + '.png')
     plt.savefig(path)
-
-def bilinearinterpolation(s0, s1, s2, s3, sI):
-    
 
 def main():
     #break apart sites from list provided
