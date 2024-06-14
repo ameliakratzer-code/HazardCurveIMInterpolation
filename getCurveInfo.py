@@ -2,13 +2,14 @@ import pymysql
 import argparse
 import matplotlib.pyplot as plt
 import pyproj
+import os
 
 parser = argparse.ArgumentParser('Allow user to input site name, period')
 # User enter sitenames with spaces
 parser.add_argument('--sitenames', nargs='+')
 parser.add_argument('--interpsitename')
 parser.add_argument('--period', default=2)
-parser.add_argument('--output', default='y')
+parser.add_argument('--output', default='Sites',help='Enter name of folder you want to store photos in')
 args = parser.parse_args()
 # Check arguments
 if args.sitenames == None:
@@ -57,8 +58,14 @@ def plotHazardCurve(xVals, yVals, nameSite):
     plotFeatures()
     plt.plot(xVals, yVals, marker='^')
     # If any output argument is provided, store the image under the site name, period
-    if args.output == 'y':
-        plt.savefig(f'{nameSite}' + 'per' + str(args.period) + '.png')
+    if args.output != None:
+        # Store photos in specific directory
+        directory = f"/Users/ameliakratzer/Desktop/LinInterpolation/{args.output}"
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        fileName = f'{nameSite}' + 'per' + str(args.period) + '.png'
+        path = os.path.join(directory, fileName)
+        plt.savefig(path)
     else:
         plt.show(block=False)
         plt.pause(5)
@@ -108,7 +115,8 @@ def linearinterpolation(s0, s1, sI):
     plotFeatures()
     plt.plot(xActual, yActual, color='green', linewidth = 2, label = 'Actual')
     plt.plot(xActual, interpolatedProbs, color='pink', linewidth = 1.5, label = 'Interpolated')
-    plt.savefig(f'Overlayed' + 'per' + str(args.period) + '.png')
+    path = os.path.join(f"/Users/ameliakratzer/Desktop/LinInterpolation/{args.output}", 'Overlayed' + '.png')
+    plt.savefig(path)
 
 def main():
     #break apart sites from list provided
