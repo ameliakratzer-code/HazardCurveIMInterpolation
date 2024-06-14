@@ -97,9 +97,10 @@ def linearinterpolation(s0, s1, sI):
     # Loop through x values on hazard Curve
     # Apply formula
     for i in range(51):
-        interpVal = (probCoords0[i] * (x1 - x) + probCoords1[i] * (x - x1)) * (1 / (x1 - x0))
+        interpVal = (probCoords0[i] * abs(x1 - x) + probCoords1[i] * abs(x - x1)) * (1 / abs(x1 - x0))
         interpolatedProbs.append(interpVal)
-    plotHazardCurve(xCoords,interpolatedProbs, sI+'interpolated')
+    print(interpolatedProbs)
+    plotHazardCurve(xCoords,interpolatedProbs, sI+' Interpolated')
     downloadHazardCurve(sI)
 
 def main():
