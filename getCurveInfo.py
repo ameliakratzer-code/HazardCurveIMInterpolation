@@ -106,8 +106,8 @@ def linearinterpolation(s0, s1, sI):
     xActual, yActual = downloadHazardCurve(sI)
     # Plot with the interpolated curve and actual curve them overlayed
     plotFeatures()
-    plt.plot(xActual, yActual, color='green', linewidth = 2)
-    plt.plot(xActual, interpolatedProbs, color='pink', linewidth = 1.5)
+    plt.plot(xActual, yActual, color='green', linewidth = 2, label = 'Actual')
+    plt.plot(xActual, interpolatedProbs, color='pink', linewidth = 1.5, label = 'Interpolated')
     plt.savefig(f'Overlayed' + 'per' + str(args.period) + '.png')
 
 def main():
