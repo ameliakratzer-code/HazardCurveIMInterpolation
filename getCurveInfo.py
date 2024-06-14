@@ -64,6 +64,7 @@ def plotHazardCurve(xVals, yVals, nameSite):
         if not os.path.exists(directory):
             os.makedirs(directory)
         fileName = f'{nameSite}' + 'per' + str(args.period) + '.png'
+        plt.title(f'{nameSite} Hazard Curve')
         path = os.path.join(directory, fileName)
         plt.savefig(path)
     else:
@@ -79,7 +80,6 @@ def plotFeatures():
     plt.ylim(1e-6,1)
     plt.xlabel('Accel (g)')
     plt.ylabel('Prob')
-    plt.title(f'Hazard Curve Overlayed')
     plt.grid(axis = 'y')
 
 def getUTM(sitename):
@@ -106,17 +106,22 @@ def linearinterpolation(s0, s1, sI):
     x, y = getUTM(sI)
     # Loop through x values on hazard Curve
     # Apply formula
-    for i in range(51):
+    for i in range(len(xCoords)):
         interpVal = (probCoords0[i] * abs(x1 - x) + probCoords1[i] * abs(x - x1)) * (1 / abs(x1 - x0))
         interpolatedProbs.append(interpVal)
     plotHazardCurve(xCoords,interpolatedProbs, sI+' Interpolated')
     xActual, yActual = downloadHazardCurve(sI)
     # Plot with the interpolated curve and actual curve them overlayed
     plotFeatures()
-    plt.plot(xActual, yActual, color='green', linewidth = 2, label = 'Actual')
+    plt.title(f'Overlayed {sI}')
+    plt.plot(xActual, yActual, color='green', linewidth = 2, label = "Actual")
     plt.plot(xActual, interpolatedProbs, color='pink', linewidth = 1.5, label = 'Interpolated')
+    plt.legend()
     path = os.path.join(f"/Users/ameliakratzer/Desktop/LinInterpolation/{args.output}", 'Overlayed' + '.png')
     plt.savefig(path)
+
+def bilinearinterpolation(s0, s1, s2, s3, sI):
+    
 
 def main():
     #break apart sites from list provided
@@ -135,7 +140,7 @@ def main():
         linearinterpolation(site0, site1, args.interpsitename)
     #bilinear interpolation between 4 sites
     elif numSites == 4:
-        pass
+        bilinearinterpolation(site0, site1, site2, site3, args.interpsitename)
     connection.close()
 
 main()
