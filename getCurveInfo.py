@@ -6,6 +6,7 @@ import os
 
 parser = argparse.ArgumentParser('Allow user to input site name, period')
 # User enter sitenames with spaces
+# Define comma_separated_list type
 parser.add_argument('--sitenames', nargs='+')
 parser.add_argument('--interpsitename')
 parser.add_argument('--period', default=2)
@@ -64,7 +65,7 @@ def plotHazardCurve(xVals, yVals, nameSite):
         if not os.path.exists(directory):
             os.makedirs(directory)
         fileName = f'{nameSite}' + 'per' + str(args.period) + '.png'
-        plt.title(f'{nameSite} Hazard Curve')
+        plt.title(f'{nameSite}, 2 sec RotD50')
         path = os.path.join(directory, fileName)
         plt.savefig(path)
     else:
@@ -135,25 +136,26 @@ def plotInterpolated(xCoords, sI, interpolatedProbs):
     plotHazardCurve(xCoords,interpolatedProbs, sI+' Interpolated')
     xActual, yActual = downloadHazardCurve(sI)
     plotFeatures()
-    plt.title(f'Overlayed {sI}')
-    plt.plot(xActual, yActual, color='green', linewidth = 2, label = "Actual")
-    plt.plot(xActual, interpolatedProbs, color='pink', linewidth = 1.5, label = 'Interpolated')
+    plt.title(f'Overlayed {sI}, 2 sec RotD50')
+    plt.plot(xActual, yActual, color='green', linewidth = 2, label = "Actual", marker='^')
+    plt.plot(xActual, interpolatedProbs, color='pink', linewidth = 2, label = 'Interpolated', marker='^')
     plt.legend()
     path = os.path.join(f"/Users/ameliakratzer/Desktop/LinInterpolation/{args.output}", 'Overlayed' + '.png')
     plt.savefig(path)
 
 def main():
-    #break apart sites from list provided
-    numSites = len(args.sitenames)
+    # Create comma-separated list of sites from arg
+    sites = (args.sitenames[0]).split(',')
+    numSites = len(sites)
     for i in range(numSites):
         if i == 0:
-            site0 = args.sitenames[0]
+            site0 = sites[0]
         elif i == 1:
-            site1 = args.sitenames[1]
+            site1 = sites[1]
         elif i == 2:
-            site2 = args.sitenames[2]
+            site2 = sites[2]
         elif i == 3:
-            site3 = args.sitenames[3]
+            site3 = sites[3]
     #linear interpolation between 2 sites
     if numSites == 2:
         linearinterpolation(site0, site1, args.interpsitename)
