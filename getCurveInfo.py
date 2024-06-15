@@ -6,7 +6,6 @@ import os
 
 parser = argparse.ArgumentParser('Allow user to input site name, period')
 # User enter sitenames with spaces
-# Define comma_separated_list type
 parser.add_argument('--sitenames', nargs='+')
 parser.add_argument('--interpsitename')
 parser.add_argument('--period', default=2)
