@@ -96,6 +96,7 @@ def getUTM(sitename):
     return x, y
 
 def getDistance(point1x, point1y, point2x, point2y, SIx, SIy):
+    # Used in bilinear interpolation
     # Find where line point1 to point2 and line interpSite intersect
     m1 = (point2y-point1y) / (point2x-point1x)
     b1 = point2y-m1*point2x
@@ -143,13 +144,13 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     x2, y2 = getUTM(s2)
     x3, y3 = getUTM(s3)
     x, y = getUTM(sI)
-    # Calculate distances with slanted axis
-    yPrime = getDistance(x3, y3, x2, y2, x, y)
-    xPrime =  getDistance(x3, y3, x0, y0, x, y)
+    # Calculate distances with slanted axis\
+    yPrime = getDistance(x3, y3, x2, y2, x, y) / 10000
+    xPrime =  getDistance(x3, y3, x0, y0, x, y) / 10000
     for i in range(len(xCoords)):
-        R1 = (probCoords0[i] * (10000-xPrime) + probCoords1[i] * xPrime) * (1 / 10000)
-        R2 = (probCoords2[i] * xPrime + probCoords3[i] * (10000-xPrime)) * (1 / 10000)
-        interpVal = (R1 * yPrime + R2 * (10000-yPrime)) * (1 / 10000)
+        R1 = (probCoords0[i] * (1-xPrime) + probCoords1[i] * xPrime)
+        R2 = (probCoords2[i] * xPrime + probCoords3[i] * (1-xPrime))
+        interpVal = (R1 * yPrime + R2 * (1-yPrime))
         interpolatedProbs.append(interpVal)
     # TEMPORARY -> print out interpolated values
     for row in interpolatedProbs:
