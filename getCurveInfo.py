@@ -127,6 +127,9 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
         R2 = (probCoords2[i] * abs(x0avg - x) + probCoords3[i] * abs(x - x2avg)) * (1 / abs(x2avg - x0avg))
         interpVal = (R1 * abs(y0avg - y) + R2 * abs(y - y2avg)) * (1 / abs(y2avg - y0avg))
         interpolatedProbs.append(interpVal)
+    # TEMPORARY -> print out interpolated values
+    for row in interpolatedProbs:
+        print(row)
     plotInterpolated(xCoords, sI, interpolatedProbs)
 
 # Plot with the interpolated curve and actual curve them overlayed
