@@ -95,6 +95,30 @@ def getUTM(sitename):
     x, y = myProj(lon, lat)
     return x, y
 
+def getDistance(point1x, point1y, point2x, point2y, SIx, SIy):
+    # Find where line point1 to point2 and line interpSite intersect
+    m1 = (point2y-point1y) / (point2x-point1x)
+    b1 = point2y-m1*point2x
+    m2 = -(1/m1)
+    b2 = SIy-m2*SIx
+    xIntersection = (b2-b1)/(m1-m2)
+    yIntersection = m2*xIntersection+b2
+    d = (SIx-xIntersection)**2 + (SIy-yIntersection)**2
+    return d**0.5
+
+# Plot with the interpolated curve and actual curve them overlayed
+# Used in linear and bilinear interpolation
+def plotInterpolated(xCoords, sI, interpolatedProbs):
+    plotHazardCurve(xCoords,interpolatedProbs, sI+' Interpolated')
+    xActual, yActual = downloadHazardCurve(sI)
+    plotFeatures()
+    plt.title(f'Overlayed {sI}, 2 sec RotD50')
+    plt.plot(xActual, yActual, color='green', linewidth = 2, label = "Actual", marker='^')
+    plt.plot(xActual, interpolatedProbs, color='pink', linewidth = 2, label = 'Interpolated', marker='^')
+    plt.legend()
+    path = os.path.join(f"/Users/ameliakratzer/Desktop/LinInterpolation/{args.output}", 'Overlayed' + '.png')
+    plt.savefig(path)
+
 def linearinterpolation(s0, s1, sI):
     # Prob values for two known sites
     xCoords, probCoords0 = (downloadHazardCurve(s0))
@@ -119,31 +143,18 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     x2, y2 = getUTM(s2)
     x3, y3 = getUTM(s3)
     x, y = getUTM(sI)
-    # Get rectangular grid points
-    x0avg, x2avg, y0avg, y2avg = (x0 + x3) / 2, (x1 + x2) / 2, (y0 + y1) / 2, (y2 + y3) / 2
-    x, y = getUTM(sI)
+    # Calculate distances with slanted axis
+    yPrime = getDistance(x3, y3, x2, y2, x, y)
+    xPrime =  getDistance(x3, y3, x0, y0, x, y)
     for i in range(len(xCoords)):
-        R1 = (probCoords0[i] * abs(x2avg - x) + probCoords1[i] * abs(x - x0avg)) * (1 / abs(x2avg - x0avg))
-        R2 = (probCoords2[i] * abs(x0avg - x) + probCoords3[i] * abs(x - x2avg)) * (1 / abs(x2avg - x0avg))
-        interpVal = (R1 * abs(y0avg - y) + R2 * abs(y - y2avg)) * (1 / abs(y2avg - y0avg))
+        R1 = (probCoords0[i] * (10000-xPrime) + probCoords1[i] * xPrime) * (1 / 10000)
+        R2 = (probCoords2[i] * xPrime + probCoords3[i] * (10000-xPrime)) * (1 / 10000)
+        interpVal = (R1 * yPrime + R2 * (10000-yPrime)) * (1 / 10000)
         interpolatedProbs.append(interpVal)
     # TEMPORARY -> print out interpolated values
     for row in interpolatedProbs:
         print(row)
     plotInterpolated(xCoords, sI, interpolatedProbs)
-
-# Plot with the interpolated curve and actual curve them overlayed
-# Used in linear and bilinear interpolation
-def plotInterpolated(xCoords, sI, interpolatedProbs):
-    plotHazardCurve(xCoords,interpolatedProbs, sI+' Interpolated')
-    xActual, yActual = downloadHazardCurve(sI)
-    plotFeatures()
-    plt.title(f'Overlayed {sI}, 2 sec RotD50')
-    plt.plot(xActual, yActual, color='green', linewidth = 2, label = "Actual", marker='^')
-    plt.plot(xActual, interpolatedProbs, color='pink', linewidth = 2, label = 'Interpolated', marker='^')
-    plt.legend()
-    path = os.path.join(f"/Users/ameliakratzer/Desktop/LinInterpolation/{args.output}", 'Overlayed' + '.png')
-    plt.savefig(path)
 
 def main():
     # Create comma-separated list of sites from arg
