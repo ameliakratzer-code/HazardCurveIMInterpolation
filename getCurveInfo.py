@@ -115,13 +115,15 @@ def plotInterpolated(xCoords, sI, interpolatedProbs):
     print('\nPercent difference')
     listDifferences = []
     for i in range(len(xCoords)):
-        avg = (yActual[i] + interpolatedProbs[i]) / 2
-        percentDifference = (abs(yActual[i] - interpolatedProbs[i]) / avg) * 100 if yActual[i] != 0 else 0
-        print(percentDifference)
-        listDifferences.append(percentDifference)
+        # Only calculate percent difference if simulated >= 1E-6
+        if yActual[i] >= 1e-6:
+            avg = (yActual[i] + interpolatedProbs[i]) / 2
+            percentDifference = (abs(yActual[i] - interpolatedProbs[i]) / avg) * 100 if yActual[i] != 0 else 0
+            print(percentDifference)
+            listDifferences.append(percentDifference)
     maxDiff = max(listDifferences)
     avgDiff = sum(listDifferences) / len(listDifferences)
-    print(f'\nMaxdiff: {maxDiff}, avgDiff: {avgDiff}\n')
+    print(f'\nMaxdiff: {round(maxDiff, 1)}%, avgDiff: {round(avgDiff,1)}%\n')
     # Plotting of overlayed curve
     plotHazardCurve(xCoords,interpolatedProbs, sI+' Interpolated')
     plotFeatures()
@@ -165,7 +167,7 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
         interpVal = (R1 * yPrime + R2 * (1-yPrime))
         interpolatedProbs.append(interpVal)
     # TEMPORARY -> print out interpolated values
-    print('\n Interp values')
+    print('\nInterp values')
     for row in interpolatedProbs:
         print(row)
     plotInterpolated(xCoords, sI, interpolatedProbs)
