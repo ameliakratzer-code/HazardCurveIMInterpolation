@@ -165,7 +165,7 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
         interpVal = (R1 * yPrime + R2 * (1-yPrime))
         interpolatedProbs.append(interpVal)
     # TEMPORARY -> print out interpolated values
-    print('\n Interpolated values')
+    print('\n Interp values')
     for row in interpolatedProbs:
         print(row)
     plotInterpolated(xCoords, sI, interpolatedProbs)
