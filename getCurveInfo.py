@@ -143,11 +143,20 @@ def linearinterpolation(s0, s1, sI):
     x0, y0 = getUTM(s0)
     x1, y1 = getUTM(s1)
     x, y = getUTM(sI)
-    # Loop through x values on hazard Curve
-    for i in range(len(xCoords)):
-        interpVal = (probCoords0[i] * abs(x1 - x) + probCoords1[i] * abs(x - x0)) * (1 / abs(x1 - x0))
-        interpolatedProbs.append(interpVal)
-    plotInterpolated(xCoords, sI, interpolatedProbs)
+    # Check if 4 sites form a square
+    pass
+    # Check if sites in right order
+    pass
+    # Check if sI is in between input sites
+    if (x0 <= x<= x1 or x1 <= x <= x0) and (y0 <= y <= y1 or y1 <= y <= y0):
+        # Loop through x values on hazard Curve
+        for i in range(len(xCoords)):
+            interpVal = (probCoords0[i] * abs(x1 - x) + probCoords1[i] * abs(x - x0)) * (1 / abs(x1 - x0))
+            interpolatedProbs.append(interpVal)
+        plotInterpolated(xCoords, sI, interpolatedProbs)
+    else:
+        print('Interpsite not in interpolation bounds')
+        exit()
 
 def bilinearinterpolation(s0, s1, s2, s3, sI):
     xCoords, probCoords0 = (downloadHazardCurve(s0))
@@ -161,6 +170,10 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     # Calculate distances with slanted axis
     yPrime = getDistance(x3, y3, x2, y2, x, y) / 10000
     xPrime =  getDistance(x3, y3, x0, y0, x, y) / 10000
+    # Check if sI is in between input sites
+    if xPrime >= 1.1 or yPrime >= 1.1:
+        print('Interpsite not in interpolation bounds')
+        exit()
     for i in range(len(xCoords)):
         R1 = (probCoords0[i] * (1-xPrime) + probCoords1[i] * xPrime)
         R2 = (probCoords2[i] * xPrime + probCoords3[i] * (1-xPrime))
