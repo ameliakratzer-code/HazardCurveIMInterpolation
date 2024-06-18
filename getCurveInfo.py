@@ -107,6 +107,12 @@ def getDistance(point1x, point1y, point2x, point2y, SIx, SIy):
     d = (SIx-xIntersection)**2 + (SIy-yIntersection)**2
     return d**0.5
 
+# Used when checking if input sites form a square
+def disFormula(x0, x1, y0, y1):
+    dsquared = (x0-x1)**2 + (y0-y1)**2
+    d = dsquared**0.5
+    return d
+
 # Plot with the interpolated curve and actual curve them overlayed
 # Used in linear and bilinear interpolation
 def plotInterpolated(xCoords, sI, interpolatedProbs):
@@ -143,10 +149,6 @@ def linearinterpolation(s0, s1, sI):
     x0, y0 = getUTM(s0)
     x1, y1 = getUTM(s1)
     x, y = getUTM(sI)
-    # Check if 4 sites form a square
-    pass
-    # Check if sites in right order
-    pass
     # Check if sI is in between input sites
     if (x0 <= x<= x1 or x1 <= x <= x0) and (y0 <= y <= y1 or y1 <= y <= y0):
         # Loop through x values on hazard Curve
@@ -170,6 +172,12 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     # Calculate distances with slanted axis
     yPrime = getDistance(x3, y3, x2, y2, x, y) / 10000
     xPrime =  getDistance(x3, y3, x0, y0, x, y) / 10000
+    # Check if 4 sites form a square - sides < 11m and diagonals < 
+    if (disFormula(x0, y0, x1, y1) > 11) or (disFormula(x1,y1,x2,y2) > 11) or (disFormula(x2,y2,x3,y3) > 11) or (disFormula(x3,y3,x0,y0) > 11) or ():
+        print()
+        exit('Sides ')
+    # Check if sites in right order
+    pass
     # Check if sI is in between input sites
     if xPrime >= 1.1 or yPrime >= 1.1:
         print('Interpsite not in interpolation bounds')
