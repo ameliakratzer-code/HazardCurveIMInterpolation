@@ -110,8 +110,20 @@ def getDistance(point1x, point1y, point2x, point2y, SIx, SIy):
 # Plot with the interpolated curve and actual curve them overlayed
 # Used in linear and bilinear interpolation
 def plotInterpolated(xCoords, sI, interpolatedProbs):
-    plotHazardCurve(xCoords,interpolatedProbs, sI+' Interpolated')
     xActual, yActual = downloadHazardCurve(sI)
+    # Describing the quality of the fit
+    print('\nPercent difference')
+    listDifferences = []
+    for i in range(len(xCoords)):
+        avg = (yActual[i] + interpolatedProbs[i]) / 2
+        percentDifference = (abs(yActual[i] - interpolatedProbs[i]) / avg) * 100 if yActual[i] != 0 else 0
+        print(percentDifference)
+        listDifferences.append(percentDifference)
+    maxDiff = max(listDifferences)
+    avgDiff = sum(listDifferences) / len(listDifferences)
+    print(f'\nMaxdiff: {maxDiff}, avgDiff: {avgDiff}\n')
+    # Plotting of overlayed curve
+    plotHazardCurve(xCoords,interpolatedProbs, sI+' Interpolated')
     plotFeatures()
     plt.title(f'Overlayed {sI}, 2 sec RotD50')
     plt.plot(xActual, yActual, color='green', linewidth = 2, label = "Actual", marker='^')
@@ -144,7 +156,7 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     x2, y2 = getUTM(s2)
     x3, y3 = getUTM(s3)
     x, y = getUTM(sI)
-    # Calculate distances with slanted axis\
+    # Calculate distances with slanted axis
     yPrime = getDistance(x3, y3, x2, y2, x, y) / 10000
     xPrime =  getDistance(x3, y3, x0, y0, x, y) / 10000
     for i in range(len(xCoords)):
@@ -153,6 +165,7 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
         interpVal = (R1 * yPrime + R2 * (1-yPrime))
         interpolatedProbs.append(interpVal)
     # TEMPORARY -> print out interpolated values
+    print('\n Interpolated values')
     for row in interpolatedProbs:
         print(row)
     plotInterpolated(xCoords, sI, interpolatedProbs)
