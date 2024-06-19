@@ -188,14 +188,16 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
         (x1, y1, probCoords1) = sortedL[3]
         (x2, y2, probCoords2) = sortedL[2]
     # Check if sites form square before interpolating: sides and diagonals
-    if (disFormula(x0,y0,x1,y1) >= 10500) or (disFormula(x1,y1,x2,y2) >= 10500) or (disFormula(x2,y2,x3,y3) >= 10500) or (disFormula(x3,y3,x0,y0) >= 10500) or (disFormula(x0,y0,x2,y2) >= (math.sqrt(2)*10500)) or (disFormula(x1,y1,x3,y3) >= (math.sqrt(2)*10500)):
+    if (not(9500 <= disFormula(x0,y0,x1,y1) <= 10500) or not(9500 <= disFormula(x1,y1,x2,y2) <= 10500) or 
+        not(9500 <= disFormula(x2,y2,x3,y3) <= 10500) or not(9500 <= disFormula(x3,y3,x0,y0) <= 10500) or
+        not((9500*math.sqrt(2)) <= disFormula(x0,y0,x2,y2) <= (math.sqrt(2)*10500)) or not((9500*math.sqrt(2)) <= disFormula(x1,y1,x3,y3) <= (math.sqrt(2)*10500))):
         print('Entered sites do not form a square')
         exit()
     # Calculate distances with slanted axis
     yPrime = getDistance(x3, y3, x2, y2, x, y) / 10000
     xPrime =  getDistance(x3, y3, x0, y0, x, y) / 10000
     # Check if sI is in between input sites
-    if xPrime >= 1.1 or yPrime >= 1.1:
+    if xPrime >= 1.05 or yPrime >= 1.05:
         print('Interpsite not in interpolation bounds')
         exit()
     for i in range(len(xCoords)):
