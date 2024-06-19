@@ -196,10 +196,6 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     # Calculate distances with slanted axis
     yPrime = getDistance(x3, y3, x2, y2, x, y) / 10000
     xPrime =  getDistance(x3, y3, x0, y0, x, y) / 10000
-    # Check if sI is in between input sites
-    if xPrime >= 1.05 or yPrime >= 1.05:
-        print('Interpsite not in interpolation bounds')
-        exit()
     for i in range(len(xCoords)):
         R1 = (probCoords0[i] * (1-xPrime) + probCoords1[i] * xPrime)
         R2 = (probCoords2[i] * xPrime + probCoords3[i] * (1-xPrime))
