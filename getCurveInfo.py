@@ -3,6 +3,7 @@ import argparse
 import matplotlib.pyplot as plt
 import pyproj
 import os
+import math
 
 parser = argparse.ArgumentParser('Allow user to input site name, period')
 # User enter sitenames with spaces
@@ -108,7 +109,7 @@ def getDistance(point1x, point1y, point2x, point2y, SIx, SIy):
     return d**0.5
 
 # Used when checking if input sites form a square
-def disFormula(x0, x1, y0, y1):
+def disFormula(x0, y0, x1, y1):
     dsquared = (x0-x1)**2 + (y0-y1)**2
     d = dsquared**0.5
     return d
@@ -161,23 +162,38 @@ def linearinterpolation(s0, s1, sI):
         exit()
 
 def bilinearinterpolation(s0, s1, s2, s3, sI):
-    xCoords, probCoords0 = (downloadHazardCurve(s0))
-    probCoords1, probCoords2, probCoords3 = (downloadHazardCurve(s1))[1], (downloadHazardCurve(s2))[1], (downloadHazardCurve(s3))[1]
-    interpolatedProbs = []
-    x0, y0 = getUTM(s0)
-    x1, y1 = getUTM(s1)
-    x2, y2 = getUTM(s2)
-    x3, y3 = getUTM(s3)
+    # Get sites in correct order for interpolation
+    p0x, p0y = getUTM(s0)
+    p1x, p1y = getUTM(s1)
+    p2x, p2y = getUTM(s2)
+    p3x, p3y = getUTM(s3)
     x, y = getUTM(sI)
+    interpolatedProbs = []
+    xCoords = downloadHazardCurve(s0)[0]
+    listPXY = [(p0x, p0y, downloadHazardCurve(s0)[1]), (p1x, p1y, downloadHazardCurve(s1)[1]), (p2x, p2y, downloadHazardCurve(s2)[1]), (p3x, p3y, downloadHazardCurve(s3)[1])]
+    sortedL = sorted(listPXY, key=lambda x:x[0])
+    # Determining S0, S3
+    if sortedL[0][1] < sortedL[1][1]:
+        # Download hazard curve of site at L[0]
+        (x0, y0, probCoords0) = sortedL[0]
+        (x3, y3, probCoords3) = sortedL[1]
+    else:
+        (x0, y0, probCoords0) = sortedL[1]
+        (x3, y3, probCoords3) = sortedL[0]
+    # Determing S1, S2
+    if sortedL[2][1] < sortedL[3][1]:
+        (x1, y1, probCoords1) = sortedL[2]
+        (x2, y2, probCoords2) = sortedL[3]
+    else:
+        (x1, y1, probCoords1) = sortedL[3]
+        (x2, y2, probCoords2) = sortedL[2]
+    # Check if sites form square before interpolating: sides and diagonals
+    if (disFormula(x0,y0,x1,y1) >= 10500) or (disFormula(x1,y1,x2,y2) >= 10500) or (disFormula(x2,y2,x3,y3) >= 10500) or (disFormula(x3,y3,x0,y0) >= 10500) or (disFormula(x0,y0,x2,y2) >= (math.sqrt(2)*10500)) or (disFormula(x1,y1,x3,y3) >= (math.sqrt(2)*10500)):
+        print('Entered sites do not form a square')
+        exit()
     # Calculate distances with slanted axis
     yPrime = getDistance(x3, y3, x2, y2, x, y) / 10000
     xPrime =  getDistance(x3, y3, x0, y0, x, y) / 10000
-    # Check if 4 sites form a square - sides < 11m and diagonals < 
-    if (disFormula(x0, y0, x1, y1) > 11) or (disFormula(x1,y1,x2,y2) > 11) or (disFormula(x2,y2,x3,y3) > 11) or (disFormula(x3,y3,x0,y0) > 11) or ():
-        print()
-        exit('Sides ')
-    # Check if sites in right order
-    pass
     # Check if sI is in between input sites
     if xPrime >= 1.1 or yPrime >= 1.1:
         print('Interpsite not in interpolation bounds')
@@ -189,8 +205,8 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
         interpolatedProbs.append(interpVal)
     # TEMPORARY -> print out interpolated values
     print('\nInterp values')
-    for row in interpolatedProbs:
-        print(row)
+    for val in interpolatedProbs:
+        print(val)
     plotInterpolated(xCoords, sI, interpolatedProbs)
 
 def main():
