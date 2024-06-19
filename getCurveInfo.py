@@ -188,9 +188,9 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
         (x1, y1, probCoords1) = sortedL[3]
         (x2, y2, probCoords2) = sortedL[2]
     # Check if sites form square before interpolating: sides and diagonals
-    if (not(9500 <= disFormula(x0,y0,x1,y1) <= 10500) or not(9500 <= disFormula(x1,y1,x2,y2) <= 10500) or 
-        not(9500 <= disFormula(x2,y2,x3,y3) <= 10500) or not(9500 <= disFormula(x3,y3,x0,y0) <= 10500) or
-        not((9500*math.sqrt(2)) <= disFormula(x0,y0,x2,y2) <= (math.sqrt(2)*10500)) or not((9500*math.sqrt(2)) <= disFormula(x1,y1,x3,y3) <= (math.sqrt(2)*10500))):
+    if (not(9900 <= disFormula(x0,y0,x1,y1) <= 10100) or not(9900 <= disFormula(x1,y1,x2,y2) <= 10100) or 
+        not(9900 <= disFormula(x2,y2,x3,y3) <= 10100) or not(9900 <= disFormula(x3,y3,x0,y0) <= 10100) or
+        not((9900*math.sqrt(2)) <= disFormula(x0,y0,x2,y2) <= (math.sqrt(2)*10100)) or not((9900*math.sqrt(2)) <= disFormula(x1,y1,x3,y3) <= (math.sqrt(2)*10100))):
         print('Entered sites do not form a square')
         exit()
     # Calculate distances with slanted axis
