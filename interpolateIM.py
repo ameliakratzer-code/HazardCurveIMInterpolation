@@ -12,9 +12,6 @@ parser.add_argument('--rup')
 parser.add_argument('--rupVar')
 parser.add_argument('--interpsitename')
 args = parser.parse_args()
-if (args.sitenames == None):
-    print('Sitename is required.')
-    exit()
 
 # Connect to the database
 connection = pymysql.connect(host = 'moment.usc.edu',
