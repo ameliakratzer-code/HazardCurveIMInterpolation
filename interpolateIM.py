@@ -2,6 +2,13 @@ import pymysql
 import argparse
 import matplotlib.pyplot as plt
 
+parser = argparse.ArgumentParser('Allow user to input site names, ')
+parser.add_argument('--sitenames', nargs='+')
+# User can specify a particular event ID (source, rup, rupVar) to do the interpolation for
+parser.add_argument('--eventID')
+parser.add_argument('--interpsitename')
+args = parser.parse_args()
+
 # Connect to the database
 connection = pymysql.connect(host = 'moment.usc.edu',
                             user = 'cybershk_ro',
@@ -26,6 +33,4 @@ def getIMValues(nameSite):
         result = cursor.fetchall()
 
 def main():
-    getIMValues('USC')
-
-main()
+    # Create comma-separated list of sites from arg
