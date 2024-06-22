@@ -105,14 +105,13 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     # xCoords = event IDs, yCoords = IM Vals
     listPXY = [(p0x, p0y, getIMValues(s0)[1]), (p1x, p1y, getIMValues(s1)[1]), (p2x, p2y, getIMValues(s2)[1]), (p3x, p3y, getIMValues(s3)[1])]
     sortedL = sorted(listPXY, key=lambda x:x[0])
-    # Determining S0, S3
+    # Set tuple of x, y, IM to vals from right site
     if sortedL[0][1] < sortedL[1][1]:
         (x0, y0, IMVals0) = sortedL[0]
         (x3, y3, IMVals3) = sortedL[1]
     else:
         (x0, y0, IMVals0) = sortedL[1]
         (x3, y3, IMVals3) = sortedL[0]
-    # Determing S1, S2
     if sortedL[2][1] < sortedL[3][1]:
         (x1, y1, IMVals1) = sortedL[2]
         (x2, y2, IMVals2) = sortedL[3]
