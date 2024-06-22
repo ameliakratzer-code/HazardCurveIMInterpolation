@@ -2,6 +2,7 @@ import pymysql
 import argparse
 import matplotlib.pyplot as plt
 import pyproj
+import math
 
 parser = argparse.ArgumentParser('Allow user to input site names, ')
 parser.add_argument('--sitenames', nargs='+')
@@ -44,6 +45,12 @@ def getDistance(point1x, point1y, point2x, point2y, SIx, SIy):
     d = (SIx-xIntersection)**2 + (SIy-yIntersection)**2
     return d**0.5
 
+# Used when checking if input sites form a square
+def disFormula(x0, y0, x1, y1):
+    dsquared = (x0-x1)**2 + (y0-y1)**2
+    d = dsquared**0.5
+    return d
+
 def getIMValues(nameSite):
     with connection.cursor() as cursor:
         # Query changes depending on what part of event ID is entered
@@ -68,8 +75,8 @@ def getIMValues(nameSite):
             cursor.execute(query1, (nameSite, args.source, args.rup))
         # Want one event only
         elif args.source != None and args.rup != None and args.rupVar != None:
-            query2 = query1 + 'And P.Rup_Var_ID = %s'
-            cursor.execute(query1, (nameSite, args.source, args.rup, args.rupVar))
+            query2 = baseQuery + 'AND P.Source_ID = %s AND P.Rupture_ID = %s And P.Rup_Var_ID = %s'
+            cursor.execute(query2, (nameSite, args.source, args.rup, args.rupVar))
         else:
             print('Please enter one event = specific source, rup, rupVar, one rupture = specific source, rup, or all events = nothing specified')
             exit()
@@ -79,12 +86,69 @@ def getIMValues(nameSite):
         eventID = []
         IMVals = []
         for row in result:
-            eventID.append((result[0], result[1], result[2]))
-            IMVals.append(result[3])
+            eventID.append((row[0], row[1], row[2]))
+            IMVals.append(row[3])
         return eventID, IMVals
 
 def bilinearinterpolation(s0, s1, s2, s3, sI):
-    pass
+    p0x, p0y = getUTM(s0)
+    p1x, p1y = getUTM(s1)
+    p2x, p2y = getUTM(s2)
+    p3x, p3y = getUTM(s3)
+    x, y = getUTM(sI)
+    # Store event ID from smallest input site
+    eventIDs = getIMValues(s0)[0], getIMValues(s1)[0], getIMValues(s2)[0], getIMValues(s3)[0], getIMValues(sI)[0]
+    minEventIDs = min(eventIDs,key=len)
+    interpolatedIMVals = []
+    # List to store shared events between the sites
+    interpEvents = []
+    # xCoords = event IDs, yCoords = IM Vals
+    listPXY = [(p0x, p0y, getIMValues(s0)[1]), (p1x, p1y, getIMValues(s1)[1]), (p2x, p2y, getIMValues(s2)[1]), (p3x, p3y, getIMValues(s3)[1])]
+    sortedL = sorted(listPXY, key=lambda x:x[0])
+    # Determining S0, S3
+    if sortedL[0][1] < sortedL[1][1]:
+        (x0, y0, IMVals0) = sortedL[0]
+        (x3, y3, IMVals3) = sortedL[1]
+    else:
+        (x0, y0, IMVals0) = sortedL[1]
+        (x3, y3, IMVals3) = sortedL[0]
+    # Determing S1, S2
+    if sortedL[2][1] < sortedL[3][1]:
+        (x1, y1, IMVals1) = sortedL[2]
+        (x2, y2, IMVals2) = sortedL[3]
+    else:
+        (x1, y1, IMVals1) = sortedL[3]
+        (x2, y2, IMVals2) = sortedL[2]
+    # Check if sites form square before interpolating: sides and diagonals
+    if (not(9900 <= disFormula(x0,y0,x1,y1) <= 10100) or not(9900 <= disFormula(x1,y1,x2,y2) <= 10100) or 
+        not(9900 <= disFormula(x2,y2,x3,y3) <= 10100) or not(9900 <= disFormula(x3,y3,x0,y0) <= 10100) or
+        not((9900*math.sqrt(2)) <= disFormula(x0,y0,x2,y2) <= (math.sqrt(2)*10100)) or not((9900*math.sqrt(2)) <= disFormula(x1,y1,x3,y3) <= (math.sqrt(2)*10100))):
+        print('Entered sites do not form a square')
+        exit()
+    # Calculate distances with slanted axis
+    yPrime = getDistance(x3, y3, x2, y2, x, y) / 10000
+    xPrime =  getDistance(x3, y3, x0, y0, x, y) / 10000
+    for i in range(len(minEventIDs)):
+        continueOuterLoop = False
+        eventID = minEventIDs[i]
+        for list in eventIDs:
+            # Event IDs might have different indexes in list of IDs for site
+            if eventID not in list:
+                continueOuterLoop = True
+        if continueOuterLoop:
+            continue
+        R1 = (IMVals0[i] * (1-xPrime) + IMVals1[i] * xPrime)
+        R2 = (IMVals2[i] * xPrime + IMVals3[i] * (1-xPrime))
+        interpVal = (R1 * yPrime + R2 * (1-yPrime))
+        interpolatedIMVals.append(interpVal)
+        interpEvents.append(eventID)
+    # TEMPORARY -> print out interpolated and event values
+    print('\nInterp values')
+    for val in interpolatedIMVals:
+        print(val)
+    print('\nEventID values')
+    for v in interpEvents:
+        print(v)
 
 def interpScatterplot():
     # Make scatterplot of actual IM values versus interpolated
