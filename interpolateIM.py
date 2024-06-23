@@ -166,7 +166,7 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     # Open file in write mode
     with open(filePath, 'w', newline='') as file:
         write = csv.writer(file)
-        write.writerow(['Event', 'Value'])
+        write.writerow(['Event', 'IMVal'])
         for event, IMVal in zip(interpEvents, interpolatedIMVals):
             write.writerow([event, IMVal])
     print('Data downloaded')
