@@ -3,6 +3,12 @@ import argparse
 import matplotlib.pyplot as plt
 import pyproj
 import math
+import os
+import csv
+import numpy as np
+
+# Use when plotting curve so know event ID to include
+oneEvent, oneRupture, allEvents = False, False, False
 
 parser = argparse.ArgumentParser('Allow user to input site names, ')
 parser.add_argument('--sitenames', nargs='+')
@@ -12,6 +18,7 @@ parser.add_argument('--source')
 parser.add_argument('--rup')
 parser.add_argument('--rupVar')
 parser.add_argument('--interpsitename')
+parser.add_argument('--output')
 args = parser.parse_args()
 
 # Connect to the database
@@ -69,14 +76,21 @@ def getIMValues(nameSite):
         # Want all events for that site
         if args.source == None and args.rup == None and args.rupVar == None:
             cursor.execute(baseQuery, (nameSite))
+            # Set global allEvents variable to True
+            global allEvents 
+            allEvents = True
         # Want all rupture variations for a specific source and rup for that site
         elif args.source != None and args.rup != None and args.rupVar == None:
             query1 = baseQuery + 'AND P.Source_ID = %s AND P.Rupture_ID = %s'
             cursor.execute(query1, (nameSite, args.source, args.rup))
+            global oneRupture
+            oneRupture = True
         # Want one event only
         elif args.source != None and args.rup != None and args.rupVar != None:
             query2 = baseQuery + 'AND P.Source_ID = %s AND P.Rupture_ID = %s And P.Rup_Var_ID = %s'
             cursor.execute(query2, (nameSite, args.source, args.rup, args.rupVar))
+            global oneEvent 
+            oneEvent = True
         else:
             print('Please enter one event = specific source, rup, rupVar, one rupture = specific source, rup, or all events = nothing specified')
             exit()
@@ -142,19 +156,47 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
         interpVal = (R1 * yPrime + R2 * (1-yPrime))
         interpolatedIMVals.append(interpVal)
         interpEvents.append(eventID)
-    # TEMPORARY -> print out interpolated and event values
-    print('\nInterp values')
-    for val in interpolatedIMVals:
-        print(val)
-    print('\nEventID values')
-    for v in interpEvents:
-        print(v)
+    # Write (event, IM) values to file
+    # Specify filename and directory
+    filename = args.output + '.csv'
+    directory = f"/Users/ameliakratzer/Desktop/LinInterpolation/{args.output}"
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    filePath = os.path.join(directory, filename)
+    # Open file in write mode
+    with open(filePath, 'w', newline='') as file:
+        write = csv.writer(file)
+        write.writerow(['Event', 'Value'])
+        for event, IMVal in zip(interpEvents, interpolatedIMVals):
+            write.writerow([event, IMVal])
+    print('Data downloaded')
+    # Scatterplot of data
+    interpScatterplot(getIMValues(sI)[1],interpolatedIMVals, args.interpsitename)
+    print('Scatterplot plotted')
 
-def interpScatterplot():
-    # Make scatterplot of actual IM values versus interpolated
-    # Have y = x as reference
-    pass
-
+# Scatterplot x-axis = simulated IM, y-axis = interp IM
+def interpScatterplot(sim, interp, sitename):
+    plt.scatter(sim, interp, color='blue')
+    plt.xlabel('Simulated IMs')
+    plt.ylabel('Interpolated IMs')
+    if oneEvent:
+        plt.title(f'{args.interpsitename} IMs for ({args.source}, {args.rup}, {args.rupVar}), 2 sec RotD50')
+    elif oneRupture:
+        plt.title(f'{args.interpsitename} IMs for ({args.source}, {args.rup}, all), 2 sec RotD50')
+    elif allEvents:
+        plt.title(f'{args.interpsitename} IMs for all events, 2 sec RotD50')
+    # Line y = x
+    minVal = min(min(sim), min(interp))
+    maxVal = max(max(sim), max(interp))
+    plt.plot([minVal, maxVal], [minVal, maxVal], linestyle = 'dashed', color='black')
+    # Want to save plot to same folder as data
+    directory = f"/Users/ameliakratzer/Desktop/LinInterpolation/{args.output}"
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    fileName = f'{sitename}' + '.png'
+    path = os.path.join(directory, fileName)
+    plt.savefig(path)
+    
 def main():
     sites = (args.sitenames[0]).split(',')
     site0, site1, site2, site3 = sites[0], sites[1], sites[2], sites[3]
