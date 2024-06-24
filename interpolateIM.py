@@ -95,13 +95,16 @@ def getIMValues(nameSite):
             print('Please enter one event = specific source, rup, rupVar, one rupture = specific source, rup, or all events = nothing specified')
             exit()
         result = cursor.fetchall()
+        # Check to make sure event ID is valid
+        if len(result) == 0:
+            print('Please enter a valid event for that site')
+            exit()
         # Result row = (sourceID, ruptureID, RupVarID, IMVal)
         # EventID = tuple of first three values from result row
         eventID = []
         IMVals = []
         for row in result:
             eventID.append((row[0], row[1], row[2]))
-            IMVals.append(row[3])
         return eventID, IMVals
 
 def bilinearinterpolation(s0, s1, s2, s3, sI):
