@@ -27,19 +27,6 @@ connection = pymysql.connect(host = 'moment.usc.edu',
                             password = 'CyberShake2007',
                             database = 'CyberShake')
 
-def getUTM(sitename):
-    #get lat lon of site
-    with connection.cursor() as cursor:
-        query3 = '''SELECT CS_Site_Lat, CS_Site_Lon FROM CyberShake_Sites
-                    WHERE CS_Short_Name = %s
-        '''
-        cursor.execute(query3, (sitename))
-        location = cursor.fetchall()
-        lat, lon = location[0][0], location[0][1]
-    myProj = pyproj.Proj(proj ='utm', zone = 11, ellps = 'WGS84')
-    x, y = myProj(lon, lat)
-    return x, y
-
 def getDistance(point1x, point1y, point2x, point2y, SIx, SIy):
     # Used in bilinear interpolation
     # Find where line point1 to point2 and line interpSite intersect

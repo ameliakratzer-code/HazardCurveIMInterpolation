@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import pyproj
 import os
 import math
+import utils.py
 
 parser = argparse.ArgumentParser('Allow user to input site name, period')
 # User enter sitenames with spaces
@@ -83,39 +84,7 @@ def plotFeatures():
     plt.ylabel('Prob')
     plt.grid(axis = 'y')
 
-def getUTM(sitename):
-    #get lat lon of site
-    with connection.cursor() as cursor:
-        query3 = '''SELECT CS_Site_Lat, CS_Site_Lon FROM CyberShake_Sites
-                    WHERE CS_Short_Name = %s
-        '''
-        cursor.execute(query3, (sitename))
-        location = cursor.fetchall()
-        lat, lon = location[0][0], location[0][1]
-    myProj = pyproj.Proj(proj ='utm', zone = 11, ellps = 'WGS84')
-    x, y = myProj(lon, lat)
-    return x, y
-
-def getDistance(point1x, point1y, point2x, point2y, SIx, SIy):
-    # Used in bilinear interpolation
-    # Find where line point1 to point2 and line interpSite intersect
-    m1 = (point2y-point1y) / (point2x-point1x)
-    b1 = point2y-m1*point2x
-    m2 = -(1/m1)
-    b2 = SIy-m2*SIx
-    xIntersection = (b2-b1)/(m1-m2)
-    yIntersection = m2*xIntersection+b2
-    d = (SIx-xIntersection)**2 + (SIy-yIntersection)**2
-    return d**0.5
-
-# Used when checking if input sites form a square
-def disFormula(x0, y0, x1, y1):
-    dsquared = (x0-x1)**2 + (y0-y1)**2
-    d = dsquared**0.5
-    return d
-
 # Plot with the interpolated curve and actual curve them overlayed
-# Used in linear and bilinear interpolation
 def plotInterpolated(xCoords, sI, interpolatedProbs):
     xActual, yActual = downloadHazardCurve(sI)
     # Describing the quality of the fit
@@ -162,50 +131,35 @@ def linearinterpolation(s0, s1, sI):
         exit()
 
 def bilinearinterpolation(s0, s1, s2, s3, sI):
-    # Get sites in correct order for interpolation
-    p0x, p0y = getUTM(s0)
-    p1x, p1y = getUTM(s1)
-    p2x, p2y = getUTM(s2)
-    p3x, p3y = getUTM(s3)
-    x, y = getUTM(sI)
-    interpolatedProbs = []
+    # Use site classes
+    p0 = Site(s0, downloadHazardCurve(s0)[1])
+    p1 = Site(s1, downloadHazardCurve(s1)[1])
+    p2 = Site(s2, downloadHazardCurve(s2)[1])
+    p3 = Site(s3, downloadHazardCurve(s3)[1])
+    p4 = Site(sI, downloadHazardCurve(sI)[1])
     xCoords = downloadHazardCurve(s0)[0]
-    listPXY = [(p0x, p0y, downloadHazardCurve(s0)[1]), (p1x, p1y, downloadHazardCurve(s1)[1]), (p2x, p2y, downloadHazardCurve(s2)[1]), (p3x, p3y, downloadHazardCurve(s3)[1])]
-    sortedL = sorted(listPXY, key=lambda x:x[0])
+    listPXY = [p0, p1, p2, p3, p4]
+    sortedL = sorted(listPXY, key=lambda site: site.x)
     # Determining S0, S3
-    if sortedL[0][1] < sortedL[1][1]:
+    if sortedL[0].y < sortedL[1].y:
         # Download hazard curve of site at L[0]
-        (x0, y0, probCoords0) = sortedL[0]
-        (x3, y3, probCoords3) = sortedL[1]
+        s0 = sortedL[0]
+        s3 = sortedL[1]
     else:
-        (x0, y0, probCoords0) = sortedL[1]
-        (x3, y3, probCoords3) = sortedL[0]
+        s0 = sortedL[1]
+        s3 = sortedL[0]
     # Determing S1, S2
-    if sortedL[2][1] < sortedL[3][1]:
-        (x1, y1, probCoords1) = sortedL[2]
-        (x2, y2, probCoords2) = sortedL[3]
+    if sortedL[2].y < sortedL[3].y:
+        s1 = sortedL[2]
+        s2 = sortedL[3]
     else:
-        (x1, y1, probCoords1) = sortedL[3]
-        (x2, y2, probCoords2) = sortedL[2]
-    # Check if sites form square before interpolating: sides and diagonals
-    if (not(9900 <= disFormula(x0,y0,x1,y1) <= 10100) or not(9900 <= disFormula(x1,y1,x2,y2) <= 10100) or 
-        not(9900 <= disFormula(x2,y2,x3,y3) <= 10100) or not(9900 <= disFormula(x3,y3,x0,y0) <= 10100) or
-        not((9900*math.sqrt(2)) <= disFormula(x0,y0,x2,y2) <= (math.sqrt(2)*10100)) or not((9900*math.sqrt(2)) <= disFormula(x1,y1,x3,y3) <= (math.sqrt(2)*10100))):
-        print('Entered sites do not form a square')
-        exit()
-    # Calculate distances with slanted axis
-    yPrime = getDistance(x3, y3, x2, y2, x, y) / 10000
-    xPrime =  getDistance(x3, y3, x0, y0, x, y) / 10000
-    for i in range(len(xCoords)):
-        R1 = (probCoords0[i] * (1-xPrime) + probCoords1[i] * xPrime)
-        R2 = (probCoords2[i] * xPrime + probCoords3[i] * (1-xPrime))
-        interpVal = (R1 * yPrime + R2 * (1-yPrime))
-        interpolatedProbs.append(interpVal)
-    # TEMPORARY -> print out interpolated values
+        s1 = sortedL[3]
+        s2 = sortedL[2]
+    interpVals = bilinFormula(s0, s1, s2, s3, p4, xCoords)
     print('\nInterp values')
-    for val in interpolatedProbs:
+    for val in interpVals:
         print(val)
-    plotInterpolated(xCoords, sI, interpolatedProbs)
+    plotInterpolated(xCoords, sI, interpVals)
 
 def main():
     # Create comma-separated list of sites from arg
