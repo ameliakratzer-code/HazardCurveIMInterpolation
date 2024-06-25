@@ -8,26 +8,37 @@ connection = pymysql.connect(host = 'moment.usc.edu',
                             password = 'CyberShake2007',
                             database = 'CyberShake')
 
+
+def getUTM(siteName):
+    with connection.cursor() as cursor:
+        query3 = '''SELECT CS_Site_Lat, CS_Site_Lon FROM CyberShake_Sites
+                    WHERE CS_Short_Name = %s
+        '''
+        cursor.execute(query3, (siteName))
+        location = cursor.fetchall()
+        lat, lon = location[0][0], location[0][1]
+    myProj = pyproj.Proj(proj ='utm', zone = 11, ellps = 'WGS84')
+    return myProj(lon, lat)
+
 # Create instance of Site class by doing site0 = Site('USC', getIM or downloadHazardCurves)
 class Site:
     def __init__(self, name, valsToInterp):
         self.name = name
         self.valsToInterp = valsToInterp
-        self.x = None
-        self.y = None
+        self.x, self.y = getUTM(name)
 
-    def getUTM(self, name):
-        with connection.cursor() as cursor:
-            query3 = '''SELECT CS_Site_Lat, CS_Site_Lon FROM CyberShake_Sites
-                        WHERE CS_Short_Name = %s
-            '''
-            cursor.execute(query3, (name))
-            location = cursor.fetchall()
-            lat, lon = location[0][0], location[0][1]
-        myProj = pyproj.Proj(proj ='utm', zone = 11, ellps = 'WGS84')
-        # Update self x and y
-        self.x, self.y = myProj(lon, lat)
-        return self.x, self.y
+    # Define comparison operators
+    def within_x_range(self, s0, s1):
+        return (s0.x <= self.x <= s1.x) or (s1.x <= self.x <= s0.x)
+
+    def within_y_range(self, s0, s1):
+        return (s0.y <= self.y <= s1.y) or (s1.y <= self.y <= s0.y)
+
+    def y_less_than(self, other):
+        return self.y < other.y
+
+    def __repr__(self):
+        return f'Sitename {self.name}, SiteVals {self.valsToInterp}'
 
 # Shared functions between getCurveInfo and interpolateIM.py
 def getDistance(point1x, point1y, point2x, point2y, SIx, SIy):

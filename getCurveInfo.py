@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import pyproj
 import os
 import math
-import utils.py
+from utils import Site, getDistance, disFormula, bilinFormula
 
 parser = argparse.ArgumentParser('Allow user to input site name, period')
 # User enter sitenames with spaces
@@ -112,18 +112,16 @@ def plotInterpolated(xCoords, sI, interpolatedProbs):
 
 def linearinterpolation(s0, s1, sI):
     # Prob values for two known sites
-    xCoords, probCoords0 = (downloadHazardCurve(s0))
-    probCoords1 = (downloadHazardCurve(s1))[1]
+    s0 = Site(s0, downloadHazardCurve(s0)[1])
+    s1 = Site(s1, downloadHazardCurve(s1)[1])
+    pI = Site(sI, downloadHazardCurve(sI)[1])
+    xCoords = downloadHazardCurve(s0.name)[0]
     interpolatedProbs = []
-    # Convert from lat/lon to UTM
-    x0, y0 = getUTM(s0)
-    x1, y1 = getUTM(s1)
-    x, y = getUTM(sI)
     # Check if sI is in between input sites
-    if (x0 <= x<= x1 or x1 <= x <= x0) and (y0 <= y <= y1 or y1 <= y <= y0):
+    if pI.within_x_range(s0, s1) and pI.within_y_range(s0, s1):
         # Loop through x values on hazard Curve
         for i in range(len(xCoords)):
-            interpVal = (probCoords0[i] * abs(x1 - x) + probCoords1[i] * abs(x - x0)) * (1 / abs(x1 - x0))
+            interpVal = (s0.valsToInterp[i] * abs(s1.x - pI.x) + s1.valsToInterp[i] * abs(pI.x - s0.x)) * (1 / abs(s1.x - s0.x))
             interpolatedProbs.append(interpVal)
         plotInterpolated(xCoords, sI, interpolatedProbs)
     else:
@@ -137,11 +135,11 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     p2 = Site(s2, downloadHazardCurve(s2)[1])
     p3 = Site(s3, downloadHazardCurve(s3)[1])
     p4 = Site(sI, downloadHazardCurve(sI)[1])
-    xCoords = downloadHazardCurve(s0)[0]
+    xCoords = downloadHazardCurve(s0.name)[0]
     listPXY = [p0, p1, p2, p3, p4]
     sortedL = sorted(listPXY, key=lambda site: site.x)
     # Determining S0, S3
-    if sortedL[0].y < sortedL[1].y:
+    if sortedL[0].y_less_than(sortedL[1]):
         # Download hazard curve of site at L[0]
         s0 = sortedL[0]
         s3 = sortedL[1]
@@ -149,7 +147,7 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
         s0 = sortedL[1]
         s3 = sortedL[0]
     # Determing S1, S2
-    if sortedL[2].y < sortedL[3].y:
+    if sortedL[2].y_less_than(sortedL[3]):
         s1 = sortedL[2]
         s2 = sortedL[3]
     else:
