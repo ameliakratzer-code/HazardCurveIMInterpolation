@@ -38,7 +38,7 @@ class Site:
         return self.y < other.y
 
     def __repr__(self):
-        return f'Sitename {self.name}, SiteVals {self.valsToInterp}'
+        return f'Sitename {self.name}'
 
 # Shared functions between getCurveInfo and interpolateIM.py
 def getDistance(point1x, point1y, point2x, point2y, SIx, SIy):

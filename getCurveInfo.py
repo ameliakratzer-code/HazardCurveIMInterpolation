@@ -135,9 +135,10 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     p2 = Site(s2, downloadHazardCurve(s2)[1])
     p3 = Site(s3, downloadHazardCurve(s3)[1])
     p4 = Site(sI, downloadHazardCurve(sI)[1])
-    xCoords = downloadHazardCurve(s0.name)[0]
-    listPXY = [p0, p1, p2, p3, p4]
+    xCoords = downloadHazardCurve(p4.name)[0]
+    listPXY = [p0, p1, p2, p3]
     sortedL = sorted(listPXY, key=lambda site: site.x)
+    sortedL.append(p4)
     # Determining S0, S3
     if sortedL[0].y_less_than(sortedL[1]):
         # Download hazard curve of site at L[0]
@@ -153,6 +154,7 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     else:
         s1 = sortedL[3]
         s2 = sortedL[2]
+    print(s0, s1, s2, s3)
     interpVals = bilinFormula(s0, s1, s2, s3, p4, xCoords)
     print('\nInterp values')
     for val in interpVals:
