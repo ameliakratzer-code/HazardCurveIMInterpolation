@@ -6,6 +6,7 @@ import math
 import os
 import csv
 import numpy as np
+from utils import Site, linearCheck
 
 # Use when plotting curve so know event ID to include
 oneEvent, oneRupture, allEvents = False, False, False
@@ -26,24 +27,6 @@ connection = pymysql.connect(host = 'moment.usc.edu',
                             user = 'cybershk_ro',
                             password = 'CyberShake2007',
                             database = 'CyberShake')
-
-def getDistance(point1x, point1y, point2x, point2y, SIx, SIy):
-    # Used in bilinear interpolation
-    # Find where line point1 to point2 and line interpSite intersect
-    m1 = (point2y-point1y) / (point2x-point1x)
-    b1 = point2y-m1*point2x
-    m2 = -(1/m1)
-    b2 = SIy-m2*SIx
-    xIntersection = (b2-b1)/(m1-m2)
-    yIntersection = m2*xIntersection+b2
-    d = (SIx-xIntersection)**2 + (SIy-yIntersection)**2
-    return d**0.5
-
-# Used when checking if input sites form a square
-def disFormula(x0, y0, x1, y1):
-    dsquared = (x0-x1)**2 + (y0-y1)**2
-    d = dsquared**0.5
-    return d
 
 def getIMValues(nameSite):
     with connection.cursor() as cursor:
@@ -92,47 +75,28 @@ def getIMValues(nameSite):
         IMVals = []
         for row in result:
             eventID.append((row[0], row[1], row[2]))
+            IMVals.append(row[3])
         return eventID, IMVals
 
 def bilinearinterpolation(s0, s1, s2, s3, sI):
-    p0x, p0y = getUTM(s0)
-    p1x, p1y = getUTM(s1)
-    p2x, p2y = getUTM(s2)
-    p3x, p3y = getUTM(s3)
-    x, y = getUTM(sI)
+    # Use site classes
+    p0 = Site(s0, getIMValues(s0)[1], getIMValues(s0)[0])
+    p1 = Site(s1, getIMValues(s1)[1], getIMValues(s1)[0])
+    p2 = Site(s2, getIMValues(s2)[1], getIMValues(s2)[0])
+    p3 = Site(s3, getIMValues(s3)[1], getIMValues(s3)[0])
+    p4 = Site(sI, getIMValues(sI)[1], getIMValues(sI)[0])
     interpolatedIMVals = []
-    # List to store shared events between the sites
     interpEvents = []
     # xCoords = event IDs, yCoords = IM Vals
-    listPXY = [(p0x, p0y, getIMValues(s0)[1], getIMValues(s0)[0]), (p1x, p1y, getIMValues(s1)[1], getIMValues(s1)[0]), (p2x, p2y, getIMValues(s2)[1], getIMValues(s2)[0]), (p3x, p3y, getIMValues(s3)[1], getIMValues(s3)[0])]
-    sortedL = sorted(listPXY, key=lambda x:x[0])
-    # Set tuple of x, y, IM to vals from right site
-    if sortedL[0][1] < sortedL[1][1]:
-        (x0, y0, IMVals0, events0) = sortedL[0]
-        (x3, y3, IMVals3, events3) = sortedL[1]
-    else:
-        (x0, y0, IMVals0, events0) = sortedL[1]
-        (x3, y3, IMVals3, events3) = sortedL[0]
-    if sortedL[2][1] < sortedL[3][1]:
-        (x1, y1, IMVals1, events1) = sortedL[2]
-        (x2, y2, IMVals2, events2) = sortedL[3]
-    else:
-        (x1, y1, IMVals1, events1) = sortedL[3]
-        (x2, y2, IMVals2, events2) = sortedL[2]
-    # Check if sites form square before interpolating: sides and diagonals
-    if (not(9900 <= disFormula(x0,y0,x1,y1) <= 10100) or not(9900 <= disFormula(x1,y1,x2,y2) <= 10100) or 
-        not(9900 <= disFormula(x2,y2,x3,y3) <= 10100) or not(9900 <= disFormula(x3,y3,x0,y0) <= 10100) or
-        not((9900*math.sqrt(2)) <= disFormula(x0,y0,x2,y2) <= (math.sqrt(2)*10100)) or not((9900*math.sqrt(2)) <= disFormula(x1,y1,x3,y3) <= (math.sqrt(2)*10100))):
-        print('Entered sites do not form a square')
-        exit()
-    # Calculate distances with slanted axis
-    yPrime = getDistance(x3, y3, x2, y2, x, y) / 10000
-    xPrime =  getDistance(x3, y3, x0, y0, x, y) / 10000
-    eventIDs = events0, events1, events2, events3
-    for i in range(len(events0)):
+    listPXY = [p0, p1, p2, p3]
+    sortedL = sorted(listPXY, key=lambda site: site.x)
+    sortedL.append(p4)
+    s0, s1, s2, s3, yPrime, xPrime = linearCheck(sortedL)
+    eventIDs = s0.events, s1.events, s2.events, s3.events
+    for i in range(len(s0.events)):
         indexOfEvents = []
         continueOuterLoop = False
-        eventID = events1[i]
+        eventID = s0.events[i]
         for list in eventIDs:
             # Event IDs might have different indexes in list of IDs for site
             if eventID in list:
@@ -141,14 +105,14 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
                 continueOuterLoop = True
         if continueOuterLoop:
             continue
-        R1 = (IMVals0[indexOfEvents[0]] * (1-xPrime) + IMVals1[indexOfEvents[1]] * xPrime)
-        R2 = (IMVals2[indexOfEvents[2]] * xPrime + IMVals3[indexOfEvents[3]] * (1-xPrime))
+        R1 = (s0.valsToInterp[indexOfEvents[0]] * (1-xPrime) + s1.valsToInterp[indexOfEvents[1]] * xPrime)
+        R2 = (s2.valsToInterp[indexOfEvents[2]] * xPrime + s3.valsToInterp[indexOfEvents[3]] * (1-xPrime))
         interpVal = (R1 * yPrime + R2 * (1-yPrime))
         interpolatedIMVals.append(interpVal)
         interpEvents.append(eventID)
     # Write (event, IM) values to file
     # Specify filename and directory
-    filename = args.output + '.csv'
+    filename = args.output + '.csv' if args.output != None else 'unnamed.csv'
     directory = f"/Users/ameliakratzer/Desktop/LinInterpolation/{args.output}"
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -190,7 +154,6 @@ def interpScatterplot(sim, interp, sitename):
 def main():
     sites = (args.sitenames[0]).split(',')
     site0, site1, site2, site3 = sites[0], sites[1], sites[2], sites[3]
-    # Just bilin interpolation for now, can add 1d linear later
     bilinearinterpolation(site0, site1, site2, site3, args.interpsitename)
     connection.close()
 

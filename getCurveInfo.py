@@ -2,7 +2,7 @@ import pymysql
 import argparse
 import matplotlib.pyplot as plt
 import os
-from utils import Site, getDistance, disFormula, bilinFormula
+from utils import Site, linearCheck
 
 parser = argparse.ArgumentParser('Allow user to input site name, period')
 # User enter sitenames with spaces
@@ -137,27 +137,17 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     listPXY = [p0, p1, p2, p3]
     sortedL = sorted(listPXY, key=lambda site: site.x)
     sortedL.append(p4)
-    # Determining S0, S3
-    if sortedL[0].y_less_than(sortedL[1]):
-        # Download hazard curve of site at L[0]
-        s0 = sortedL[0]
-        s3 = sortedL[1]
-    else:
-        s0 = sortedL[1]
-        s3 = sortedL[0]
-    # Determing S1, S2
-    if sortedL[2].y_less_than(sortedL[3]):
-        s1 = sortedL[2]
-        s2 = sortedL[3]
-    else:
-        s1 = sortedL[3]
-        s2 = sortedL[2]
-    print(s0, s1, s2, s3)
-    interpVals = bilinFormula(s0, s1, s2, s3, p4, xCoords)
+    s0, s1, s2, s3, yPrime, xPrime = linearCheck(sortedL)
+    interpolatedProbs = []
+    for i in range(len(xCoords)):
+        R1 = (s0.valsToInterp[i] * (1-xPrime) + s1.valsToInterp[i] * xPrime)
+        R2 = (s2.valsToInterp[i] * xPrime + s3.valsToInterp[i] * (1-xPrime))
+        interpVal = (R1 * yPrime + R2 * (1-yPrime))
+        interpolatedProbs.append(interpVal)
     print('\nInterp values')
-    for val in interpVals:
+    for val in interpolatedProbs:
         print(val)
-    plotInterpolated(xCoords, sI, interpVals)
+    plotInterpolated(xCoords, sI, interpolatedProbs)
 
 def main():
     # Create comma-separated list of sites from arg

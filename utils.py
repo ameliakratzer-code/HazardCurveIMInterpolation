@@ -22,10 +22,11 @@ def getUTM(siteName):
 
 # Create instance of Site class by doing site0 = Site('USC', getIM or downloadHazardCurves)
 class Site:
-    def __init__(self, name, valsToInterp):
+    def __init__(self, name, valsToInterp, events=None):
         self.name = name
         self.valsToInterp = valsToInterp
         self.x, self.y = getUTM(name)
+        self.events = events
 
     # Define comparison operators
     def within_x_range(self, s0, s1):
@@ -59,8 +60,22 @@ def disFormula(x0, y0, x1, y1):
     d = dsquared**0.5
     return d
 
-def bilinFormula(s0, s1, s2, s3, sI, xCoords):
-    interpolatedProbs = []
+def linearCheck(sortedL):
+    # Determining S0, S3
+    if sortedL[0].y_less_than(sortedL[1]):
+        # Download hazard curve of site at L[0]
+        s0 = sortedL[0]
+        s3 = sortedL[1]
+    else:
+        s0 = sortedL[1]
+        s3 = sortedL[0]
+    # Determing S1, S2
+    if sortedL[2].y_less_than(sortedL[3]):
+        s1 = sortedL[2]
+        s2 = sortedL[3]
+    else:
+        s1 = sortedL[3]
+        s2 = sortedL[2]
     # Check if sites form square before interpolating: sides and diagonals
     if (not(9900 <= disFormula(s0.x,s0.y,s1.x,s1.y) <= 10100) or not(9900 <= disFormula(s1.x,s1.y,s2.x,s2.y) <= 10100) or 
         not(9900 <= disFormula(s2.x,s2.y,s3.x,s3.y) <= 10100) or not(9900 <= disFormula(s3.x,s3.y,s0.x,s0.y) <= 10100) or
@@ -68,12 +83,7 @@ def bilinFormula(s0, s1, s2, s3, sI, xCoords):
         print('Entered sites do not form a square')
         exit()
     # Calculate distances with slanted axis
-    yPrime = getDistance(s3.x, s3.y, s2.x, s2.y, sI.x, sI.y) / 10000
-    xPrime =  getDistance(s3.x, s3.y, s0.x, s0.y, sI.x, sI.y) / 10000
-    for i in range(len(xCoords)):
-        R1 = (s0.valsToInterp[i] * (1-xPrime) + s1.valsToInterp[i] * xPrime)
-        R2 = (s2.valsToInterp[i] * xPrime + s3.valsToInterp[i] * (1-xPrime))
-        interpVal = (R1 * yPrime + R2 * (1-yPrime))
-        interpolatedProbs.append(interpVal)
-    return interpolatedProbs
+    yPrime = getDistance(s3.x, s3.y, s2.x, s2.y, sortedL[-1].x, sortedL[-1].y) / 10000
+    xPrime =  getDistance(s3.x, s3.y, s0.x, s0.y, sortedL[-1].x, sortedL[-1].y) / 10000
+    return s0, s1, s2, s3, yPrime, xPrime
 
