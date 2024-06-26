@@ -111,7 +111,7 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     # Specify filename and directory
     filename = args.output + '.csv' if args.output != None else 'unnamed.csv'
     # On my computer f"/Users/ameliakratzer/Desktop/LinInterpolation/{args.output}"
-    directory = f"{args.output}"
+    directory = args.output
     if not os.path.exists(directory):
         os.makedirs(directory)
     filePath = os.path.join(directory, filename)

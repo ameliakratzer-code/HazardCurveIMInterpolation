@@ -61,7 +61,7 @@ def plotHazardCurve(xVals, yVals, nameSite):
     if args.output != None:
         # Store photos in specific directory
         # On my laptop f"/Users/ameliakratzer/Desktop/LinInterpolation/{args.output}"
-        directory = f"{args.output}"
+        directory = {args.output}
         if not os.path.exists(directory):
             os.makedirs(directory)
         fileName = f'{nameSite}' + 'per' + str(args.period) + '.png'
@@ -106,7 +106,7 @@ def plotInterpolated(xCoords, sI, interpolatedProbs):
     plt.plot(xActual, yActual, color='green', linewidth = 2, label = "Actual", marker='^')
     plt.plot(xActual, interpolatedProbs, color='pink', linewidth = 2, label = 'Interpolated', marker='^')
     plt.legend()
-    path = os.path.join(f"/Users/ameliakratzer/Desktop/LinInterpolation/{args.output}", 'Overlayed' + '.png')
+    path = os.path.join({args.output}, 'Overlayed' + '.png')
     plt.savefig(path)
 
 def linearinterpolation(s0, s1, sI):
