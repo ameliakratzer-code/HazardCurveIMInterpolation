@@ -1,7 +1,7 @@
 import pymysql
 import argparse
 import matplotlib.pyplot as plt
-#import os
+import os
 from utils import Site, linearCheck
 
 parser = argparse.ArgumentParser('Allow user to input site name, period')
@@ -62,12 +62,13 @@ def plotHazardCurve(xVals, yVals, nameSite):
         # Store photos in specific directory
         # On my laptop f"/Users/ameliakratzer/Desktop/LinInterpolation/{args.output}"
         directory = args.output
-        #if not os.path.exists(directory):
-            #os.makedirs(directory)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
         fileName = f'{nameSite}' + 'per' + str(args.period) + '.png'
         plt.title(f'{nameSite}, 2 sec RotD50')
-        #path = os.path.join(directory, fileName)
-        plt.savefig(directory + '/' + fileName)
+        path = os.path.join(directory, fileName)
+        #directory + '/' + fileName
+        plt.savefig(path)
     else:
         plt.show(block=False)
         plt.pause(5)
@@ -106,8 +107,8 @@ def plotInterpolated(xCoords, sI, interpolatedProbs):
     plt.plot(xActual, yActual, color='green', linewidth = 2, label = "Actual", marker='^')
     plt.plot(xActual, interpolatedProbs, color='pink', linewidth = 2, label = 'Interpolated', marker='^')
     plt.legend()
-    path = ({args.output} + '/' + 'Overlayed' + '.png')
-    #os.path.join({args.output}, 'Overlayed' + '.png')
+    # ({args.output} + '/' + 'Overlayed' + '.png')
+    path = os.path.join({args.output}, 'Overlayed' + '.png')
     plt.savefig(path)
 
 def linearinterpolation(s0, s1, sI):

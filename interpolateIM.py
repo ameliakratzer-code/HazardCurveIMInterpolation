@@ -1,7 +1,7 @@
 import pymysql
 import argparse
 import matplotlib.pyplot as plt
-#import os
+import os
 import csv
 from utils import Site, linearCheck
 
@@ -112,9 +112,10 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     filename = args.output + '.csv' if args.output != None else 'unnamed.csv'
     # On my computer f"/Users/ameliakratzer/Desktop/LinInterpolation/{args.output}"
     directory = args.output
-    #if not os.path.exists(directory):
-        #os.makedirs(directory)
-    filePath = directory + '/' + filename
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    #filePath = directory + '/' + filename
+    filePath = os.path.join(directory, filename)
     # Open file in write mode
     with open(filePath, 'w', newline='') as file:
         write = csv.writer(file)
@@ -143,11 +144,11 @@ def interpScatterplot(sim, interp, sitename):
     plt.plot([minVal, maxVal], [minVal, maxVal], linestyle = 'dashed', color='black')
     # Want to save plot to same folder as data
     directory = f"{args.output}"
-    #if not os.path.exists(directory):
-        #os.makedirs(directory)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
     fileName = f'{sitename}' + '.png'
-    #path = os.path.join(directory, fileName)
-    plt.savefig(directory + '/' + fileName)
+    path = os.path.join(directory, fileName)
+    plt.savefig(path)
     
 def main():
     sites = (args.sitenames[0]).split(',')
