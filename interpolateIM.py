@@ -1,11 +1,8 @@
 import pymysql
 import argparse
 import matplotlib.pyplot as plt
-import pyproj
-import math
 import os
 import csv
-import numpy as np
 from utils import Site, linearCheck
 
 # Use when plotting curve so know event ID to include
