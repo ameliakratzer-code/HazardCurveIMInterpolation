@@ -1,9 +1,7 @@
 import pymysql
 import argparse
 import matplotlib.pyplot as plt
-import pyproj
 import os
-import math
 from utils import Site, getDistance, disFormula, bilinFormula
 
 parser = argparse.ArgumentParser('Allow user to input site name, period')
