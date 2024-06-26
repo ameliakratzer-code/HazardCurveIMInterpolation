@@ -60,7 +60,8 @@ def plotHazardCurve(xVals, yVals, nameSite):
     # If any output argument is provided, store the image under the site name, period
     if args.output != None:
         # Store photos in specific directory
-        directory = f"/Users/ameliakratzer/Desktop/LinInterpolation/{args.output}"
+        # On my laptop f"/Users/ameliakratzer/Desktop/LinInterpolation/{args.output}"
+        directory = f"{args.output}"
         if not os.path.exists(directory):
             os.makedirs(directory)
         fileName = f'{nameSite}' + 'per' + str(args.period) + '.png'
