@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import os
 import csv
 from utils import Site, linearCheck
+import numpy as np
 
 # Use when plotting curve so know event ID to include
 oneEvent, oneRupture, allEvents = False, False, False
@@ -109,7 +110,7 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
         interpEvents.append(eventID)
     # Write (event, IM) values to file
     # Specify filename and directory
-    filename = args.output + '.csv' if args.output != None else 'unnamed.csv'
+    filename = args.interpsitename + '.csv' if args.output != None else 'unnamed.csv'
     # On my computer f"/Users/ameliakratzer/Desktop/LinInterpolation/{args.output}"
     directory = args.output
     if not os.path.exists(directory):
@@ -129,7 +130,16 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
 
 # Scatterplot x-axis = simulated IM, y-axis = interp IM
 def interpScatterplot(sim, interp, sitename):
-    plt.scatter(sim, interp, color='blue')
+    numDots = len(sim)
+    if numDots <= 20:
+        # Size for one event
+        size = 150
+    elif numDots <= 100:
+        # Size for all rup vars
+        size = 2000 / numDots
+    else:
+        size = 25
+    plt.scatter(sim, interp, color='blue', s = size)
     plt.xlabel('Simulated IMs')
     plt.ylabel('Interpolated IMs')
     if oneEvent:
@@ -138,6 +148,12 @@ def interpScatterplot(sim, interp, sitename):
         plt.title(f'{args.interpsitename} IMs for ({args.source}, {args.rup}, all), 2 sec RotD50')
     elif allEvents:
         plt.title(f'{args.interpsitename} IMs for all events, 2 sec RotD50')
+    # Line of best fit to scatterplot
+    # Convert x and y to numpy arrays
+    xNumpy, yNumpy = np.array(sim), np.array(interp)
+    slope, intercept = np.polyfit(xNumpy, yNumpy, 1)
+    lineOfBestFit = slope * xNumpy + intercept
+    plt.plot(sim, lineOfBestFit, color='green', linestyle = 'dashed')
     # Line y = x
     minVal = min(min(sim), min(interp))
     maxVal = max(max(sim), max(interp))
