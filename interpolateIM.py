@@ -140,6 +140,8 @@ def interpScatterplot(sim, interp, sitename):
     else:
         size = 25
     plt.scatter(sim, interp, color='blue', s = size)
+    # Set 1 to 1 ration
+    plt.gca().set_aspect('equal', adjustable='box')
     plt.xlabel('Simulated IMs')
     plt.ylabel('Interpolated IMs')
     if oneEvent:
