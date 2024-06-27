@@ -153,6 +153,7 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     plotInterpolated(xCoords, sI, interpolatedProbs)
 
 def main():
+    print('hello')
     # Create comma-separated list of sites from arg
     sites = (args.sitenames[0]).split(',')
     numSites = len(sites)
