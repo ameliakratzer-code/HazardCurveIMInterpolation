@@ -5,10 +5,6 @@ import matplotlib.pyplot as plt
 import os
 from utils import Site, linearCheck
 
-user_site_packages = '/home1/10000/ameliakratzer14/.local/lib/python3.7/site-packages'
-if os.path.exists(user_site_packages):
-    sys.path.append(user_site_packages)
-
 parser = argparse.ArgumentParser('Allow user to input site name, period')
 # User enter sitenames with spaces
 parser.add_argument('--sitenames', nargs='+')
