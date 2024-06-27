@@ -1,4 +1,3 @@
-import sys
 import pymysql
 import argparse
 import matplotlib.pyplot as plt
