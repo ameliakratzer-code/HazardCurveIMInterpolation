@@ -110,7 +110,7 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
         interpEvents.append(eventID)
     # Write (event, IM) values to file
     # Specify filename and directory
-    filename =  f'{args.interpsitename} for ({args.source}, {args.rup}, {args.rupVar})' + '.csv' if args.output != None else 'unnamed.csv'
+    filename =  f'{args.interpsitename}for({args.source},{args.rup},{args.rupVar})' + '.csv' if args.output != None else 'unnamed.csv'
     # On my computer f"/Users/ameliakratzer/Desktop/LinInterpolation/{args.output}"
     directory = args.output
     if not os.path.exists(directory):
@@ -164,7 +164,7 @@ def interpScatterplot(sim, interp, sitename):
     directory = args.output
     if not os.path.exists(directory):
         os.makedirs(directory)
-    fileName = f'{sitename} for ({args.source}, {args.rup}, {args.rupVar})' + '.png'
+    fileName = f'{sitename}for({args.source},{args.rup},{args.rupVar})' + '.png'
     path = os.path.join(directory, fileName)
     plt.savefig(path)
     
