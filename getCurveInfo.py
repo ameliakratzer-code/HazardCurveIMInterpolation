@@ -108,7 +108,7 @@ def plotInterpolated(xCoords, sI, interpolatedProbs):
     plt.plot(xActual, interpolatedProbs, color='pink', linewidth = 2, label = 'Interpolated', marker='^')
     plt.legend()
     # ({args.output} + '/' + 'Overlayed' + '.png')
-    path = os.path.join({args.output}, 'Overlayed' + '.png')
+    path = os.path.join(args.output, 'Overlayed' + '.png')
     plt.savefig(path)
 
 def linearinterpolation(s0, s1, sI):
@@ -153,7 +153,6 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     plotInterpolated(xCoords, sI, interpolatedProbs)
 
 def main():
-    print('hello')
     # Create comma-separated list of sites from arg
     sites = (args.sitenames[0]).split(',')
     numSites = len(sites)
