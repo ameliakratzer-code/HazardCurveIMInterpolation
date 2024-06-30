@@ -73,6 +73,7 @@ def getIMValues(site0, site1, site2, site3):
                     sharedRups = result
                 else:
                     sharedRups = list(set(sharedRups) & set(result))
+                print(f'SharedRups: {sharedRups}, len(SharedRups)')
         # All rup vars
         elif args.source != None and args.rup != None and args.rupVar == None:
                 global oneRupture
@@ -88,6 +89,7 @@ def getIMValues(site0, site1, site2, site3):
                 q1 = baseQuery + 'AND P.Source_ID = %s AND P.Rupture_ID = %s'
                 cursor.execute(q1, (site, source, rup))
                 result = cursor.fetchall()
+                print(f'site: {site}, result: {result}')
                 IMVals.extend(result)
                 # Length of result = how many rupture variations
                 # Only get event IDs once
@@ -101,10 +103,12 @@ def getIMValues(site0, site1, site2, site3):
 
 def bilinearinterpolation(s0, s1, s2, s3, sI):
     events, IMTogether = getIMValues(s0, s1, s2, s3)
+    print(f'Events: {events}')
     # IMTogether has all IMs together IM0, IM1
     IMs = []
     for i in range(0, len(IMTogether), len(events)):
         IMs.append(IMTogether[i:i+len(events)])
+    print(f'IM Vals: {IMs}')
     # Use site classes
     p0 = Site(s0, IMs[0])
     p1 = Site(s1, IMs[1])
