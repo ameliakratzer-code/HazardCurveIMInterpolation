@@ -2,7 +2,7 @@ import pymysql
 import argparse
 import matplotlib.pyplot as plt
 import os
-from utils import Site, linearCheck
+from utils import Site, interpolate
 
 parser = argparse.ArgumentParser('Allow user to input site name, period')
 # User enter sitenames with spaces
@@ -140,13 +140,7 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     listPXY = [p0, p1, p2, p3]
     sortedL = sorted(listPXY, key=lambda site: site.x)
     sortedL.append(p4)
-    s0, s1, s2, s3, yPrime, xPrime = linearCheck(sortedL)
-    interpolatedProbs = []
-    for i in range(len(xCoords)):
-        R1 = (s0.valsToInterp[i] * (1-xPrime) + s1.valsToInterp[i] * xPrime)
-        R2 = (s2.valsToInterp[i] * xPrime + s3.valsToInterp[i] * (1-xPrime))
-        interpVal = (R1 * yPrime + R2 * (1-yPrime))
-        interpolatedProbs.append(interpVal)
+    interpolatedProbs = interpolate(sortedL, xCoords)
     print('\nInterp values')
     for val in interpolatedProbs:
         print(val)

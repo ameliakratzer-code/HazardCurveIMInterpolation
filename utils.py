@@ -22,11 +22,10 @@ def getUTM(siteName):
 
 # Create instance of Site class by doing site0 = Site('USC', getIM or downloadHazardCurves)
 class Site:
-    def __init__(self, name, valsToInterp, events=None):
+    def __init__(self, name, valsToInterp):
         self.name = name
         self.valsToInterp = valsToInterp
         self.x, self.y = getUTM(name)
-        self.events = events
 
     # Define comparison operators
     def within_x_range(self, s0, s1):
@@ -60,7 +59,7 @@ def disFormula(x0, y0, x1, y1):
     d = dsquared**0.5
     return d
 
-def linearCheck(sortedL):
+def interpolate(sortedL, xVals):
     # Determining S0, S3
     if sortedL[0].y_less_than(sortedL[1]):
         # Download hazard curve of site at L[0]
@@ -85,5 +84,10 @@ def linearCheck(sortedL):
     # Calculate distances with slanted axis
     yPrime = getDistance(s3.x, s3.y, s2.x, s2.y, sortedL[-1].x, sortedL[-1].y) / 10000
     xPrime =  getDistance(s3.x, s3.y, s0.x, s0.y, sortedL[-1].x, sortedL[-1].y) / 10000
-    return s0, s1, s2, s3, yPrime, xPrime
-
+    interpolatedProbs = []
+    for i in range(len(xVals)):
+        R1 = (s0.valsToInterp[i] * (1-xPrime) + s1.valsToInterp[i] * xPrime)
+        R2 = (s2.valsToInterp[i] * xPrime + s3.valsToInterp[i] * (1-xPrime))
+        interpVal = (R1 * yPrime + R2 * (1-yPrime))
+        interpolatedProbs.append(interpVal)
+    return interpolatedProbs
