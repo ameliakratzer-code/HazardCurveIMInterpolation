@@ -2,7 +2,7 @@ import unittest
 import csv
 import sys
 sys.path.append('/home1/10000/ameliakratzer14/Pasadena')
-from getCurveInfo import main
+import getCurveInfo
 from unittest.mock import patch
 import argparse
 
@@ -24,7 +24,7 @@ class testHazardCurveInterpolater(unittest.TestCase):
                 for row in read:
                     refResultsL.append(float(row[1]))
             # Compare ref results list to current results
-            currentResultsL = main()
+            currentResultsL = getCurveInfo()
             errorTolerance = 0.001 / 100
             for i in range(len(refResultsL)):
                 difference = abs(refResultsL[i]-currentResultsL[i])
