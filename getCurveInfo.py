@@ -172,7 +172,7 @@ def main():
         linearinterpolation(site0, site1, args.interpsitename)
     #bilinear interpolation between 4 sites
     elif numSites == 4:
-        bilinearinterpolation(site0, site1, site2, site3, args.interpsitename)
+        return bilinearinterpolation(site0, site1, site2, site3, args.interpsitename)
     connection.close()
 
 main()
