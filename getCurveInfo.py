@@ -3,7 +3,6 @@ import argparse
 import matplotlib.pyplot as plt
 import os
 from utils import Site, interpolate
-import csv
 
 parser = argparse.ArgumentParser('Allow user to input site name, period')
 # User enter sitenames with spaces
@@ -165,7 +164,7 @@ def main():
         linearinterpolation(site0, site1, args.interpsitename)
     #bilinear interpolation between 4 sites
     elif numSites == 4:
-        return bilinearinterpolation(site0, site1, site2, site3, args.interpsitename)
+        bilinearinterpolation(site0, site1, site2, site3, args.interpsitename)
     connection.close()
 
 main()
