@@ -1,35 +1,47 @@
+import subprocess
 import unittest
 import csv
-import sys
-sys.path.append('/home1/10000/ameliakratzer14/Pasadena')
-from getCurveInfo import main
-from unittest.mock import patch
-import argparse
 
-class testHazardCurveInterpolater(unittest.TestCase):
-    # Testing accuracy of interpolation function
-    def testInterpolationCalcs(self):
-        with patch('argparse.ArgumentParser.parse_args',
-                   return_value=argparse.Namespace(
-                       sitenames='S385,S429,S431,S387',
-                       interpsitename='COO',
-                       output='$SCRATCH')):
-            # Get ref results list
-            referenceFile = 'ReferenceCOO.csv'
-            refResultsL = []
-            with open(referenceFile, 'r') as file:
-                read = csv.reader(file)
-                # Skip headers, vals read as strings
-                next(read)
-                for row in read:
-                    refResultsL.append(float(row[1]))
-            # Compare ref results list to current results
-            currentResultsL = main()
-            errorTolerance = 0.001 / 100
-            for i in range(len(refResultsL)):
-                difference = abs(refResultsL[i]-currentResultsL[i])
-                # Unittest method that checks whether difference is <= errorTolerance
-                self.assertLessEqual(difference, errorTolerance, 'Difference exceeds error tolerence')
+def call_script():
+    script_name = '/Users/ameliakratzer/codescripts/sources/Pasadena/getCurveInfo.py'
+    sitenames = 'S385,S429,S431,S387'
+    interpsitename = 'COO'
+    # Desktop on laptop, SCRATCH on Frontera
+    output = '$SCRATCH'
 
-if __name__ == '__main__':
+    # Construct the command to run the second script with arguments
+    command = [
+        'python3', script_name,
+        '--sitename', sitenames,
+        '--interpsitename', interpsitename,
+        '--output', output
+    ]
+
+    # Call the second script using subprocess
+    result = subprocess.run(command, capture_output=True, text=True)
+
+class TestHazardInterp(unittest.TestCase):
+    def test_calculations(self):
+        errorTolerance = 0.001 / 100
+        call_script()
+        currentFile = 'ActualCOO.csv'
+        # Reference file stored in tests
+        referenceFile = 'ReferenceCOO.csv'
+        refResultsL = []
+        with open(referenceFile, 'r') as file:
+            read = csv.reader(file)
+            next(read)
+            for row in read:
+                refResultsL.append(float(row[1]))
+        curResultsL = []
+        with open(currentFile, 'r') as file:
+            read = csv.reader(file)
+            next(read)
+            for row in read:
+                curResultsL.append(float(row[1]))
+        for i in range(len(refResultsL)):
+            difference = abs(refResultsL[i]-curResultsL[i])
+            self.assertLessEqual(difference, errorTolerance, 'Difference exceeds error tolerence')
+
+if __name__ == "__main__":
     unittest.main()

@@ -2,6 +2,7 @@ import pymysql
 import argparse
 import matplotlib.pyplot as plt
 import os
+import csv
 from utils import Site, interpolate
 
 parser = argparse.ArgumentParser('Allow user to input site name, period')
@@ -127,6 +128,7 @@ def linearinterpolation(s0, s1, sI):
     else:
         print('Interpsite not in interpolation bounds')
         exit()
+    return interpolatedProbs
 
 def bilinearinterpolation(s0, s1, s2, s3, sI):
     # Use site classes
@@ -143,8 +145,15 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     print('\nInterp values')
     for val in interpolatedProbs:
         print(val)
+    # Write interpolated vals to file for testing
+    fileName = f'Actual{args.interpsitename}.csv'
+    filePath = os.path.join(os.getcwd(), fileName)
+    with open(filePath, 'w', newline='') as file:
+        write = csv.writer(file)
+        write.writerow(['XVals', 'InterpVals'])
+        for xVal, interpVal in zip(xCoords, interpolatedProbs):
+            write.writerow([xVal, interpVal])
     plotInterpolated(xCoords, sI, interpolatedProbs)
-    return interpolatedProbs
     
 def main():
     # Create comma-separated list of sites from arg
