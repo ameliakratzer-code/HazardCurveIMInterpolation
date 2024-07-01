@@ -3,6 +3,7 @@ import argparse
 import matplotlib.pyplot as plt
 import os
 from utils import Site, interpolate
+import csv
 
 parser = argparse.ArgumentParser('Allow user to input site name, period')
 # User enter sitenames with spaces
@@ -60,7 +61,6 @@ def plotHazardCurve(xVals, yVals, nameSite):
     # If any output argument is provided, store the image under the site name, period
     if args.output != None:
         # Store photos in specific directory
-        # On my laptop f"/Users/ameliakratzer/Desktop/LinInterpolation/{args.output}"
         directory = args.output
         if not os.path.exists(directory):
             os.makedirs(directory)
@@ -144,8 +144,16 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     print('\nInterp values')
     for val in interpolatedProbs:
         print(val)
+    #fileName = f'Reference{args.interpsitename}.csv'
+    #filePath = os.path.join(os.getcwd(), fileName)
+    #with open(filePath, 'w', newline='') as file:
+        #write = csv.writer(file)
+        #write.writerow(['XVals', 'InterpVals'])
+        #for xVal, interpVal in zip(xCoords, interpolatedProbs):
+            #write.writerow([xVal, interpVal])
     plotInterpolated(xCoords, sI, interpolatedProbs)
-
+    return interpolatedProbs
+    
 def main():
     # Create comma-separated list of sites from arg
     sites = (args.sitenames[0]).split(',')
