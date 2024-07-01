@@ -7,7 +7,7 @@ def call_script():
     sitenames = 'S345,S387,S389,S347'
     interpsitename = 'USC'
     # Desktop on laptop, SCRATCH on Frontera
-    output = '$SCRATCH'
+    output = '~/Desktop'
 
     # Construct the command to run the second script with arguments
     command = [
@@ -16,9 +16,9 @@ def call_script():
         '--interpsitename', interpsitename,
         '--output', output
     ]
-
+    output_directory = '/Users/ameliakratzer/codescripts/sources/Pasadena/tests'
     # Call the second script using subprocess
-    result = subprocess.run(command, capture_output=True, text=True)
+    result = subprocess.run(command, cwd=output_directory, capture_output=True, text=True)
 
 class TestHazardInterp(unittest.TestCase):
     def test_calculations(self):
