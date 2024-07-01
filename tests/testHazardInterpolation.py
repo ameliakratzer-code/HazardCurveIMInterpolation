@@ -1,6 +1,8 @@
 import unittest
-from getCurveInfo import bilinearinterpolation
 import csv
+import sys
+sys.path.append('/home1/10000/ameliakratzer14/Pasadena')
+from getCurveInfo import bilinearinterpolation
 
 class testHazardCurveInterpolater(unittest.TestCase):
     # Testing accuracy of interpolation function
