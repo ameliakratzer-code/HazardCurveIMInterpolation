@@ -4,11 +4,16 @@ import sys
 sys.path.append('/home1/10000/ameliakratzer14/Pasadena')
 from getCurveInfo import main
 from unittest.mock import patch
+import argparse
 
 class testHazardCurveInterpolater(unittest.TestCase):
     # Testing accuracy of interpolation function
     def testInterpolationCalcs(self):
-        with patch('sys.argv', ['python3', 'getCurveInfo.py', '--sitenames', 'S385,S429,S431,S387', '--interpsitename', 'COO', '--output', '$SCRATCH']):
+        with patch('argparse.ArgumentParser.parse_args',
+                   return_value=argparse.Namespace(
+                       sitenames='S385,S429,S431,S387',
+                       interpsitename='COO',
+                       output='$SCRATCH')):
             # Get ref results list
             referenceFile = 'ReferenceCOO.csv'
             refResultsL = []

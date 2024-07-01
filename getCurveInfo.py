@@ -144,13 +144,6 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     print('\nInterp values')
     for val in interpolatedProbs:
         print(val)
-    #fileName = f'Reference{args.interpsitename}.csv'
-    #filePath = os.path.join(os.getcwd(), fileName)
-    #with open(filePath, 'w', newline='') as file:
-        #write = csv.writer(file)
-        #write.writerow(['XVals', 'InterpVals'])
-        #for xVal, interpVal in zip(xCoords, interpolatedProbs):
-            #write.writerow([xVal, interpVal])
     plotInterpolated(xCoords, sI, interpolatedProbs)
     return interpolatedProbs
     
