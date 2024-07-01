@@ -73,7 +73,6 @@ def getIMValues(site0, site1, site2, site3):
                     sharedRups = result
                 else:
                     sharedRups = list(set(sharedRups) & set(result))
-                print(f'SharedRups: {sharedRups}, len(SharedRups)')
         # All rup vars
         elif args.source != None and args.rup != None and args.rupVar == None:
                 global oneRupture
@@ -89,7 +88,6 @@ def getIMValues(site0, site1, site2, site3):
                 q1 = baseQuery + 'AND P.Source_ID = %s AND P.Rupture_ID = %s'
                 cursor.execute(q1, (site, source, rup))
                 result = cursor.fetchall()
-                print(f'site: {site}, result: {result}')
                 IMVals.extend(result)
                 # Length of result = how many rupture variations
                 # Only get event IDs once
@@ -103,12 +101,10 @@ def getIMValues(site0, site1, site2, site3):
 
 def bilinearinterpolation(s0, s1, s2, s3, sI):
     events, IMTogether = getIMValues(s0, s1, s2, s3)
-    print(f'Events: {events}')
     # IMTogether has all IMs together IM0, IM1
     IMs = []
     for i in range(0, len(IMTogether), len(events)):
         IMs.append(IMTogether[i:i+len(events)])
-    print(f'IM Vals: {IMs}')
     # Use site classes
     p0 = Site(s0, IMs[0])
     p1 = Site(s1, IMs[1])
@@ -144,12 +140,13 @@ def interpScatterplot(sim, interp, sitename):
     numDots = len(sim)
     if numDots <= 20:
         # Size for one event
-        size = 120
-    elif numDots <= 100:
+        size = 100
+    elif numDots < 100:
         # Size for all rup vars
         size = 2000 / numDots
     else:
-        size = 25
+        size = 3
+    plt.figure()
     plt.scatter(sim, interp, color='blue', s = size)
     # Set 1 to 1 ration
     plt.gca().set_aspect('equal', adjustable='box')
@@ -178,6 +175,21 @@ def interpScatterplot(sim, interp, sitename):
     fileName = f'{sitename}for({args.source},{args.rup},{args.rupVar})' + '.png'
     path = os.path.join(directory, fileName)
     plt.savefig(path)
+    plt.close()
+    # Log scale plot
+    plt.figure()
+    plt.scatter(sim, interp, color='blue', s = 3)
+    plt.plot([minVal, maxVal], [minVal, maxVal], linestyle = 'dashed', color='black')
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.gca().set_aspect('equal', adjustable='box')
+    plt.xlabel('Simulated IMs')
+    plt.ylabel('Interpolated IMs')
+    plt.title('Log Scale')
+    name = f'logScale{sitename}'
+    logPath = os.path.join(directory, name)
+    plt.savefig(logPath)
+    plt.close()
     
 def main():
     sites = (args.sitenames[0]).split(',')
