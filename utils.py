@@ -2,14 +2,12 @@ import pymysql
 import pyproj
 import math
 
-# Connect to the database
-connection = pymysql.connect(host = 'moment.usc.edu',
-                            user = 'cybershk_ro',
-                            password = 'CyberShake2007',
-                            database = 'CyberShake')
-
 
 def getUTM(siteName):
+    connection = pymysql.connect(host = 'moment.usc.edu',
+                                user = 'cybershk_ro',
+                                password = 'CyberShake2007',
+                                database = 'CyberShake')
     with connection.cursor() as cursor:
         query3 = '''SELECT CS_Site_Lat, CS_Site_Lon FROM CyberShake_Sites
                     WHERE CS_Short_Name = %s
@@ -17,6 +15,7 @@ def getUTM(siteName):
         cursor.execute(query3, (siteName))
         location = cursor.fetchall()
         lat, lon = location[0][0], location[0][1]
+    connection.close()
     myProj = pyproj.Proj(proj ='utm', zone = 11, ellps = 'WGS84')
     return myProj(lon, lat)
 

@@ -5,9 +5,7 @@ import os
 import csv
 from utils import Site, interpolate
 import numpy as np
-
-# Use when plotting curve so know event ID to include
-oneEvent, oneRupture, allEvents = False, False, False
+from enum import Enum
 
 parser = argparse.ArgumentParser('Allow user to input site names, ')
 parser.add_argument('--sitenames', nargs='+')
@@ -26,6 +24,18 @@ connection = pymysql.connect(host = 'moment.usc.edu',
                             password = 'CyberShake2007',
                             database = 'CyberShake')
 
+# Create Mode enumeration and set user_mode variable depending on user arguments
+class Mode(Enum):
+    ONE_EVENT = 1
+    ONE_RUPTURE = 2
+    ALL_EVENTS = 3
+if args.source != None and args.rup != None and args.rupVar != None:
+    userMode = Mode.ONE_EVENT
+elif args.source == None and args.rup == None and args.rupVar == None:
+    userMode = Mode.ALL_EVENTS
+elif args.source != None and args.rup != None and args.rupVar == None:
+    userMode = Mode.ONE_RUPTURE
+
 def getIMValues(site0, site1, site2, site3):
     with connection.cursor() as cursor:
         eventsList = []
@@ -42,10 +52,7 @@ def getIMValues(site0, site1, site2, site3):
             AND I.IM_Type_Value = 2.0
             AND I.IM_Type_ID = P.IM_Type_ID
             '''
-        # Check for one event first and exit from function
-        if args.source != None and args.rup != None and args.rupVar != None:
-            global oneEvent 
-            oneEvent = True
+        if userMode == Mode.ONE_EVENT:
             for site in [site0, site1, site2, site3, args.interpsitename]:
                 qOneEvent = baseQuery + 'AND P.Source_ID = %s AND P.Rupture_ID = %s And P.Rup_Var_ID = %s'
                 cursor.execute(qOneEvent, (site, args.source, args.rup, args.rupVar))
@@ -53,10 +60,7 @@ def getIMValues(site0, site1, site2, site3):
                 IMVals.append(result[0])
             eventsList.append((int(args.source),int(args.rup),int(args.rupVar)))
             return eventsList, IMVals
-        # All events
-        elif args.source == None and args.rup == None and args.rupVar == None:
-            global allEvents 
-            allEvents = True
+        elif userMode == Mode.ALL_EVENTS:
             # First get list of sharedRups
             sharedRups = []
             for site in [site0, site1, site2, site3]:
@@ -73,10 +77,7 @@ def getIMValues(site0, site1, site2, site3):
                     sharedRups = result
                 else:
                     sharedRups = list(set(sharedRups) & set(result))
-        # All rup vars
-        elif args.source != None and args.rup != None and args.rupVar == None:
-                global oneRupture
-                oneRupture = True
+        elif userMode == Mode.ONE_RUPTURE:
                 sharedRups = [(args.source, args.rup)]
         else:
                 print('Please enter one event = specific source, rup, rupVar, one rupture = specific source, rup, or all events = nothing specified')
@@ -117,13 +118,7 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     sortedL.append(p4)
     interpIMVals = interpolate(sortedL, xVals)
     # Write (event, IM) values to file
-    filename =  f'{args.interpsitename}for({args.source},{args.rup},{args.rupVar})' + '.csv' if args.output != None else 'unnamed.csv'
-    # On my computer f"/Users/ameliakratzer/Desktop/LinInterpolation/{args.output}"
-    directory = args.output
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-    #filePath = directory + '/' + filename
-    filePath = os.path.join(directory, filename)
+    filePath = args.output + '.csv'
     # Open file in write mode
     with open(filePath, 'w', newline='') as file:
         write = csv.writer(file)
@@ -132,11 +127,11 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
             write.writerow([event, IMVal])
     print('Data downloaded')
     # Scatterplot of data
-    interpScatterplot(p4.valsToInterp, interpIMVals, args.interpsitename)
+    interpScatterplot(p4.valsToInterp, interpIMVals)
     print('Scatterplot plotted')
 
 # Scatterplot x-axis = simulated IM, y-axis = interp IM
-def interpScatterplot(sim, interp, sitename):
+def interpScatterplot(sim, interp):
     numDots = len(sim)
     if numDots <= 20:
         # Size for one event
@@ -146,17 +141,16 @@ def interpScatterplot(sim, interp, sitename):
         size = 2000 / numDots
     else:
         size = 3
-    plt.figure()
     plt.scatter(sim, interp, color='blue', s = size)
     # Set 1 to 1 ration
     plt.gca().set_aspect('equal', adjustable='box')
     plt.xlabel('Simulated IMs')
     plt.ylabel('Interpolated IMs')
-    if oneEvent:
+    if userMode == Mode.ONE_EVENT:
         plt.title(f'{args.interpsitename} IMs for ({args.source}, {args.rup}, {args.rupVar}), 2 sec RotD50')
-    elif oneRupture:
+    elif userMode == Mode.ONE_RUPTURE:
         plt.title(f'{args.interpsitename} IMs for ({args.source}, {args.rup}, all), 2 sec RotD50')
-    elif allEvents:
+    elif userMode == Mode.ALL_EVENTS:
         plt.title(f'{args.interpsitename} IMs for all events, 2 sec RotD50')
     # Line of best fit to scatterplot
     # Convert x and y to numpy arrays
@@ -169,27 +163,8 @@ def interpScatterplot(sim, interp, sitename):
     maxVal = max(max(sim), max(interp))
     plt.plot([minVal, maxVal], [minVal, maxVal], linestyle = 'dashed', color='black')
     # Want to save plot to same folder as data
-    directory = args.output
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-    fileName = f'{sitename}for({args.source},{args.rup},{args.rupVar})' + '.png'
-    path = os.path.join(directory, fileName)
+    path = args.output + '.png'
     plt.savefig(path)
-    plt.close()
-    # Log scale plot
-    plt.figure()
-    plt.scatter(sim, interp, color='blue', s = 3)
-    plt.plot([minVal, maxVal], [minVal, maxVal], linestyle = 'dashed', color='black')
-    plt.xscale('log')
-    plt.yscale('log')
-    plt.gca().set_aspect('equal', adjustable='box')
-    plt.xlabel('Simulated IMs')
-    plt.ylabel('Interpolated IMs')
-    plt.title('Log Scale')
-    name = f'logScale{sitename}'
-    logPath = os.path.join(directory, name)
-    plt.savefig(logPath)
-    plt.close()
     
 def main():
     sites = (args.sitenames[0]).split(',')
