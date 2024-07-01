@@ -11,7 +11,7 @@ class testHazardCurveInterpolater(unittest.TestCase):
     def testInterpolationCalcs(self):
         with patch('argparse.ArgumentParser.parse_args',
                    return_value=argparse.Namespace(
-                       sitenames='S385,S429,S431,S387',
+                       sitenames=['S385,S429,S431,S387'],
                        interpsitename='COO',
                        output='$SCRATCH')):
             # Get ref results list
