@@ -5,7 +5,7 @@ import csv
 def call_script():
     script_name = '/Users/ameliakratzer/codescripts/sources/Pasadena/getCurveInfo.py'
     sitenames = 'S385,S429,S431,S387'
-    interpsitename = 'COO'
+    interpsitename = 'USC'
     # Desktop on laptop, SCRATCH on Frontera
     output = '$SCRATCH'
 
