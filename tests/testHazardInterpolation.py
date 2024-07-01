@@ -4,7 +4,7 @@ import csv
 
 def call_script():
     script_name = '/Users/ameliakratzer/codescripts/sources/Pasadena/getCurveInfo.py'
-    sitenames = 'S385,S429,S431,S387'
+    sitenames = 'S345,S387,S389,S347'
     interpsitename = 'USC'
     # Desktop on laptop, SCRATCH on Frontera
     output = '$SCRATCH'
@@ -24,9 +24,9 @@ class TestHazardInterp(unittest.TestCase):
     def test_calculations(self):
         errorTolerance = 0.001 / 100
         call_script()
-        currentFile = 'ActualCOO.csv'
+        currentFile = 'ActualUSC.csv'
         # Reference file stored in tests
-        referenceFile = 'ReferenceCOO.csv'
+        referenceFile = 'ReferenceUSC.csv'
         refResultsL = []
         with open(referenceFile, 'r') as file:
             read = csv.reader(file)
