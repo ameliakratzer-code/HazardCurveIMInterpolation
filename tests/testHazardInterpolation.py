@@ -6,6 +6,7 @@ from getCurveInfo import bilinearinterpolation
 from unittest.mock import patch
 
 @patch('args', ['--sitenames', 'S385,S429,S431,S387', '--interpsitename', 'COO', '--output', '$SCRATCH'])
+@patch('argparse.ArgumentParser.parse_args')
 class testHazardCurveInterpolater(unittest.TestCase):
     # Testing accuracy of interpolation function
     def testInterpolationCalcs(self):
