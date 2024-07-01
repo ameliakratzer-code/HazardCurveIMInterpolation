@@ -3,7 +3,9 @@ import csv
 import sys
 sys.path.append('/home1/10000/ameliakratzer14/Pasadena')
 from getCurveInfo import bilinearinterpolation
+from unittest.mock import patch
 
+@patch('args', ['--sitenames', 'S385,S429,S431,S387', '--interpsitename', 'COO', '--output', '$SCRATCH'])
 class testHazardCurveInterpolater(unittest.TestCase):
     # Testing accuracy of interpolation function
     def testInterpolationCalcs(self):
@@ -17,8 +19,7 @@ class testHazardCurveInterpolater(unittest.TestCase):
             for row in read:
                 refResultsL.append(float(row[1]))
         # Compare ref results list to current results
-        args = ['--sitenames', 'S385,S429,S431,S387', '--interpsitename', 'COO', '--output', '$SCRATCH']
-        currentResultsL = bilinearinterpolation(args)
+        currentResultsL = bilinearinterpolation()
         errorTolerance = 0.001 / 100
         for i in range(len(refResultsL)):
             difference = abs(refResultsL[i]-currentResultsL[i])
