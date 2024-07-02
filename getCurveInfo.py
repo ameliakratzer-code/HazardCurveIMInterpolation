@@ -17,6 +17,12 @@ connection = sqlite3.connect('/scratch1/00349/scottcal/CS_interpolation/study_22
 
 def downloadHazardCurve(nameSite):
     cursor = connection.cursor()
+    print("Database created and Successfully Connected to SQLite")
+    t = '''SELECT * FROM CyberShake_Sites
+    '''
+    cursor.execute(t)
+    p = cursor.fetchall()
+    print(p)
     # Queries to get hazard curve information
     query1 = '''SELECT CyberShake_Runs.Run_ID FROM CyberShake_Sites
                 INNER JOIN CyberShake_Runs
@@ -40,7 +46,6 @@ def downloadHazardCurve(nameSite):
         '''
     cursor.execute(query2, (runID, period))
     result = cursor.fetchall()
-    cursor.close()
     #get list of x and y coordinates from result tuple
     xCoords = []
     yCoords = []
@@ -48,6 +53,7 @@ def downloadHazardCurve(nameSite):
         xCoords.append(row[2])
         yCoords.append(row[3])
     plotHazardCurve(xCoords, yCoords, nameSite)
+    cursor.close()
     return xCoords, yCoords
     
 def plotHazardCurve(xVals, yVals, nameSite):
