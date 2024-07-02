@@ -18,13 +18,12 @@ def call_script():
         '--output', output
     ]
     # Call the second script using subprocess
-    print(os.getcwd())
     result = subprocess.run(command, capture_output=True, text=True)
 
 class TestHazardInterp(unittest.TestCase):
     def test_calculations(self):
         errorTolerance = 0.001 / 100
-        call_script()
+        print(call_script())
         currentFile = 'ActualUSC.csv'
         # Reference file stored in tests
         referenceFile = 'ReferenceUSC.csv'

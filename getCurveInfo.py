@@ -12,10 +12,6 @@ parser.add_argument('--interpsitename')
 parser.add_argument('--period', default=2)
 parser.add_argument('--output', default='Sites',help='Enter name of folder you want to store photos in')
 args = parser.parse_args()
-# Check arguments
-#if args.sitenames == None:
-    #print('Sitename is required.')
-    #exit()
 # Connect to the database
 connection = pymysql.connect(host = 'moment.usc.edu',
                             user = 'cybershk_ro',
