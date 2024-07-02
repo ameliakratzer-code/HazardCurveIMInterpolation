@@ -70,8 +70,9 @@ def getIMValues(site0, site1, site2, site3):
                     AND C.ERF_ID = 36
                     AND S.CS_Short_Name = ?
                     '''
-            cursor.execute(q0, (site))
+            cursor.execute(q0, (site,))
             result = cursor.fetchall()
+            print(f'Result q0: {result}')
             if sharedRups == []:
                 sharedRups = result
             else:
@@ -88,6 +89,7 @@ def getIMValues(site0, site1, site2, site3):
             q1 = baseQuery + 'AND P.Source_ID = ? AND P.Rupture_ID = ?'
             cursor.execute(q1, (site, source, rup))
             result = cursor.fetchall()
+            print(f'Result q1: {result}')
             IMVals.extend(result)
             # Length of result = how many rupture variations
             # Only get event IDs once

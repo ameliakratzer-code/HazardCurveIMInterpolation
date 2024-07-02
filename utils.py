@@ -9,7 +9,7 @@ def getUTM(siteName):
     query3 = '''SELECT CS_Site_Lat, CS_Site_Lon FROM CyberShake_Sites
                     WHERE CS_Short_Name = ?
         '''
-    cursor.execute(query3, (siteName))
+    cursor.execute(query3, (siteName,))
     location = cursor.fetchall()
     lat, lon = location[0][0], location[0][1]
     cursor.close()
