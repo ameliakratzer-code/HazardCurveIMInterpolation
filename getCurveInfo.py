@@ -25,14 +25,14 @@ def downloadHazardCurve(nameSite):
                 ON CyberShake_Runs.Study_ID = Studies.Study_ID
                 WHERE CyberShake_Sites.CS_Short_Name = '{nameSite}' AND Studies.Study_Name = 'Study 22.12 LF';
                 '''
-    query2 = '''SELECT CyberShake_Runs.Run_ID FROM CyberShake_Sites
+    q4 = '''SELECT CyberShake_Runs.Run_ID FROM CyberShake_Sites
 INNER JOIN CyberShake_Runs                
 ON CyberShake_Sites.CS_Site_ID = CyberShake_Runs.Site_ID
 INNER JOIN Studies               
 ON CyberShake_Runs.Study_ID = Studies.Study_ID                
 WHERE CyberShake_Sites.CS_Short_Name = 'S385' AND Studies.Study_Name = 'Study 22.12 LF';'''
     #cursor.execute(query1, (nameSite,))
-    cursor.execute(query2)
+    cursor.execute(q4)
     runID = cursor.fetchone()[0]
     print(runID)
     # Use query1 value - the run_Id as WHERE Hazard_Curves.Run_ID = query1
