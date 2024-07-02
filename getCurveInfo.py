@@ -27,7 +27,7 @@ def downloadHazardCurve(nameSite):
                 '''
     #cursor.execute(query1, (nameSite,))
     cursor.execute(query1)
-    runID = cursor.fetchall()[0]
+    runID = cursor.fetchone()[0]
     print(runID)
     # Use query1 value - the run_Id as WHERE Hazard_Curves.Run_ID = query1
     period = float(args.period)
