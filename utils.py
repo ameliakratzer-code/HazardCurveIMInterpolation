@@ -7,7 +7,7 @@ def getUTM(siteName):
     connection = sqlite3.connect('/scratch1/00349/scottcal/CS_interpolation/study_22_12_lf_indexed.sqlite')
     cursor = connection.cursor()
     query3 = '''SELECT CS_Site_Lat, CS_Site_Lon FROM CyberShake_Sites
-                    WHERE CS_Short_Name = %s
+                    WHERE CS_Short_Name = ?
         '''
     cursor.execute(query3, (siteName))
     location = cursor.fetchall()

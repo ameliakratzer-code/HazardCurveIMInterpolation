@@ -23,7 +23,7 @@ def downloadHazardCurve(nameSite):
                 ON CyberShake_Sites.CS_Site_ID = CyberShake_Runs.Site_ID
                 INNER JOIN Studies
                 ON CyberShake_Runs.Study_ID = Studies.Study_ID
-                WHERE CyberShake_Sites.CS_Short_Name = %s AND Studies.Study_Name = 'Study 22.12 LF';
+                WHERE CyberShake_Sites.CS_Short_Name = ? AND Studies.Study_Name = 'Study 22.12 LF';
                 '''
     cursor.execute(query1, (nameSite))
     runID = cursor.fetchall()
@@ -34,7 +34,7 @@ def downloadHazardCurve(nameSite):
         ON Hazard_Curve_Points.Hazard_Curve_ID = Hazard_Curves.Hazard_Curve_ID
         INNER JOIN IM_Types
         ON Hazard_Curves.IM_Type_ID = IM_Types.IM_Type_ID
-        WHERE Hazard_Curves.Run_ID = %s AND IM_Types.IM_Type_Value = %s AND IM_Types.IM_Type_Component='RotD50';
+        WHERE Hazard_Curves.Run_ID = ? AND IM_Types.IM_Type_Value = ? AND IM_Types.IM_Type_Component='RotD50';
         '''
     cursor.execute(query2, (runID, period))
     result = cursor.fetchall()

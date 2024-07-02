@@ -42,7 +42,7 @@ def getIMValues(site0, site1, site2, site3):
     baseQuery = '''
             SELECT P.IM_Value 
             FROM CyberShake_Sites S, CyberShake_Runs R, PeakAmplitudes P, Studies T, IM_Types I
-            WHERE S.CS_Short_Name = %s
+            WHERE S.CS_Short_Name = ?
             AND S.CS_Site_ID = R.Site_ID
             AND R.Study_ID = T.Study_ID
             AND T.Study_Name = 'Study 22.12 LF'
@@ -53,7 +53,7 @@ def getIMValues(site0, site1, site2, site3):
             '''
     if userMode == Mode.ONE_EVENT:
         for site in [site0, site1, site2, site3, args.interpsitename]:
-            qOneEvent = baseQuery + 'AND P.Source_ID = %s AND P.Rupture_ID = %s And P.Rup_Var_ID = %s'
+            qOneEvent = baseQuery + 'AND P.Source_ID = ? AND P.Rupture_ID = ? And P.Rup_Var_ID = ?'
             cursor.execute(qOneEvent, (site, args.source, args.rup, args.rupVar))
             result = cursor.fetchone()
             IMVals.append(result[0])
@@ -68,7 +68,7 @@ def getIMValues(site0, site1, site2, site3):
                     FROM CyberShake_Site_Ruptures C, CyberShake_Sites S
                     WHERE C.CS_Site_ID = S.CS_Site_ID
                     AND C.ERF_ID = 36
-                    AND S.CS_Short_Name = %s
+                    AND S.CS_Short_Name = ?
                     '''
             cursor.execute(q0, (site))
             result = cursor.fetchall()
@@ -85,7 +85,7 @@ def getIMValues(site0, site1, site2, site3):
     # Need IM value for simulated interpsite
     for site in [site0, site1, site2, site3, args.interpsitename]:
         for (source, rup) in sharedRups:
-            q1 = baseQuery + 'AND P.Source_ID = %s AND P.Rupture_ID = %s'
+            q1 = baseQuery + 'AND P.Source_ID = ? AND P.Rupture_ID = ?'
             cursor.execute(q1, (site, source, rup))
             result = cursor.fetchall()
             IMVals.extend(result)
