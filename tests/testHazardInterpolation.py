@@ -12,6 +12,7 @@ class TestHazardInterp(unittest.TestCase):
         interpname = 'USC'
         o = '$SCRATCH'
         args = [
+        'python3', 'getCurveInfo.py'
         '--sitenames', names,
         '--interpsitename', interpname,
         '--output', o
