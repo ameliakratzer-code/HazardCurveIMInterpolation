@@ -13,6 +13,7 @@ class TestHazardInterp(unittest.TestCase):
         '--interpsitename', 'USC',
         '--output', '$SCRATCH'
         ]
+        print(args)
         getCurveInfo.main(argv=args)
         # Reference file stored in tests
         referenceFile = 'ReferenceUSC.csv'
