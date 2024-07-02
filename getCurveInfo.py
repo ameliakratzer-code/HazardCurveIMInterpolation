@@ -28,6 +28,7 @@ def downloadHazardCurve(nameSite):
     print(repr(nameSite), type(nameSite))
     cursor.execute(query1, (nameSite,))
     runID = cursor.fetchall()
+    print(runID)
     # Use query1 value - the run_Id as WHERE Hazard_Curves.Run_ID = query1
     period = float(args.period)
     query2 = '''SELECT * FROM Hazard_Curve_Points
