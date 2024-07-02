@@ -1,6 +1,7 @@
 import subprocess
 import unittest
 import csv
+import os
 
 def call_script():
     script_name = '/Users/ameliakratzer/codescripts/sources/Pasadena/getCurveInfo.py'
@@ -17,7 +18,8 @@ def call_script():
         '--output', output
     ]
     # Call the second script using subprocess
-    result = subprocess.run(command, capture_output=True, text=True)
+    print(os.getcwd())
+    result = subprocess.run(command, cwd = os.getcwd(), capture_output=True, text=True)
 
 class TestHazardInterp(unittest.TestCase):
     def test_calculations(self):
