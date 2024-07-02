@@ -172,5 +172,6 @@ def main(argv=sys.argv):
         bilinearinterpolation(site0, site1, site2, site3, args.interpsitename)
     connection.close()
 
+# Call main() when script is executed directly
 if __name__ == "__main__":
     main()
