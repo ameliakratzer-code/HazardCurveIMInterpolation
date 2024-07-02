@@ -36,6 +36,8 @@ def downloadHazardCurve(nameSite):
         ON Hazard_Curves.IM_Type_ID = IM_Types.IM_Type_ID
         WHERE Hazard_Curves.Run_ID = ? AND IM_Types.IM_Type_Value = ? AND IM_Types.IM_Type_Component='RotD50';
         '''
+    print(runID, period)
+    print(type(runID), type(period))
     cursor.execute(query2, (runID, period))
     result = cursor.fetchall()
     cursor.close()
