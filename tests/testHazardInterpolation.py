@@ -16,7 +16,7 @@ class TestHazardInterp(unittest.TestCase):
         '--interpsitename', interpname,
         '--output', o
         ]
-        getCurveInfo.main(argv=args)
+        getCurveInfo.main(args)
         # Reference file stored in tests
         referenceFile = 'ReferenceUSC.csv'
         currentFile = 'ActualUSC.csv'
