@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import os
 import csv
 from utils import Site, interpolate
+import sys
 
 parser = argparse.ArgumentParser('Allow user to input site name, period')
 # User enter sitenames with spaces
@@ -150,7 +151,7 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
             write.writerow([xVal, interpVal])
     plotInterpolated(xCoords, sI, interpolatedProbs)
     
-def main():
+def main(argv=sys.argv):
     # Create comma-separated list of sites from arg
     sites = (args.sitenames[0]).split(',')
     numSites = len(sites)
@@ -170,4 +171,6 @@ def main():
     elif numSites == 4:
         bilinearinterpolation(site0, site1, site2, site3, args.interpsitename)
     connection.close()
-main()
+
+if __name__ == "__main__":
+    main()

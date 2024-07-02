@@ -1,29 +1,18 @@
-import subprocess
+import getCurveInfo
 import unittest
 import csv
 import os
 
-def call_script():
-    # '/Users/ameliakratzer/codescripts/sources/Pasadena/getCurveInfo.py' on laptop
-    script_name =  '/home1/10000/ameliakratzer14/Pasadena/getCurveInfo.py'
-    sitenames = 'S345,S387,S389,S347'
-    interpsitename = 'USC'
-    output = '$SCRATCH'
-
-    # Construct the command to run the second script with arguments
-    command = [
-        'python3', script_name,
-        '--sitename', sitenames,
-        '--interpsitename', interpsitename,
-        '--output', output
-    ]
-    # Call the second script using subprocess
-    result = subprocess.run(command, capture_output=True, text=True)
-
 class TestHazardInterp(unittest.TestCase):
     def test_calculations(self):
         errorTolerance = 0.001 / 100
-        call_script()
+        # '/home1/10000/ameliakratzer14/Pasadena/getCurveInfo.py'
+        args = [
+        '--sitename', 's345,s387,s389,s347',
+        '--interpsitename', 'USC',
+        '--output', '$SCRATCH'
+        ]
+        getCurveInfo.main(argv=args)
         # Reference file stored in tests
         referenceFile = 'ReferenceUSC.csv'
         currentFile = 'ActualUSC.csv'
