@@ -17,12 +17,6 @@ connection = sqlite3.connect('/scratch1/00349/scottcal/CS_interpolation/study_22
 
 def downloadHazardCurve(nameSite):
     cursor = connection.cursor()
-    t = '''SELECT * FROM CyberShake_Sites
-    WHERE CS_Short_Name = ?
-    '''
-    cursor.execute(t, ('USC',))
-    p = cursor.fetchall()
-    print(p)
     # Queries to get hazard curve information
     query1 = '''SELECT CyberShake_Runs.Run_ID FROM CyberShake_Sites
                 INNER JOIN CyberShake_Runs
@@ -31,7 +25,7 @@ def downloadHazardCurve(nameSite):
                 ON CyberShake_Runs.Study_ID = Studies.Study_ID
                 WHERE CyberShake_Sites.CS_Short_Name = ? AND Studies.Study_Name = 'Study 22.12 LF';
                 '''
-    print(repr(nameSite), type(nameSite))
+    print(nameSite)
     cursor.execute(query1, (nameSite,))
     runID = cursor.fetchall()
     print(runID)
