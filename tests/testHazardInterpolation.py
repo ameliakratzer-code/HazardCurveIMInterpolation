@@ -7,7 +7,7 @@ def call_script():
     sitenames = 'S345,S387,S389,S347'
     interpsitename = 'USC'
     # Desktop on laptop, SCRATCH on Frontera
-    output = '~/Desktop'
+    output = '$SCRATCH'
 
     # Construct the command to run the second script with arguments
     command = [
