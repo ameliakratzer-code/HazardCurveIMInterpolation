@@ -16,10 +16,8 @@ def call_script():
         '--interpsitename', interpsitename,
         '--output', output
     ]
-    # '/Users/ameliakratzer/codescripts/sources/Pasadena/tests' for computer
-    output_directory = '/home1/10000/ameliakratzer14/Pasadena/tests'
     # Call the second script using subprocess
-    result = subprocess.run(command, cwd=output_directory, capture_output=True, text=True)
+    result = subprocess.run(command, capture_output=True, text=True)
 
 class TestHazardInterp(unittest.TestCase):
     def test_calculations(self):
