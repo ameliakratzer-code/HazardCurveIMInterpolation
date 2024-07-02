@@ -25,8 +25,8 @@ def downloadHazardCurve(nameSite):
                 ON CyberShake_Runs.Study_ID = Studies.Study_ID
                 WHERE CyberShake_Sites.CS_Short_Name = {nameSite} AND Studies.Study_Name = 'Study 22.12 LF';
                 '''
+    print(repr(query1))
     #cursor.execute(query1, (nameSite,))
-    print(nameSite)
     cursor.execute(query1)
     runID = cursor.fetchone()[0]
     print(runID)
