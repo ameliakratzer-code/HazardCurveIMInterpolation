@@ -4,10 +4,10 @@ import csv
 import os
 
 def call_script():
-    script_name = '/Users/ameliakratzer/codescripts/sources/Pasadena/getCurveInfo.py'
+    # '/Users/ameliakratzer/codescripts/sources/Pasadena/getCurveInfo.py' on laptop
+    script_name =  '/home1/10000/ameliakratzer14/Pasadena/getCurveInfo.py'
     sitenames = 'S345,S387,S389,S347'
     interpsitename = 'USC'
-    # Desktop on laptop, SCRATCH on Frontera
     output = '$SCRATCH'
 
     # Construct the command to run the second script with arguments
@@ -23,7 +23,7 @@ def call_script():
 class TestHazardInterp(unittest.TestCase):
     def test_calculations(self):
         errorTolerance = 0.001 / 100
-        print(call_script())
+        call_script()
         # Reference file stored in tests
         referenceFile = 'ReferenceUSC.csv'
         currentFile = 'ActualUSC.csv'
