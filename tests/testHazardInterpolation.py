@@ -1,6 +1,8 @@
-import getCurveInfo
 import unittest
 import csv
+import sys
+sys.path.append('/home1/10000/ameliakratzer14/Pasadena/getCurveInfo.py')
+import getCurveInfo
 import os
 
 class TestHazardInterp(unittest.TestCase):
