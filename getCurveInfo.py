@@ -20,7 +20,7 @@ def downloadHazardCurve(nameSite):
     t = '''SELECT * FROM CyberShake_Sites
     WHERE CS_Short_Name = ?
     '''
-    cursor.execute(t, ('USC'))
+    cursor.execute(t, ('USC',))
     p = cursor.fetchall()
     print(p)
     # Queries to get hazard curve information
