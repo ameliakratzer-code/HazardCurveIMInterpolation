@@ -8,7 +8,8 @@ class TestHazardInterp(unittest.TestCase):
     def test_calculations(self):
         errorTolerance = 0.001 / 100
         args = ['--sitenames', 's345,s387,s389,s347', '--interpsitename', 'USC', '-output', '$SCRATCH']
-        getCurveInfo.main(argv=args)
+        sys.argv = args
+        getCurveInfo.main()
         # Reference file stored in tests
         referenceFile = 'ReferenceUSC.csv'
         currentFile = 'ActualUSC.csv'
