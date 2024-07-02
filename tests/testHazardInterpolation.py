@@ -9,7 +9,7 @@ class TestHazardInterp(unittest.TestCase):
         errorTolerance = 0.001 / 100
         # '/home1/10000/ameliakratzer14/Pasadena/getCurveInfo.py'
         args = [
-        '--sitename', 's345,s387,s389,s347',
+        '--sitenames', 's345,s387,s389,s347',
         '--interpsitename', 'USC',
         '--output', '$SCRATCH'
         ]
