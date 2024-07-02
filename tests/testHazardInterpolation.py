@@ -8,7 +8,7 @@ def call_script():
     sitenames = 'S345,S387,S389,S347'
     interpsitename = 'USC'
     # Desktop on laptop, SCRATCH on Frontera
-    output = '/home1/10000/ameliakratzer14/Pasadena/tests'
+    output = '$SCRATCH'
 
     # Construct the command to run the second script with arguments
     command = [
@@ -24,9 +24,9 @@ class TestHazardInterp(unittest.TestCase):
     def test_calculations(self):
         errorTolerance = 0.001 / 100
         print(call_script())
-        currentFile = 'ActualUSC.csv'
         # Reference file stored in tests
         referenceFile = 'ReferenceUSC.csv'
+        currentFile = 'ActualUSC.csv'
         refResultsL = []
         with open(referenceFile, 'r') as file:
             read = csv.reader(file)
