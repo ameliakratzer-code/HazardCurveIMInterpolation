@@ -1,13 +1,10 @@
-import pymysql
+import sqlite3
 import pyproj
 import math
 
 
 def getUTM(siteName):
-    connection = pymysql.connect(host = 'moment.usc.edu',
-                                user = 'cybershk_ro',
-                                password = 'CyberShake2007',
-                                database = 'CyberShake')
+    connection = sqlite3.connect('/scratch1/00349/scottcal/CS_interpolation/study_22_12_lf_indexed.sqlite')
     with connection.cursor() as cursor:
         query3 = '''SELECT CS_Site_Lat, CS_Site_Lon FROM CyberShake_Sites
                     WHERE CS_Short_Name = %s

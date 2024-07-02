@@ -1,4 +1,4 @@
-import pymysql
+import sqlite3
 import argparse
 import matplotlib.pyplot as plt
 import os
@@ -13,10 +13,7 @@ parser.add_argument('--period', default=2)
 parser.add_argument('--output', default='Sites',help='Enter name of folder you want to store photos in')
 args = parser.parse_args()
 # Connect to the database
-connection = pymysql.connect(host = 'moment.usc.edu',
-                            user = 'cybershk_ro',
-                            password = 'CyberShake2007',
-                            database = 'CyberShake')
+connection = sqlite3.connect('/scratch1/00349/scottcal/CS_interpolation/study_22_12_lf_indexed.sqlite')
 
 def downloadHazardCurve(nameSite):
     with connection.cursor() as cursor:

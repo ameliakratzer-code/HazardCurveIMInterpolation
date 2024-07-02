@@ -1,4 +1,5 @@
-import pymysql
+#pymysql for database, sqlite for sqlite version
+import sqlite3
 import argparse
 import matplotlib.pyplot as plt
 import os
@@ -19,10 +20,8 @@ parser.add_argument('--output')
 args = parser.parse_args()
 
 # Connect to the database
-connection = pymysql.connect(host = 'moment.usc.edu',
-                            user = 'cybershk_ro',
-                            password = 'CyberShake2007',
-                            database = 'CyberShake')
+# (host = 'moment.usc.edu', user = 'cybershk_ro', password = 'CyberShake2007', database = 'CyberShake')
+connection = sqlite3.connect('/scratch1/00349/scottcal/CS_interpolation/study_22_12_lf_indexed.sqlite')
 
 # Create Mode enumeration and set user_mode variable depending on user arguments
 class Mode(Enum):
