@@ -25,9 +25,23 @@ def downloadHazardCurve(nameSite):
                 ON CyberShake_Runs.Study_ID = Studies.Study_ID
                 WHERE CyberShake_Sites.CS_Short_Name = ? AND Studies.Study_Name = 'Study 22.12 LF';
                 '''
-    print(repr(query1), repr(nameSite))
-    cursor.execute(query1, (nameSite,))
-    runID = cursor.fetchall()
+    #print(repr(query1), repr(nameSite))
+    #cursor.execute(query1, (nameSite,))
+    #runID = cursor.fetchall()
+    try:
+        # Print the query and parameter for debugging
+        print("Executing query:", repr(query1))
+        print("With parameter:", repr(nameSite))
+
+        # Execute the query with parameter
+        cursor.execute(query1, (nameSite,))
+
+        # Fetch results if needed
+        runID = cursor.fetchall()
+        print("Results:", runID)
+
+    except sqlite3.Error as e:  
+        print("SQLite error:", e)
     # Use query1 value - the run_Id as WHERE Hazard_Curves.Run_ID = query1
     period = float(args.period)
     query2 = '''SELECT * FROM Hazard_Curve_Points
