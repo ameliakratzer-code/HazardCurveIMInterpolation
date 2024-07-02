@@ -161,7 +161,7 @@ def interpScatterplot(sim, interp):
     minVal = min(min(sim), min(interp))
     maxVal = max(max(sim), max(interp))
     plt.plot([minVal, maxVal], [minVal, maxVal], linestyle = 'dashed', color='black')
-    # Want to save plot to same folder as data
+    # User types in full name of output
     path = args.output + '.png'
     plt.savefig(path)
     
