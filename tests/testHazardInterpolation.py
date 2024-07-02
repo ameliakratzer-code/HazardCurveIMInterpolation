@@ -11,13 +11,12 @@ class TestHazardInterp(unittest.TestCase):
         names = 's345,s387,s389,s347'
         interpname = 'USC'
         o = '$SCRATCH'
-        args = [
-        'getCurveInfo.py'
+        argv = [
         '--sitenames', names,
         '--interpsitename', interpname,
         '--output', o
         ]
-        getCurveInfo.main(args)
+        getCurveInfo.main(argv)
         # Reference file stored in tests
         referenceFile = 'ReferenceUSC.csv'
         currentFile = 'ActualUSC.csv'
