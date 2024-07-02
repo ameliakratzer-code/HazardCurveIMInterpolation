@@ -151,7 +151,7 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
             write.writerow([xVal, interpVal])
     plotInterpolated(xCoords, sI, interpolatedProbs)
     
-def main(argv=sys.argv):
+def main(argv):
     # Create comma-separated list of sites from arg
     sites = (args.sitenames[0]).split(',')
     numSites = len(sites)

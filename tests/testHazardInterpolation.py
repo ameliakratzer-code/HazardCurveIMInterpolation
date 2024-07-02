@@ -3,7 +3,6 @@ import csv
 import sys
 sys.path.append('/home1/10000/ameliakratzer14/Pasadena')
 import getCurveInfo
-import os
 
 class TestHazardInterp(unittest.TestCase):
     def test_calculations(self):
