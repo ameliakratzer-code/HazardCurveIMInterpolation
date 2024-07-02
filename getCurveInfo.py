@@ -17,10 +17,10 @@ connection = sqlite3.connect('/scratch1/00349/scottcal/CS_interpolation/study_22
 
 def downloadHazardCurve(nameSite):
     cursor = connection.cursor()
-    print("Database created and Successfully Connected to SQLite")
     t = '''SELECT * FROM CyberShake_Sites
+    WHERE CS_Short_Name = ?
     '''
-    cursor.execute(t)
+    cursor.execute(t, ('USC'))
     p = cursor.fetchall()
     print(p)
     # Queries to get hazard curve information
