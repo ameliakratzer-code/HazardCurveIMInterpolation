@@ -70,7 +70,7 @@ def getIMValues(site0, site1, site2, site3):
                     AND C.ERF_ID = 36
                     AND S.CS_Short_Name = ?
                     '''
-            cursor.execute(q0, (site))
+            cursor.execute(q0, (site,))
             result = cursor.fetchall()
             if sharedRups == []:
                 sharedRups = result

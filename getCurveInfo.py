@@ -25,7 +25,7 @@ def downloadHazardCurve(nameSite):
                 ON CyberShake_Runs.Study_ID = Studies.Study_ID
                 WHERE CyberShake_Sites.CS_Short_Name = ? AND Studies.Study_Name = 'Study 22.12 LF';
                 '''
-    cursor.execute(query1, (nameSite))
+    cursor.execute(query1, (nameSite,))
     runID = cursor.fetchall()
     # Use query1 value - the run_Id as WHERE Hazard_Curves.Run_ID = query1
     period = float(args.period)
