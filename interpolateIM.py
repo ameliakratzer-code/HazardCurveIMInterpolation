@@ -70,7 +70,7 @@ def getIMValues(site0, site1, site2, site3):
                     AND C.ERF_ID = 36
                     AND S.CS_Short_Name = ?
                     '''
-            cursor.execute(q0, (site,))
+            cursor.execute(q0, (site))
             result = cursor.fetchall()
             if sharedRups == []:
                 sharedRups = result
@@ -102,6 +102,7 @@ def getIMValues(site0, site1, site2, site3):
 
 def bilinearinterpolation(s0, s1, s2, s3, sI):
     events, IMTogether = getIMValues(s0, s1, s2, s3)
+    print(events,IMTogether)
     # IMTogether has all IMs together IM0, IM1
     IMs = []
     for i in range(0, len(IMTogether), len(events)):
