@@ -171,8 +171,6 @@ def main():
         linearinterpolation(site0, site1, args.interpsitename)
     #bilinear interpolation between 4 sites
     elif numSites == 4:
-        print(f'site0:{site0}')
-        print(type(site0))
         bilinearinterpolation(site0, site1, site2, site3, args.interpsitename)
     connection.close()
 main()
