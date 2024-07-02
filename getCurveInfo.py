@@ -23,7 +23,7 @@ def downloadHazardCurve(nameSite):
                 ON CyberShake_Sites.CS_Site_ID = CyberShake_Runs.Site_ID
                 INNER JOIN Studies
                 ON CyberShake_Runs.Study_ID = Studies.Study_ID
-                WHERE CyberShake_Sites.CS_Short_Name = '{nameSite}' AND Studies.Study_Name = 'Study 22.12 LF';
+                WHERE CyberShake_Sites.CS_Short_Name = {nameSite} AND Studies.Study_Name = 'Study 22.12 LF';
                 '''
     #cursor.execute(query1, (nameSite,))
     print(nameSite)
@@ -171,6 +171,8 @@ def main():
         linearinterpolation(site0, site1, args.interpsitename)
     #bilinear interpolation between 4 sites
     elif numSites == 4:
+        print(f'site0:{site0}')
+        print(type(site0))
         bilinearinterpolation(site0, site1, site2, site3, args.interpsitename)
     connection.close()
 main()
