@@ -5,13 +5,14 @@ import math
 
 def getUTM(siteName):
     connection = sqlite3.connect('/scratch1/00349/scottcal/CS_interpolation/study_22_12_lf_indexed.sqlite')
-    with connection.cursor() as cursor:
-        query3 = '''SELECT CS_Site_Lat, CS_Site_Lon FROM CyberShake_Sites
+    cursor = connection.cursor()
+    query3 = '''SELECT CS_Site_Lat, CS_Site_Lon FROM CyberShake_Sites
                     WHERE CS_Short_Name = %s
         '''
-        cursor.execute(query3, (siteName))
-        location = cursor.fetchall()
-        lat, lon = location[0][0], location[0][1]
+    cursor.execute(query3, (siteName))
+    location = cursor.fetchall()
+    lat, lon = location[0][0], location[0][1]
+    cursor.close()
     connection.close()
     myProj = pyproj.Proj(proj ='utm', zone = 11, ellps = 'WGS84')
     return myProj(lon, lat)

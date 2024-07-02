@@ -36,10 +36,10 @@ elif args.source != None and args.rup != None and args.rupVar == None:
     userMode = Mode.ONE_RUPTURE
 
 def getIMValues(site0, site1, site2, site3):
-    with connection.cursor() as cursor:
-        eventsList = []
-        IMVals = []
-        baseQuery = '''
+    cursor = connection.cursor()
+    eventsList = []
+    IMVals = []
+    baseQuery = '''
             SELECT P.IM_Value 
             FROM CyberShake_Sites S, CyberShake_Runs R, PeakAmplitudes P, Studies T, IM_Types I
             WHERE S.CS_Short_Name = %s
@@ -51,52 +51,53 @@ def getIMValues(site0, site1, site2, site3):
             AND I.IM_Type_Value = 2.0
             AND I.IM_Type_ID = P.IM_Type_ID
             '''
-        if userMode == Mode.ONE_EVENT:
-            for site in [site0, site1, site2, site3, args.interpsitename]:
-                qOneEvent = baseQuery + 'AND P.Source_ID = %s AND P.Rupture_ID = %s And P.Rup_Var_ID = %s'
-                cursor.execute(qOneEvent, (site, args.source, args.rup, args.rupVar))
-                result = cursor.fetchone()
-                IMVals.append(result[0])
-            eventsList.append((int(args.source),int(args.rup),int(args.rupVar)))
-            return eventsList, IMVals
-        elif userMode == Mode.ALL_EVENTS:
-            # First get list of sharedRups
-            sharedRups = []
-            for site in [site0, site1, site2, site3]:
-                q0 = '''
+    if userMode == Mode.ONE_EVENT:
+        for site in [site0, site1, site2, site3, args.interpsitename]:
+            qOneEvent = baseQuery + 'AND P.Source_ID = %s AND P.Rupture_ID = %s And P.Rup_Var_ID = %s'
+            cursor.execute(qOneEvent, (site, args.source, args.rup, args.rupVar))
+            result = cursor.fetchone()
+            IMVals.append(result[0])
+        eventsList.append((int(args.source),int(args.rup),int(args.rupVar)))
+        return eventsList, IMVals
+    elif userMode == Mode.ALL_EVENTS:
+        # First get list of sharedRups
+        sharedRups = []
+        for site in [site0, site1, site2, site3]:
+            q0 = '''
                     SELECT C.Source_ID, C.Rupture_ID
                     FROM CyberShake_Site_Ruptures C, CyberShake_Sites S
                     WHERE C.CS_Site_ID = S.CS_Site_ID
                     AND C.ERF_ID = 36
                     AND S.CS_Short_Name = %s
                     '''
-                cursor.execute(q0, (site))
-                result = cursor.fetchall()
-                if sharedRups == []:
-                    sharedRups = result
-                else:
-                    sharedRups = list(set(sharedRups) & set(result))
-        elif userMode == Mode.ONE_RUPTURE:
-                sharedRups = [(args.source, args.rup)]
-        else:
-                print('Please enter one event = specific source, rup, rupVar, one rupture = specific source, rup, or all events = nothing specified')
-                exit()
-        # Loop through sharedRups and get IM values
-            # Need IM value for simulated interpsite
-        for site in [site0, site1, site2, site3, args.interpsitename]:
-            for (source, rup) in sharedRups:
-                q1 = baseQuery + 'AND P.Source_ID = %s AND P.Rupture_ID = %s'
-                cursor.execute(q1, (site, source, rup))
-                result = cursor.fetchall()
-                IMVals.extend(result)
-                # Length of result = how many rupture variations
-                # Only get event IDs once
-                if site == site0:
-                    for i in range(len(result)):
-                        eventsList.append((source, rup, i))
+            cursor.execute(q0, (site))
+            result = cursor.fetchall()
+            if sharedRups == []:
+                sharedRups = result
+            else:
+                sharedRups = list(set(sharedRups) & set(result))
+    elif userMode == Mode.ONE_RUPTURE:
+        sharedRups = [(args.source, args.rup)]
+    else:
+        print('Please enter one event = specific source, rup, rupVar, one rupture = specific source, rup, or all events = nothing specified')
+        exit()
+    # Loop through sharedRups and get IM values
+    # Need IM value for simulated interpsite
+    for site in [site0, site1, site2, site3, args.interpsitename]:
+        for (source, rup) in sharedRups:
+            q1 = baseQuery + 'AND P.Source_ID = %s AND P.Rupture_ID = %s'
+            cursor.execute(q1, (site, source, rup))
+            result = cursor.fetchall()
+            IMVals.extend(result)
+            # Length of result = how many rupture variations
+            # Only get event IDs once
+            if site == site0:
+                for i in range(len(result)):
+                    eventsList.append((source, rup, i))
     r = []
     for val in IMVals:
         r.append(val[0])
+    cursor.close()
     return eventsList, r
 
 def bilinearinterpolation(s0, s1, s2, s3, sI):
