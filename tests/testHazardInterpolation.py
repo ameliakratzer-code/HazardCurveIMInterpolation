@@ -8,12 +8,10 @@ class TestHazardInterp(unittest.TestCase):
     def test_calculations(self):
         errorTolerance = 0.001 / 100
         # '/home1/10000/ameliakratzer14/Pasadena/getCurveInfo.py'
-        script_name =  '/home1/10000/ameliakratzer14/Pasadena/getCurveInfo.py'
-        sitenames = 'S345,S387,S389,S347'
+        sitenames = 's345,s387,s389,s347'
         interpsitename = 'USC'
         output = '$SCRATCH'
         args = [
-        'python3', script_name,
         '--sitename', sitenames,
         '--interpsitename', interpsitename,
         '--output', output
