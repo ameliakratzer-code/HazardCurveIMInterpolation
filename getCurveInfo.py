@@ -23,7 +23,7 @@ def downloadHazardCurve(nameSite):
                 ON CyberShake_Sites.CS_Site_ID = CyberShake_Runs.Site_ID
                 INNER JOIN Studies
                 ON CyberShake_Runs.Study_ID = Studies.Study_ID
-                WHERE CyberShake_Sites.CS_Short_Name = ? AND Studies.Study_Name = 'Study 22.12 LF';
+                WHERE CyberShake_Sites.CS_Short_Name = '?' AND Studies.Study_Name = 'Study 22.12 LF';
                 '''
     print(nameSite)
     cursor.execute(query1, (nameSite,))
