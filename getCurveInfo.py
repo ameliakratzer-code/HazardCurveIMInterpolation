@@ -152,7 +152,8 @@ def bilinearinterpolation(s0, s1, s2, s3, sI, args, connection):
     
 def main(argv=sys.argv):
     # Create comma-separated list of sites from arg
-    args = parseArgs(argv)
+    # Exclude name of script = first argument
+    args = parseArgs(argv[1:])
     # Connect to the database
     connection = sqlite3.connect('/scratch1/00349/scottcal/CS_interpolation/study_22_12_lf_indexed.sqlite')
     sites = (args.sitenames[0]).split(',')
