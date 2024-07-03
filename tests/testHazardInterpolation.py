@@ -1,7 +1,11 @@
 import unittest
 import csv
 import sys
-sys.path.append('/home1/10000/ameliakratzer14/Pasadena')
+import os
+# Relative path: get path of user's current directory and add on Pasadena
+current_dir = os.path.dirname(os.path.abspath(__file__))
+pasadena_dir = os.path.abspath(os.path.join(current_dir, '..', 'Pasadena'))
+sys.path.append(pasadena_dir)
 import getCurveInfo
 
 class TestHazardInterp(unittest.TestCase):
