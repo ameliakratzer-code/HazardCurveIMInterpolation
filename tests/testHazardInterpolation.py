@@ -7,7 +7,8 @@ import getCurveInfo
 class TestHazardInterp(unittest.TestCase):
     def test_calculations(self):
         errorTolerance = 0.001 / 100
-        args = ['--sitenames', 's345,s387,s389,s347', '--interpsitename', 'USC', '-output', '$SCRATCH']
+        # Add script name since getCurveInfo parser parses from args[1:]
+        args = ['getCurveInfo.py', '--sitenames', 's345,s387,s389,s347', '--interpsitename', 'USC', '-output', '$SCRATCH']
         getCurveInfo.main(argv=args)
         # Reference file stored in tests
         referenceFile = 'ReferenceUSC.csv'
