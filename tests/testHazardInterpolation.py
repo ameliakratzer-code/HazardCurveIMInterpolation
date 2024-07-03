@@ -4,7 +4,7 @@ import sys
 import os
 # Relative path: get path of user's current directory and add on Pasadena
 current_dir = os.path.dirname(os.path.abspath(__file__))
-pasadena_dir = os.path.abspath(os.path.join(current_dir, '..', 'Pasadena'))
+pasadena_dir = os.path.abspath(os.path.join(current_dir, '..'))
 sys.path.append(pasadena_dir)
 import getCurveInfo
 
