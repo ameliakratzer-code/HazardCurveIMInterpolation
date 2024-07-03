@@ -6,17 +6,16 @@ import csv
 from utils import Site, interpolate
 import sys
 
-parser = argparse.ArgumentParser('Allow user to input site name, period')
-# User enter sitenames with spaces
-parser.add_argument('--sitenames', nargs='+')
-parser.add_argument('--interpsitename')
-parser.add_argument('--period', default=2)
-parser.add_argument('--output', default='Sites',help='Enter name of folder you want to store photos in')
-args = parser.parse_args()
-# Connect to the database
-connection = sqlite3.connect('/scratch1/00349/scottcal/CS_interpolation/study_22_12_lf_indexed.sqlite')
+def parseArgs(argv):
+    parser = argparse.ArgumentParser('Allow user to input site name, period')
+    # User enter sitenames with spaces
+    parser.add_argument('--sitenames', nargs='+')
+    parser.add_argument('--interpsitename')
+    parser.add_argument('--period', default=2)
+    parser.add_argument('--output', default='Sites',help='Enter name of folder you want to store photos in')
+    return parser.parse_args(argv)
 
-def downloadHazardCurve(nameSite):
+def downloadHazardCurve(nameSite, args, connection):
     cursor = connection.cursor()
     # Queries to get hazard curve information
     query1 = '''SELECT CyberShake_Runs.Run_ID FROM CyberShake_Sites
@@ -45,11 +44,11 @@ def downloadHazardCurve(nameSite):
     for row in result:
         xCoords.append(row[2])
         yCoords.append(row[3])
-    plotHazardCurve(xCoords, yCoords, nameSite)
+    plotHazardCurve(xCoords, yCoords, nameSite, args)
     cursor.close()
     return xCoords, yCoords
     
-def plotHazardCurve(xVals, yVals, nameSite):
+def plotHazardCurve(xVals, yVals, nameSite, args):
     # plot of hazard curve using matplotlib
     plotFeatures()
     plt.plot(xVals, yVals, marker='^')
@@ -80,8 +79,8 @@ def plotFeatures():
     plt.grid(axis = 'y')
 
 # Plot with the interpolated curve and actual curve them overlayed
-def plotInterpolated(xCoords, sI, interpolatedProbs):
-    xActual, yActual = downloadHazardCurve(sI)
+def plotInterpolated(xCoords, sI, interpolatedProbs, args, connection):
+    xActual, yActual = downloadHazardCurve(sI, args, connection)
     # Describing the quality of the fit
     print('\nPercent difference')
     listDifferences = []
@@ -96,7 +95,7 @@ def plotInterpolated(xCoords, sI, interpolatedProbs):
     avgDiff = sum(listDifferences) / len(listDifferences)
     print(f'\nMaxdiff: {round(maxDiff, 1)}%, avgDiff: {round(avgDiff,1)}%\n')
     # Plotting of overlayed curve
-    plotHazardCurve(xCoords,interpolatedProbs, sI+' Interpolated')
+    plotHazardCurve(xCoords,interpolatedProbs, sI+' Interpolated', args)
     plotFeatures()
     plt.title(f'Overlayed {sI}, 2 sec RotD50')
     plt.plot(xActual, yActual, color='green', linewidth = 2, label = "Actual", marker='^')
@@ -106,12 +105,12 @@ def plotInterpolated(xCoords, sI, interpolatedProbs):
     path = os.path.join(args.output, 'Overlayed' + '.png')
     plt.savefig(path)
 
-def linearinterpolation(s0, s1, sI):
+def linearinterpolation(s0, s1, sI, args, connection):
     # Prob values for two known sites
-    s0 = Site(s0, downloadHazardCurve(s0)[1])
-    s1 = Site(s1, downloadHazardCurve(s1)[1])
-    pI = Site(sI, downloadHazardCurve(sI)[1])
-    xCoords = downloadHazardCurve(s0.name)[0]
+    s0 = Site(s0, downloadHazardCurve(s0, args, connection)[1])
+    s1 = Site(s1, downloadHazardCurve(s1, args, connection)[1])
+    pI = Site(sI, downloadHazardCurve(sI, args, connection)[1])
+    xCoords = downloadHazardCurve(s0.name, args, connection)[0]
     interpolatedProbs = []
     # Check if sI is in between input sites
     if pI.within_x_range(s0, s1) and pI.within_y_range(s0, s1):
@@ -119,20 +118,20 @@ def linearinterpolation(s0, s1, sI):
         for i in range(len(xCoords)):
             interpVal = (s0.valsToInterp[i] * abs(s1.x - pI.x) + s1.valsToInterp[i] * abs(pI.x - s0.x)) * (1 / abs(s1.x - s0.x))
             interpolatedProbs.append(interpVal)
-        plotInterpolated(xCoords, sI, interpolatedProbs)
+        plotInterpolated(xCoords, sI, interpolatedProbs, args, connection)
     else:
         print('Interpsite not in interpolation bounds')
         exit()
     return interpolatedProbs
 
-def bilinearinterpolation(s0, s1, s2, s3, sI):
+def bilinearinterpolation(s0, s1, s2, s3, sI, args, connection):
     # Use site classes
-    p0 = Site(s0, downloadHazardCurve(s0)[1])
-    p1 = Site(s1, downloadHazardCurve(s1)[1])
-    p2 = Site(s2, downloadHazardCurve(s2)[1])
-    p3 = Site(s3, downloadHazardCurve(s3)[1])
-    p4 = Site(sI, downloadHazardCurve(sI)[1])
-    xCoords = downloadHazardCurve(p4.name)[0]
+    p0 = Site(s0, downloadHazardCurve(s0, args, connection)[1])
+    p1 = Site(s1, downloadHazardCurve(s1, args, connection)[1])
+    p2 = Site(s2, downloadHazardCurve(s2, args, connection)[1])
+    p3 = Site(s3, downloadHazardCurve(s3, args, connection)[1])
+    p4 = Site(sI, downloadHazardCurve(sI, args, connection)[1])
+    xCoords = downloadHazardCurve(p4.name, args, connection)[0]
     listPXY = [p0, p1, p2, p3]
     sortedL = sorted(listPXY, key=lambda site: site.x)
     sortedL.append(p4)
@@ -149,10 +148,13 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
         write.writerow(['XVals', 'InterpVals'])
         for xVal, interpVal in zip(xCoords, interpolatedProbs):
             write.writerow([xVal, interpVal])
-    plotInterpolated(xCoords, sI, interpolatedProbs)
+    plotInterpolated(xCoords, sI, interpolatedProbs, args, connection)
     
 def main(argv=sys.argv):
     # Create comma-separated list of sites from arg
+    args = parseArgs(argv)
+    # Connect to the database
+    connection = sqlite3.connect('/scratch1/00349/scottcal/CS_interpolation/study_22_12_lf_indexed.sqlite')
     sites = (args.sitenames[0]).split(',')
     numSites = len(sites)
     for i in range(numSites):
@@ -165,11 +167,12 @@ def main(argv=sys.argv):
         elif i == 3:
             site3 = sites[3]
     #linear interpolation between 2 sites
+    # Pass in args, connection
     if numSites == 2:
-        linearinterpolation(site0, site1, args.interpsitename)
+        linearinterpolation(site0, site1, args.interpsitename, args, connection)
     #bilinear interpolation between 4 sites
     elif numSites == 4:
-        bilinearinterpolation(site0, site1, site2, site3, args.interpsitename)
+        bilinearinterpolation(site0, site1, site2, site3, args.interpsitename, args, connection)
     connection.close()
 
 # Call main() when script is executed directly
