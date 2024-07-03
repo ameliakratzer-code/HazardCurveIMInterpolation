@@ -17,6 +17,7 @@ parser.add_argument('--rup')
 parser.add_argument('--rupVar')
 parser.add_argument('--interpsitename')
 parser.add_argument('--output')
+parser.add_argument('--period', default=2)
 args = parser.parse_args()
 
 # Connect to the database
@@ -48,13 +49,13 @@ def getIMValues(site0, site1, site2, site3):
             AND T.Study_Name = 'Study 22.12 LF'
             AND R.Run_ID = P.Run_ID
             AND I.IM_Type_Component = 'RotD50'
-            AND I.IM_Type_Value = 2.0
+            AND I.IM_Type_Value = ?
             AND I.IM_Type_ID = P.IM_Type_ID
             '''
     if userMode == Mode.ONE_EVENT:
         for site in [site0, site1, site2, site3, args.interpsitename]:
             qOneEvent = baseQuery + 'AND P.Source_ID = ? AND P.Rupture_ID = ? And P.Rup_Var_ID = ?'
-            cursor.execute(qOneEvent, (site, args.source, args.rup, args.rupVar))
+            cursor.execute(qOneEvent, (site, float(args.period), args.source, args.rup, args.rupVar))
             result = cursor.fetchone()
             IMVals.append(result[0])
         eventsList.append((int(args.source),int(args.rup),int(args.rupVar)))
@@ -86,7 +87,7 @@ def getIMValues(site0, site1, site2, site3):
     for site in [site0, site1, site2, site3, args.interpsitename]:
         for (source, rup) in sharedRups:
             q1 = baseQuery + 'AND P.Source_ID = ? AND P.Rupture_ID = ?'
-            cursor.execute(q1, (site, source, rup))
+            cursor.execute(q1, (site, float(args.period), source, rup))
             result = cursor.fetchall()
             IMVals.extend(result)
             # Length of result = how many rupture variations
@@ -117,7 +118,7 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     sortedL = sorted(listPXY, key=lambda site: site.x)
     sortedL.append(p4)
     interpIMVals = interpolate(sortedL, xVals)
-    # Write (event, IM) values to file
+    # Write (event, IM) values to file, user types entire file path
     filePath = args.output + '.csv'
     # Open file in write mode
     with open(filePath, 'w', newline='') as file:
@@ -147,11 +148,11 @@ def interpScatterplot(sim, interp):
     plt.xlabel('Simulated IMs')
     plt.ylabel('Interpolated IMs')
     if userMode == Mode.ONE_EVENT:
-        plt.title(f'{args.interpsitename} IMs for ({args.source}, {args.rup}, {args.rupVar}), 2 sec RotD50')
+        plt.title(f'{args.interpsitename} IMs for ({args.source}, {args.rup}, {args.rupVar}), {args.period} per RotD50')
     elif userMode == Mode.ONE_RUPTURE:
-        plt.title(f'{args.interpsitename} IMs for ({args.source}, {args.rup}, all), 2 sec RotD50')
+        plt.title(f'{args.interpsitename} IMs for ({args.source}, {args.rup}, all), {args.period} per RotD50')
     elif userMode == Mode.ALL_EVENTS:
-        plt.title(f'{args.interpsitename} IMs for all events, 2 sec RotD50')
+        plt.title(f'{args.interpsitename} IMs for all events, {args.period} per RotD50')
     # Line of best fit to scatterplot
     # Convert x and y to numpy arrays
     xNumpy, yNumpy = np.array(sim), np.array(interp)
