@@ -130,6 +130,23 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     # Scatterplot of data
     interpScatterplot(p4.valsToInterp, interpIMVals)
     print('Scatterplot plotted')
+    # Print out percent error and create a histogram for each event
+    listDifferences = []
+    for i in range(len(interpIMVals)):
+        # Percent difference = (interp-simulated) / simulated not absolute
+        percentDifference = ((interpIMVals[i] - p4.interpIMVal[i]) / p4.interpIMVal[i]) * 100
+        print(percentDifference)
+        listDifferences.append(percentDifference)
+    bin_width = 25
+    numBins = (max(listDifferences)-min(listDifferences)) // bin_width + 1
+    plt.hist(listDifferences, bins = numBins, edgecolor='black')
+    plt.title(f'Histogram of Percent Error {sI}')
+    plt.xlabel('Percent difference')
+    plt.ylabel('Frequency')
+    # Save histogram to file
+    filePath = args.output + 'histogram.csv'
+    plt.savefig(filePath)
+    print('Histogram plotted')
 
 # Scatterplot x-axis = simulated IM, y-axis = interp IM
 def interpScatterplot(sim, interp):
