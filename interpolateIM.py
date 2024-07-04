@@ -134,7 +134,7 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     listDifferences = []
     for i in range(len(interpIMVals)):
         # Percent difference = (interp-simulated) / simulated not absolute
-        percentDifference = ((interpIMVals[i] - p4.interpIMVal[i]) / p4.interpIMVal[i]) * 100
+        percentDifference = ((interpIMVals[i] - p4.valsToInterp[i]) / p4.valsToInterp[i]) * 100
         print(percentDifference)
         listDifferences.append(percentDifference)
     bin_width = 25
@@ -144,7 +144,7 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     plt.xlabel('Percent difference')
     plt.ylabel('Frequency')
     # Save histogram to file
-    filePath = args.output + 'histogram.csv'
+    filePath = args.output + 'histogram.png'
     plt.savefig(filePath)
     print('Histogram plotted')
 
