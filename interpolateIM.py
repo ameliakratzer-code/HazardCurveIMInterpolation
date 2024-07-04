@@ -7,6 +7,7 @@ import csv
 from utils import Site, interpolate
 import numpy as np
 from enum import Enum
+import math
 
 parser = argparse.ArgumentParser('Allow user to input site names, ')
 parser.add_argument('--sitenames', nargs='+')
@@ -135,10 +136,10 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     for i in range(len(interpIMVals)):
         # Percent difference = (interp-simulated) / simulated not absolute
         percentDifference = ((interpIMVals[i] - p4.valsToInterp[i]) / p4.valsToInterp[i]) * 100
-        print(percentDifference)
         listDifferences.append(percentDifference)
     bin_width = 25
-    numBins = ((max(listDifferences)-min(listDifferences)) // bin_width) + 1
+    numBins = math.floor((max(listDifferences)-min(listDifferences)) / bin_width) + 1
+    print(max(listDifferences), min(listDifferences), numBins)
     plt.hist(listDifferences, bins = numBins, edgecolor='black')
     plt.title(f'Histogram of Percent Error {sI}')
     plt.xlabel('Percent difference')
