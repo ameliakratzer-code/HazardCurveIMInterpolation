@@ -138,7 +138,7 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
         print(percentDifference)
         listDifferences.append(percentDifference)
     bin_width = 25
-    numBins = (max(listDifferences)-min(listDifferences)) // bin_width + 1
+    numBins = ((max(listDifferences)-min(listDifferences)) // bin_width) + 1
     plt.hist(listDifferences, bins = numBins, edgecolor='black')
     plt.title(f'Histogram of Percent Error {sI}')
     plt.xlabel('Percent difference')
