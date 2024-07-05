@@ -138,12 +138,12 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
         percentDifference = ((interpIMVals[i] - p4.valsToInterp[i]) / p4.valsToInterp[i]) * 100
         listDifferences.append(percentDifference)
     bin_width = 25
-    numBins = math.floor((max(listDifferences)-min(listDifferences)) / bin_width) + 1
-    print(max(listDifferences), min(listDifferences), numBins)
-    plt.hist(listDifferences, bins = numBins, edgecolor='black')
+    bins = np.arange(-100,125,bin_width)
+    plt.hist(listDifferences, bins = bins, edgecolor='black')
     plt.title(f'Histogram of Percent Error {sI}')
     plt.xlabel('Percent difference')
     plt.ylabel('Frequency')
+    plt.grid(True)
     # Save histogram to file
     filePath = args.output + 'histogram.png'
     plt.savefig(filePath)
