@@ -136,18 +136,21 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
         # Percent difference = (interp-simulated) / simulated not absolute
         percentDifference = ((interpIMVals[i] - p4.valsToInterp[i]) / p4.valsToInterp[i]) * 100
         listDifferences.append(percentDifference)
+    plt.figure()
     plt.hist(listDifferences)
     plt.grid(True)
-    plt.title(f'Histogram of Percent Error {sI}')
+    plt.title(f'Percent Error {sI}')
     plt.xlabel('Percent difference')
     plt.ylabel('Frequency')
     # Save histogram to file
     filePath = args.output + 'histogram.png'
     plt.savefig(filePath)
+    plt.close()
     print('Histogram plotted')
 
 # Scatterplot x-axis = simulated IM, y-axis = interp IM
 def interpScatterplot(sim, interp):
+    plt.figure()
     numDots = len(sim)
     if numDots <= 20:
         # Size for one event
@@ -181,6 +184,7 @@ def interpScatterplot(sim, interp):
     # User types in full name of output
     path = args.output + '.png'
     plt.savefig(path)
+    plt.close()
     
 def main():
     sites = (args.sitenames[0]).split(',')
