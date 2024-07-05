@@ -137,7 +137,7 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
         percentDifference = ((interpIMVals[i] - p4.valsToInterp[i]) / p4.valsToInterp[i]) * 100
         listDifferences.append(percentDifference)
     plt.figure()
-    plt.hist(listDifferences)
+    plt.hist(listDifferences, bins = [-100, -75, -50, -25, 0, 25, 50, 75, 100])
     plt.grid(True)
     plt.title(f'Percent Error {sI}')
     plt.xlabel('Percent difference')
