@@ -166,11 +166,11 @@ def interpScatterplot(sim, interp):
     plt.xlabel('Simulated IMs')
     plt.ylabel('Interpolated IMs')
     if userMode == Mode.ONE_EVENT:
-        plt.title(f'{args.interpsitename} IMs for ({args.source}, {args.rup}, {args.rupVar}), {args.period} per RotD50')
+        plt.title(f'{args.interpsitename} IMs for ({args.source}, {args.rup}, {args.rupVar}), {args.period} sec RotD50')
     elif userMode == Mode.ONE_RUPTURE:
-        plt.title(f'{args.interpsitename} IMs for ({args.source}, {args.rup}, all), {args.period} per RotD50')
+        plt.title(f'{args.interpsitename} IMs for ({args.source}, {args.rup}, all), {args.period} sec RotD50')
     elif userMode == Mode.ALL_EVENTS:
-        plt.title(f'{args.interpsitename} IMs for all events, {args.period} per RotD50')
+        plt.title(f'{args.interpsitename} IMs for all events, {args.period} sec RotD50')
     # Line of best fit to scatterplot
     # Convert x and y to numpy arrays
     xNumpy, yNumpy = np.array(sim), np.array(interp)
