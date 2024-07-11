@@ -83,12 +83,44 @@ def interpolate(sortedL, xVals):
     xPrime =  getDistance(s3.x, s3.y, s0.x, s0.y, sortedL[-1].x, sortedL[-1].y) / 10000
     interpolatedProbs = []
     # Taking into account velocity model
-    scaleFactor = 0.75
-    for i in range(len(s2.valsToInterp)):
-        s2.valsToInterp[i] = s2.valsToInterp[i] * scaleFactor
+    connection = sqlite3.connect('/scratch1/00349/scottcal/CS_interpolation/study_22_12_lf_indexed.sqlite')
+    cursor = connection.cursor()
+    scales = []
+    # Get velocity model vals for interp site
+    q = '''
+            SELECT R.Model_Vs30, R.Z1_0, R.Z2_5 FROM CyberShake_Runs R, Studies T, CyberShake_Sites S
+            WHERE T.Study_Name = 'Study 22.12 LF'
+            AND T.Study_ID = R.Study_ID
+            AND S.CS_Site_ID = R.Site_ID
+            AND S.CS_Short_Name = ?
+        '''
+    cursor.execute(q, (sortedL[4].name,))
+    result = cursor.fetchone()
+    sIVs30, sIZ1, sIZ2 = result[0], result[1], result[2]
+    # Compare ratios and calculate scale factor for each site
+    increase = False
+    for site in [s0, s1, s2, s3]:
+        cursor.execute(q, (site,))
+        res = cursor.fetchone()
+        Vs30Ratio = sIVs30 / res[0]
+        Z1Ratio = sIZ1 / res[1]
+        Z2Ratio = sIZ2 / res[2]
+        totalDifference = abs(1-Vs30Ratio) + abs(1-Z1Ratio) + abs(1-Z2Ratio)
+        # Modeling after 0.25 scale = 1.5 difference for site s505
+        scaleFactor = 6 
+        scale = totalDifference / scaleFactor
+        # Decide if increasing or decreasing ground motions
+        increase = True if Vs30Ratio >= 1 else False
+        if increase:
+            scales.append((1+scale))
+        else:
+            scales.append((1-scale))
+    print(f'Scale factors: {scales}')
     for i in range(len(xVals)):
-        R1 = (s0.valsToInterp[i] * (1-xPrime) + s1.valsToInterp[i] * xPrime)
-        R2 = (s2.valsToInterp[i] * xPrime + s3.valsToInterp[i] * (1-xPrime))
+        R1 = (s0.valsToInterp[i] * scales[0] * (1-xPrime) + s1.valsToInterp[i] * scales[1] * xPrime)
+        R2 = (s2.valsToInterp[i] * scales[2] * xPrime + s3.valsToInterp[i] * scales[3] * (1-xPrime))
         interpVal = (R1 * yPrime + R2 * (1-yPrime))
         interpolatedProbs.append(interpVal)
+    cursor.close()
+    connection.close()
     return interpolatedProbs
