@@ -97,9 +97,9 @@ def interpolate(sortedL, xVals):
     cursor.execute(q, (sortedL[4].name,))
     result = cursor.fetchone()
     sIVs30, sIZ1, sIZ2 = result[0], result[1], result[2]
-    totalDifference = 0
     # Compare ratios and calculate scale factor for each site
     for site in [s0.name, s1.name, s2.name, s3.name]:
+        totalDifference = 0
         cursor.execute(q, (site,))
         res = cursor.fetchone()
         Vs30Ratio = sIVs30 / res[0]
