@@ -82,6 +82,10 @@ def interpolate(sortedL, xVals):
     yPrime = getDistance(s3.x, s3.y, s2.x, s2.y, sortedL[-1].x, sortedL[-1].y) / 10000
     xPrime =  getDistance(s3.x, s3.y, s0.x, s0.y, sortedL[-1].x, sortedL[-1].y) / 10000
     interpolatedProbs = []
+    # Taking into account velocity model
+    scaleFactor = 0.75
+    for i in range(len(s2.valsToInterp)):
+        s2.valsToInterp[i] = s2.valsToInterp[i] * scaleFactor
     for i in range(len(xVals)):
         R1 = (s0.valsToInterp[i] * (1-xPrime) + s1.valsToInterp[i] * xPrime)
         R2 = (s2.valsToInterp[i] * xPrime + s3.valsToInterp[i] * (1-xPrime))
