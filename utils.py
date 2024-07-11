@@ -110,7 +110,7 @@ def interpolate(sortedL, xVals):
         scaleFactor = 6 
         scale = totalDifference / scaleFactor
         # Decide if increasing or decreasing ground motions
-        increase = True if Vs30Ratio >= 1 else False
+        increase = True if Vs30Ratio < 1 else False
         if increase:
             scales.append((1+scale))
         else:
