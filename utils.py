@@ -97,24 +97,34 @@ def interpolate(sortedL, xVals):
     cursor.execute(q, (sortedL[4].name,))
     result = cursor.fetchone()
     sIVs30, sIZ1, sIZ2 = result[0], result[1], result[2]
+    totalDifference = 0
     # Compare ratios and calculate scale factor for each site
-    increase = False
     for site in [s0.name, s1.name, s2.name, s3.name]:
         cursor.execute(q, (site,))
         res = cursor.fetchone()
         Vs30Ratio = sIVs30 / res[0]
         Z1Ratio = sIZ1 / res[1]
         Z2Ratio = sIZ2 / res[2]
-        totalDifference = abs(1-Vs30Ratio) + abs(1-Z1Ratio) + abs(1-Z2Ratio)
+        # Decide if increasing or decreasing ground motions
+        if Vs30Ratio > 1:
+            # Negative contribution to total distance since want to decrease ground motions
+            totalDifference += 1-Vs30Ratio
+        else:
+            totalDifference += Vs30Ratio-1
+        if  Z1Ratio > 1:
+            # Positive contribution to total distance since want to increase ground motions
+            totalDifference += Z1Ratio-1
+        else:
+            totalDifference += 1-Z1Ratio
+        if  Z2Ratio > 1:
+            # Positive contribution to total distance since want to increase ground motions
+            totalDifference += Z2Ratio-1
+        else:
+            totalDifference += 1-Z2Ratio
         # Modeling after 0.25 scale = 1.5 difference for site s505
         scaleFactor = 6 
         scale = totalDifference / scaleFactor
-        # Decide if increasing or decreasing ground motions
-        increase = True if Vs30Ratio < 1 else False
-        if increase:
-            scales.append((1+scale))
-        else:
-            scales.append((1-scale))
+        scales.append(1+scale)
     print(f'Scale factors: {scales}')
     for i in range(len(xVals)):
         R1 = (s0.valsToInterp[i] * scales[0] * (1-xPrime) + s1.valsToInterp[i] * scales[1] * xPrime)
