@@ -142,7 +142,7 @@ def bilinearinterpolation(s0, s1, s2, s3, sI, args, connection):
     # Write interpolated vals to file for testing
     fileName = f'Actual{args.interpsitename}.csv'
     # '/Users/ameliakratzer/codescripts/sources/Pasadena/tests' for computer
-    filePath = os.path.join(os.getcwd(), fileName)
+    filePath = os.path.join('/scratch1/10000/ameliakratzer14', args.output)
     with open(filePath, 'w', newline='') as file:
         write = csv.writer(file)
         write.writerow(['XVals', 'InterpVals'])
