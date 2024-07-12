@@ -122,7 +122,7 @@ def interpolate(sortedL, xVals):
         else:
             totalDifference += 1-Z2Ratio
         # Modeling after 0.25 scale = 1.5 difference for site s505
-        scaleFactor = 6 
+        scaleFactor = 7.5
         scale = totalDifference / scaleFactor
         scales.append(1+scale)
     print(f'Scale factors: {scales}')
