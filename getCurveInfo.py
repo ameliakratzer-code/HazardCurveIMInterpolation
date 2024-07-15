@@ -74,8 +74,8 @@ def plotFeatures():
     plt.xlim(0, 2)
     plt.yscale('log')
     plt.ylim(1e-6,1)
-    plt.xlabel('Accel (g)')
-    plt.ylabel('Prob')
+    plt.xlabel('Accel (cm/s\u00B2)')
+    plt.ylabel('Prob (1/yr)')
     plt.grid(axis = 'y')
 
 # Plot with the interpolated curve and actual curve them overlayed
