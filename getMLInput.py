@@ -48,7 +48,7 @@ with open(outputPath, 'w', newline='') as file:
             runID = cursor.fetchone()[0]
             desiredXVal = 0.50119
             period = 2
-            q2 = '''SELECT Hazard_CurvePoints.Y_Value FROM Hazard_Curve_Points
+            q2 = '''SELECT Hazard_Curve_Points.Y_Value FROM Hazard_Curve_Points
                         INNER JOIN Hazard_Curves
                         ON Hazard_Curve_Points.Hazard_Curve_ID = Hazard_Curves.Hazard_Curve_ID
                         INNER JOIN IM_Types
