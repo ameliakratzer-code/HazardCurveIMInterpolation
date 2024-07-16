@@ -5,6 +5,7 @@ import tensorflow as tf
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
+from tensorflow import keras
 
 # 1) Preprocessing
 # a) read and normalize data
@@ -34,19 +35,24 @@ EPOCHS = 50
 INPUT_SIZE = 8
 OUTPUT_SIZE = 1
 # Optimize the learning rate by creating scheduler
+# TO DO: play around with this to optimize my results
 def scheduler(epoch):
-    if epoch < 100:
+    if epoch < 10:
         print("lr= 0.01" )
         return 0.01
-    elif epoch < 400:
+    elif epoch < 40:
         print("lr= 0.001" )
         return 0.001
-    elif epoch < 1200:
+    elif epoch < 120:
         print("lr= 0.0001" )
         return 0.0001
     else:
         print("lr= 0.00001" )
         return 0.00001
+schedule = keras.callbacks.LearningRateScheduler(scheduler)
+# Create my model
+model = tf.keras.models.Sequential()
+
 
 # 3) Training
 
