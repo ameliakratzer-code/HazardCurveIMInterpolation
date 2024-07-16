@@ -29,7 +29,7 @@ sites = [('s034','s078','s080','s036','s035'),('s076','s119','s121','s078','OSI'
 with open(outputPath, 'w', newline='') as file:
     write = csv.writer(file)
     # Headers
-    write.writerow(['LBProb, RBProb, RTProb, LTProb, simVal, d1, d2, d3, d4, interpSiteName'])
+    write.writerow(['LBProb', 'RBProb', 'RTProb', 'LTProb', 'simVal', 'd1', 'd2', 'd3', 'd4', 'interpSiteName'])
     # Have list of groups of sites we are using [(s0, s1, s2, s3, interpsite), (s0, s1, s2, s3, interpsite)]
     for group in sites:
         xInterpSite, yInterpSite = getUTM(group[4])
