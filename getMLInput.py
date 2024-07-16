@@ -36,7 +36,6 @@ with open(outputPath, 'w', newline='') as file:
         probVals = []
         distanceVals = []
         cursor = connection.cursor()
-        print(group)
         for i in range(5):
             q1 = '''SELECT CyberShake_Runs.Run_ID FROM CyberShake_Sites
                     INNER JOIN CyberShake_Runs
