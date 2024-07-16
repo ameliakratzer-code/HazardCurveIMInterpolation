@@ -60,9 +60,10 @@ with open(outputPath, 'w', newline='') as file:
             # Appending site prob to list, including interpsite
             probVals.append(result[0])
             # Calculate distance from interpsite to input site
-            x, y = getUTM(group[i])
-            d = disFormula(x,y,xInterpSite,yInterpSite)
-            distanceVals.append(d)
+            if i != 4:
+                x, y = getUTM(group[i])
+                d = disFormula(x,y,xInterpSite,yInterpSite)
+                distanceVals.append(d)
         # Write vals for this group to file
         write.writerow(probVals + distanceVals + [group[4]])
     
