@@ -10,8 +10,8 @@ from sklearn.model_selection import train_test_split
 # a) read and normalize data
 # Read data columns not simVal or sitename
 probCols, disCols = ['LBProb','RBProb','RTProb','LTProb'], ['d1','d2','d3','d4']
-# On Frontera: /scratch1/10000/ameliakratzer14/data1b
-df = pd.read_csv('/Users/ameliakratzer/Desktop/LinInterpolation/ML/inputs.csv')
+# On Frontera: /scratch1/10000/ameliakratzer14/data1c
+df = pd.read_csv('/Users/ameliakratzer/Desktop/LinInterpolation/ML/input.csv')
 print(df.columns)
 # Take log then normalize probability
 # Access probs by doing df[proCols]
