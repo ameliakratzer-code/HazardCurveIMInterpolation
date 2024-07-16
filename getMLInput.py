@@ -31,7 +31,7 @@ with open(outputPath, 'w', newline='') as file:
     # Headers
     write.writerow(['LBProb, RBProb, RTProb, LTProb, simVal, d1, d2, d3, d4, interpSiteName'])
     # Have list of groups of sites we are using [(s0, s1, s2, s3, interpsite), (s0, s1, s2, s3, interpsite)]
-    for group in []:
+    for group in sites:
         xInterpSite, yInterpSite = getUTM(group[4])
         probVals = []
         distanceVals = []
