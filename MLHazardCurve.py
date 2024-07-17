@@ -12,8 +12,7 @@ import numpy as np
 
 # 1) Preprocessing
 # a) read and normalize data
-# Read data columns not simVal or sitename
-probCols, disCols = ['LBProb','RBProb','RTProb','LTProb'], ['d1','d2','d3','d4']
+probCols, disCols = ['LBProb','RBProb','RTProb','LTProb', 'simVal'], ['d1','d2','d3','d4']
 # On Frontera: /scratch1/10000/ameliakratzer14/data1c
 df = pd.read_csv('/Users/ameliakratzer/Desktop/LinInterpolation/ML/input.csv')
 # Take log then normalize probability
@@ -86,7 +85,6 @@ plt.legend()
 plt.savefig(sys.argv[1] + '/error2.png')
 plt.close()
 # Create plot of network outputs versus actual for validation data
-# TO DO: denormalize my outputs
 yPredictionList = model.predict(X_test)
 plt.figure(2)
 plt.scatter(y_test, yPredictionList, color='blue')
