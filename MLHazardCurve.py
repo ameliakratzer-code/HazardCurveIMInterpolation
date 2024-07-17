@@ -15,8 +15,7 @@ import numpy as np
 probCols, disCols = ['LBProb','RBProb','RTProb','LTProb', 'simVal'], ['d1','d2','d3','d4']
 # On Frontera: /scratch1/10000/ameliakratzer14/data1c
 df = pd.read_csv('/Users/ameliakratzer/Desktop/LinInterpolation/ML/input.csv')
-# Take log then normalize probability
-# Access probs by doing df[proCols]
+# Take log then normalize probabilities including simVal
 scaler = MinMaxScaler()
 df[probCols] = np.log10(df[probCols])
 df[probCols] = scaler.fit_transform(df[probCols])
