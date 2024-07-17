@@ -5,7 +5,6 @@ import tensorflow as tf
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
-from tensorflow import keras
 
 # 1) Preprocessing
 # a) read and normalize data
@@ -34,26 +33,56 @@ BATCH_SIZE = 32
 EPOCHS = 50
 INPUT_SIZE = 8
 OUTPUT_SIZE = 1
-# Optimize the learning rate by creating scheduler
-# TO DO: play around with this to optimize my results
-def scheduler(epoch):
-    if epoch < 10:
-        print("lr= 0.01" )
-        return 0.01
-    elif epoch < 40:
-        print("lr= 0.001" )
-        return 0.001
-    elif epoch < 120:
-        print("lr= 0.0001" )
-        return 0.0001
-    else:
-        print("lr= 0.00001" )
-        return 0.00001
-schedule = keras.callbacks.LearningRateScheduler(scheduler)
 # Create my model
 model = tf.keras.models.Sequential()
+# Implicitely defines input layer with first hidden layer
+model.add(tf.keras.layers.Dense(32, activation='softplus', input_shape=(INPUT_SIZE,)))
+# Hidden layers: [32,64,128,64,32]
+# Normalize batch: important for larger networks
+model.add(tf.keras.layers.Dense(64))
+model.add(tf.keras.layers.BatchNormalization())
+model.add(tf.keras.layers.Activation('softplus'))
 
+model.add(tf.keras.layers.Dense(128))
+model.add(tf.keras.layers.BatchNormalization())
+model.add(tf.keras.layers.Activation('softplus'))
+
+model.add(tf.keras.layers.Dense(64))
+model.add(tf.keras.layers.BatchNormalization())
+model.add(tf.keras.layers.Activation('softplus'))
+
+model.add(tf.keras.layers.Dense(32))
+model.add(tf.keras.layers.BatchNormalization())
+model.add(tf.keras.layers.Activation('softplus'))
+# Output layer
+model.add(tf.keras.layers.Dense(OUTPUT_SIZE , activation='sigmoid')) 
+# Prints out layer type, output shape, parameters, connections
+model.summary()
 
 # 3) Training
+# Adam optimizer adapts learning rates for you, so no need to define a scheduler
+model.compile(optimizer = 'adam', loss='mean_squared_error')
+# Train the model using training data
+# Capture the loss and val_loss statistics with history variable
+history = model.fit(X_train, y_train, batch_size=BATCH_SIZE, epochs=EPOCHS, validation_data=(X_test,y_test))
 
 # 4) Evaluation
+# Visualize data with tensorBoard
+score = model.evaluate(X_test,y_test,verbose=0)
+print(f'Test loss: {score}')
+model.save('/Users/ameliakratzer/Desktop/model3.h5')
+# Create plot of error
+plt.figure(1)
+plt.plot(history.history['loss'], color = 'green', label = 'Training Loss')
+plt.plot(history.history['val_loss'], color = 'pink', label = 'Testing Loss')
+plt.title('Training versus Validation Loss')
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.legend()
+plt.savefig('/Users/ameliakratzer/Desktop/error3')
+plt.close()
+# Create plot of network outputs versus actual for validation data
+# Denormalize my outputs
+yPredictionList = model.predict(X_test)
+plt.figure(2)
+plt
