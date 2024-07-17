@@ -3,8 +3,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
 import pandas as pd
+import sys
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
+import numpy as np
+
+# One command line argument: name of folder where want output files to go
 
 # 1) Preprocessing
 # a) read and normalize data
@@ -70,7 +74,7 @@ history = model.fit(X_train, y_train, batch_size=BATCH_SIZE, epochs=EPOCHS, vali
 # Visualize data with tensorBoard
 score = model.evaluate(X_test,y_test,verbose=0)
 print(f'Test loss: {score}')
-model.save('/Users/ameliakratzer/Desktop/model3.h5')
+model.save(sys.argv[1] + '/model1.h5')
 # Create plot of error
 plt.figure(1)
 plt.plot(history.history['loss'], color = 'green', label = 'Training Loss')
@@ -79,10 +83,16 @@ plt.title('Training versus Validation Loss')
 plt.xlabel('Epoch')
 plt.ylabel('Loss')
 plt.legend()
-plt.savefig('/Users/ameliakratzer/Desktop/error3')
+plt.savefig(sys.argv[1] + '/error1.png')
 plt.close()
 # Create plot of network outputs versus actual for validation data
-# Denormalize my outputs
+# TO DO: denormalize my outputs
 yPredictionList = model.predict(X_test)
 plt.figure(2)
-plt
+plt.scatter(y_test, yPredictionList, color='blue')
+plt.title('Simulated versus Interpolated Values')
+plt.xlabel('Simulated')
+plt.ylabel('Interpolated')
+print('hello')
+print(sys.argv[1] + 'simActual1.png')
+plt.savefig(sys.argv[1] + '/simActual1.png')
