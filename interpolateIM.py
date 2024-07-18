@@ -147,6 +147,106 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     plt.savefig(filePath)
     plt.close()
     print('Histogram plotted')
+    # Scatterplots by magnitude
+    # Event = (source, rup, rupVar)
+    cursor = connection.cursor()
+    index1, index2, index3, index4 = [], [], [], []
+    bin1x, bin1y, bin2x, bin2y, bin3x, bin3y, bin4x, bin4y = [], [], [], [], [], [], [], []
+    # Append index of the event instead of event itself since want to access IM val
+    for i in range(len(events)):
+        event = events[i]
+        source, rup = event[0], event[1]
+        q = '''SELECT Mag FROM Ruptures
+        WHERE ERF_ID = 36
+        AND Source_ID = ? AND Rupture_ID = ?
+        '''
+        cursor.execute(q, (source, rup))
+        magnitude = cursor.fetchone()[0]
+        # Decide which bin to place event in
+        if magnitude <= 7:
+            index1.append(i)
+        elif 7 < magnitude <= 7.5:
+            index2.append(i)
+        elif 7.5 < magnitude <= 8:
+            index3.append(i)
+        elif magnitude > 8:
+            index4.append(i)
+    for i in index1:
+        bin1x.append(p4.valsToInterp[i])
+        bin1y.append(interpIMVals[i])
+    for i in index2:
+        bin2x.append(p4.valsToInterp[i])
+        bin2y.append(interpIMVals[i])
+    for i in index3:
+        bin3x.append(p4.valsToInterp[i])
+        bin3y.append(interpIMVals[i])
+    for i in index4:
+        bin4x.append(p4.valsToInterp[i])
+        bin4y.append(interpIMVals[i])
+        # Plot 4 lists seperately with subplot
+    fig, axs = plt.subplots(2, 2, figsize=(12, 10))
+    fig.suptitle(f'Magnitude Binned Scatter Plots {args.interpsitename} {args.period} sec RotD50', fontsize=16)
+    
+    # Plot 1
+    axs[0, 0].scatter(bin1x, bin1y, color='blue', s = 4)
+    axs[0, 0].set_title('Mag <= 7')
+    axs[0, 0].set_xlabel('Simulated IMs')
+    axs[0, 0].set_ylabel('Interpolated IMs')
+    axs[0, 0].set_aspect('equal')
+    xNumpy, yNumpy = np.array(bin1x), np.array(bin1y)
+    slope, intercept = np.polyfit(xNumpy, yNumpy, 1)
+    lineOfBestFit = slope * xNumpy + intercept
+    axs[0, 0].plot(bin1x, lineOfBestFit, color='green', linestyle = 'dashed')
+    minVal = min(min(bin1x), min(bin1y))
+    maxVal = max(max(bin1x), max(bin1y))
+    axs[0, 0].plot([minVal, maxVal], [minVal, maxVal], linestyle = 'dashed', color='black')
+    
+    # Plot 2
+    axs[0, 1].scatter(bin2x, bin2y, color='blue', s = 4)
+    axs[0, 1].set_title('Mag > 7 and <= 7.5')
+    axs[0, 1].set_xlabel('Simulated IMs')
+    axs[0, 1].set_ylabel('Interpolated IMs')
+    axs[0, 1].set_aspect('equal')
+    xNumpy, yNumpy = np.array(bin2x), np.array(bin2y)
+    slope, intercept = np.polyfit(xNumpy, yNumpy, 1)
+    lineOfBestFit = slope * xNumpy + intercept
+    axs[0, 1].plot(bin2x, lineOfBestFit, color='green', linestyle = 'dashed')
+    minVal = min(min(bin2x), min(bin2y))
+    maxVal = max(max(bin2x), max(bin2y))
+    axs[0, 1].plot([minVal, maxVal], [minVal, maxVal], linestyle = 'dashed', color='black')
+    
+    # Plot 3
+    axs[1, 0].scatter(bin3x, bin3y, color='blue', s = 4)
+    axs[1, 0].set_title('Mag > 7.5 and <= 8')
+    axs[1, 0].set_xlabel('Simulated IMs')
+    axs[1, 0].set_ylabel('Interpolated IMs')
+    axs[1, 0].set_aspect('equal')
+    xNumpy, yNumpy = np.array(bin3x), np.array(bin3y)
+    slope, intercept = np.polyfit(xNumpy, yNumpy, 1)
+    lineOfBestFit = slope * xNumpy + intercept
+    axs[1, 0].plot(bin3x, lineOfBestFit, color='green', linestyle = 'dashed')
+    minVal = min(min(bin3x), min(bin3y))
+    maxVal = max(max(bin3x), max(bin3y))
+    axs[1, 0].plot([minVal, maxVal], [minVal, maxVal], linestyle = 'dashed', color='black')
+    
+    # Plot 4
+    axs[1, 1].scatter(bin4x, bin4y, color='blue', s = 4)
+    axs[1, 1].set_title('Mag > 7.5 and <= 8')
+    axs[1, 1].set_xlabel('Simulated IMs')
+    axs[1, 1].set_ylabel('Interpolated IMs')
+    axs[1, 1].set_aspect('equal')
+    xNumpy, yNumpy = np.array(bin4x), np.array(bin4y)
+    slope, intercept = np.polyfit(xNumpy, yNumpy, 1)
+    lineOfBestFit = slope * xNumpy + intercept
+    axs[1, 1].plot(bin4x, lineOfBestFit, color='green', linestyle = 'dashed')
+    minVal = min(min(bin4x), min(bin4y))
+    maxVal = max(max(bin4x), max(bin4y))
+    axs[1, 1].plot([minVal, maxVal], [minVal, maxVal], linestyle = 'dashed', color='black')
+    
+    filePath = args.output + 'magnitudeplot.png'
+    plt.savefig(filePath)
+    print('Magnitude subplot plotted')
+    cursor.close()
 
 # Scatterplot x-axis = simulated IM, y-axis = interp IM
 def interpScatterplot(sim, interp):
