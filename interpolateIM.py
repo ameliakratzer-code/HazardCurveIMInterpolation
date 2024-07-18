@@ -171,6 +171,7 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
             index3.append(i)
         elif magnitude > 8:
             index4.append(i)
+    print(f'1: {len(index1)}, 2: {len(index2)}, 3: {len(index3)}, 4: {len(index4)}, events: {len(events)}')
     for i in index1:
         bin1x.append(p4.valsToInterp[i])
         bin1y.append(interpIMVals[i])
@@ -183,70 +184,32 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     for i in index4:
         bin4x.append(p4.valsToInterp[i])
         bin4y.append(interpIMVals[i])
-        # Plot 4 lists seperately with subplot
+    # Plot 4 lists seperately with subplot
     fig, axs = plt.subplots(2, 2, figsize=(12, 10))
     fig.suptitle(f'Magnitude Binned Scatter Plots {args.interpsitename} {args.period} sec RotD50', fontsize=16)
-    
-    # Plot 1
-    axs[0, 0].scatter(bin1x, bin1y, color='blue', s = 4)
-    axs[0, 0].set_title('Mag <= 7')
-    axs[0, 0].set_xlabel('Simulated IMs')
-    axs[0, 0].set_ylabel('Interpolated IMs')
-    axs[0, 0].set_aspect('equal')
-    xNumpy, yNumpy = np.array(bin1x), np.array(bin1y)
-    slope, intercept = np.polyfit(xNumpy, yNumpy, 1)
-    lineOfBestFit = slope * xNumpy + intercept
-    axs[0, 0].plot(bin1x, lineOfBestFit, color='green', linestyle = 'dashed')
-    minVal = min(min(bin1x), min(bin1y))
-    maxVal = max(max(bin1x), max(bin1y))
-    axs[0, 0].plot([minVal, maxVal], [minVal, maxVal], linestyle = 'dashed', color='black')
-    
-    # Plot 2
-    axs[0, 1].scatter(bin2x, bin2y, color='blue', s = 4)
-    axs[0, 1].set_title('Mag > 7 and <= 7.5')
-    axs[0, 1].set_xlabel('Simulated IMs')
-    axs[0, 1].set_ylabel('Interpolated IMs')
-    axs[0, 1].set_aspect('equal')
-    xNumpy, yNumpy = np.array(bin2x), np.array(bin2y)
-    slope, intercept = np.polyfit(xNumpy, yNumpy, 1)
-    lineOfBestFit = slope * xNumpy + intercept
-    axs[0, 1].plot(bin2x, lineOfBestFit, color='green', linestyle = 'dashed')
-    minVal = min(min(bin2x), min(bin2y))
-    maxVal = max(max(bin2x), max(bin2y))
-    axs[0, 1].plot([minVal, maxVal], [minVal, maxVal], linestyle = 'dashed', color='black')
-    
-    # Plot 3
-    axs[1, 0].scatter(bin3x, bin3y, color='blue', s = 4)
-    axs[1, 0].set_title('Mag > 7.5 and <= 8')
-    axs[1, 0].set_xlabel('Simulated IMs')
-    axs[1, 0].set_ylabel('Interpolated IMs')
-    axs[1, 0].set_aspect('equal')
-    xNumpy, yNumpy = np.array(bin3x), np.array(bin3y)
-    slope, intercept = np.polyfit(xNumpy, yNumpy, 1)
-    lineOfBestFit = slope * xNumpy + intercept
-    axs[1, 0].plot(bin3x, lineOfBestFit, color='green', linestyle = 'dashed')
-    minVal = min(min(bin3x), min(bin3y))
-    maxVal = max(max(bin3x), max(bin3y))
-    axs[1, 0].plot([minVal, maxVal], [minVal, maxVal], linestyle = 'dashed', color='black')
-    
-    # Plot 4
-    axs[1, 1].scatter(bin4x, bin4y, color='blue', s = 4)
-    axs[1, 1].set_title('Mag > 7.5 and <= 8')
-    axs[1, 1].set_xlabel('Simulated IMs')
-    axs[1, 1].set_ylabel('Interpolated IMs')
-    axs[1, 1].set_aspect('equal')
-    xNumpy, yNumpy = np.array(bin4x), np.array(bin4y)
-    slope, intercept = np.polyfit(xNumpy, yNumpy, 1)
-    lineOfBestFit = slope * xNumpy + intercept
-    axs[1, 1].plot(bin4x, lineOfBestFit, color='green', linestyle = 'dashed')
-    minVal = min(min(bin4x), min(bin4y))
-    maxVal = max(max(bin4x), max(bin4y))
-    axs[1, 1].plot([minVal, maxVal], [minVal, maxVal], linestyle = 'dashed', color='black')
-    
+    mag_scatter(axs[0, 0], bin1x, bin1y, 'Mag ≤ 7')
+    mag_scatter(axs[0, 1], bin2x, bin2y, '7 < Mag ≤ 7.5')
+    mag_scatter(axs[1, 0], bin3x, bin3y, '7.5 < Mag ≤ 8')
+    mag_scatter(axs[1, 1], bin4x, bin4y, 'Mag > 8')
+    plt.tight_layout()
     filePath = args.output + 'magnitudeplot.png'
     plt.savefig(filePath)
     print('Magnitude subplot plotted')
     cursor.close()
+
+def mag_scatter(ax, x, y, title):
+    ax.scatter(x, y, color='blue', s=4)
+    ax.set_title(title)
+    ax.set_xlabel('Simulated IMs')
+    ax.set_ylabel('Interpolated IMs')
+    ax.set_aspect('equal')
+    xNumpy, yNumpy = np.array(x), np.array(y)
+    slope, intercept = np.polyfit(xNumpy, yNumpy, 1)
+    lineOfBestFit = slope * xNumpy + intercept
+    ax.plot(x, lineOfBestFit, color='green', linestyle='dashed')
+    minVal = min(min(x), min(y))
+    maxVal = max(max(x), max(y))
+    ax.plot([minVal, maxVal], [minVal, maxVal], linestyle='dashed', color='black')
 
 # Scatterplot x-axis = simulated IM, y-axis = interp IM
 def interpScatterplot(sim, interp):
