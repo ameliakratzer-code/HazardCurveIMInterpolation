@@ -12,21 +12,24 @@ import numpy as np
 
 # 1) Preprocessing
 # a) read and normalize data
-probCols, disCols = ['LBProb','RBProb','RTProb','LTProb', 'simVal'], ['d1','d2','d3','d4']
+probCols = ['LBProb','RBProb','RTProb','LTProb', 'simVal']
 # On Frontera: /scratch1/10000/ameliakratzer14/data1c
 df = pd.read_csv('/Users/ameliakratzer/Desktop/LinInterpolation/ML/input.csv')
-# Take log then normalize probabilities including simVal
-scaler = MinMaxScaler()
+# Take log of probabilities
 df[probCols] = np.log10(df[probCols])
-df[probCols] = scaler.fit_transform(df[probCols])
-# Normalize distance without log
-df[disCols] = scaler.fit_transform(df[disCols])
+Xscaler = MinMaxScaler()
+Yscaler = MinMaxScaler()
 # b) split data into training and testing
 # X = independent variable (inputs), y = dependent variable (value to predict)
 X = df.drop(columns=['simVal','interpSiteName'])
 y = df['simVal']
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-# Xtrain has 80 rows (since 20 rows = Xtest)and Y_train has 80 labels corresponding to 80 x samples
+X_trainU, X_testU, y_trainU, y_testU = train_test_split(X, y, test_size=0.2, random_state=42)
+# XtrainU has 80 rows (since 20 rows = Xtest)and Y_train has 80 labels corresponding to 80 x samples
+# Transform the data
+X_train = Xscaler.fit_transform(X_trainU)
+X_test = Xscaler.transform(X_testU)
+y_train = Yscaler.fit_transform(y_trainU.values.reshape(-1,1)).ravel()
+y_test = Yscaler.transform(y_testU.values.reshape(-1,1)).ravel()
 
 # 2) Network topology
 # Batch size = number of samples fed to neural network at once before weights updated
@@ -45,17 +48,19 @@ model.add(tf.keras.layers.Dense(64))
 model.add(tf.keras.layers.BatchNormalization())
 model.add(tf.keras.layers.Activation('softplus'))
 
-model.add(tf.keras.layers.Dense(128))
-model.add(tf.keras.layers.BatchNormalization())
-model.add(tf.keras.layers.Activation('softplus'))
-
-model.add(tf.keras.layers.Dense(64))
-model.add(tf.keras.layers.BatchNormalization())
-model.add(tf.keras.layers.Activation('softplus'))
-
+# Changed from 128 to 32 for three layers
 model.add(tf.keras.layers.Dense(32))
 model.add(tf.keras.layers.BatchNormalization())
 model.add(tf.keras.layers.Activation('softplus'))
+
+#model.add(tf.keras.layers.Dense(64))
+#model.add(tf.keras.layers.BatchNormalization())
+#model.add(tf.keras.layers.Activation('softplus'))
+
+#model.add(tf.keras.layers.Dense(32))
+#model.add(tf.keras.layers.BatchNormalization())
+#model.add(tf.keras.layers.Activation('softplus'))
+
 # Output layer
 model.add(tf.keras.layers.Dense(OUTPUT_SIZE , activation='sigmoid')) 
 # Prints out layer type, output shape, parameters, connections
@@ -72,7 +77,7 @@ history = model.fit(X_train, y_train, batch_size=BATCH_SIZE, epochs=EPOCHS, vali
 # Visualize data with tensorBoard
 score = model.evaluate(X_test,y_test,verbose=0)
 print(f'Test loss: {score}')
-model.save(sys.argv[1] + '/model2.h5')
+model.save(sys.argv[1] + '/model4.h5')
 # Create plot of error
 plt.figure(1)
 plt.plot(history.history['loss'], color = 'green', label = 'Training Loss')
@@ -81,13 +86,17 @@ plt.title('Training versus Validation Loss')
 plt.xlabel('Epoch')
 plt.ylabel('Loss')
 plt.legend()
-plt.savefig(sys.argv[1] + '/error2.png')
+plt.savefig(sys.argv[1] + '/error4.png')
 plt.close()
 # Create plot of network outputs versus actual for validation data
-yPredictionList = model.predict(X_test)
+yPredictionListNorm = model.predict(X_test)
+yPredictionListLog = Yscaler.inverse_transform(yPredictionListNorm.reshape(-1,1)).ravel()
+yPredictionList = np.power(10, yPredictionListLog)
+ySimListLog = Yscaler.inverse_transform(y_test.reshape(-1,1)).ravel()
+ySimList = np.power(10, ySimListLog)
 plt.figure(2)
-plt.scatter(y_test, yPredictionList, color='blue')
+plt.scatter(ySimList, yPredictionList, color='blue')
 plt.title('Simulated versus Interpolated Values')
 plt.xlabel('Simulated')
 plt.ylabel('Interpolated')
-plt.savefig(sys.argv[1] + '/simActual2.png')
+plt.savefig(sys.argv[1] + '/simActual4.png')
