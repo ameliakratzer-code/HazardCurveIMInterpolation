@@ -24,7 +24,6 @@ Yscaler = MinMaxScaler()
 X = df.drop(columns=['simVal','interpSiteName'])
 y = df['simVal']
 X_trainU, X_testU, y_trainU, y_testU = train_test_split(X, y, test_size=0.2, random_state=42)
-# XtrainU has 80 rows (since 20 rows = Xtest)and Y_train has 80 labels corresponding to 80 x samples
 # Transform the data
 X_train = Xscaler.fit_transform(X_trainU)
 X_test = Xscaler.transform(X_testU)
@@ -43,7 +42,6 @@ model = tf.keras.models.Sequential()
 # Implicitely defines input layer with first hidden layer
 model.add(tf.keras.layers.Dense(32, activation='softplus', input_shape=(INPUT_SIZE,)))
 # Hidden layers: [32,64,128,64,32]
-# Normalize batch: important for larger networks
 model.add(tf.keras.layers.Dense(64))
 model.add(tf.keras.layers.BatchNormalization())
 model.add(tf.keras.layers.Activation('softplus'))
