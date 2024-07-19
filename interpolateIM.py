@@ -149,7 +149,7 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     print('Histogram plotted')
     # Scatterplots by magnitude
     # Event = (source, rup, rupVar)
-    cursor = connection.cursor()
+    """ cursor = connection.cursor()
     index1, index2, index3, index4 = [], [], [], []
     bin1x, bin1y, bin2x, bin2y, bin3x, bin3y, bin4x, bin4y = [], [], [], [], [], [], [], []
     # Append index of the event instead of event itself since want to access IM val
@@ -196,7 +196,7 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     plt.savefig(filePath)
     print('Magnitude subplot plotted')
     cursor.close()
-
+ """
 def mag_scatter(ax, x, y, title):
     ax.scatter(x, y, color='blue', s=4)
     ax.set_title(title)
