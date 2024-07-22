@@ -94,16 +94,16 @@ def plotInterpolated(xCoords, sI, interpolatedProbs, args, connection):
     maxDiff = max(listDifferences)
     avgDiff = sum(listDifferences) / len(listDifferences)
     print(f'\nMaxdiff: {round(maxDiff, 1)}%, avgDiff: {round(avgDiff,1)}%\n')
-    # Plotting of overlayed curve
-    plotHazardCurve(xCoords,interpolatedProbs, sI+' Interpolated', args)
-    plotFeatures()
-    plt.title(f'Overlayed {sI}, 2 sec RotD50')
-    plt.plot(xActual, yActual, color='green', linewidth = 2, label = "Actual", marker='^')
-    plt.plot(xActual, interpolatedProbs, color='pink', linewidth = 2, label = 'Interpolated', marker='^')
-    plt.legend()
+    # Plotting of overlayed curve - do not need for now
+    # plotHazardCurve(xCoords,interpolatedProbs, sI+' Interpolated', args)
+    # plotFeatures()
+    # plt.title(f'Overlayed {sI}, 2 sec RotD50')
+    # plt.plot(xActual, yActual, color='green', linewidth = 2, label = "Actual", marker='^')
+    # plt.plot(xActual, interpolatedProbs, color='pink', linewidth = 2, label = 'Interpolated', marker='^')
+    # plt.legend()
     # ({args.output} + '/' + 'Overlayed' + '.png')
-    path = os.path.join(args.output, 'Overlayed' + '.png')
-    plt.savefig(path)
+    # path = os.path.join(args.output, 'Overlayed' + '.png')
+    # plt.savefig(path)
 
 def linearinterpolation(s0, s1, sI, args, connection):
     # Prob values for two known sites
@@ -118,7 +118,7 @@ def linearinterpolation(s0, s1, sI, args, connection):
         for i in range(len(xCoords)):
             interpVal = (s0.valsToInterp[i] * abs(s1.x - pI.x) + s1.valsToInterp[i] * abs(pI.x - s0.x)) * (1 / abs(s1.x - s0.x))
             interpolatedProbs.append(interpVal)
-        plotInterpolated(xCoords, sI, interpolatedProbs, args, connection)
+        #plotInterpolated(xCoords, sI, interpolatedProbs, args, connection)
     else:
         print('Interpsite not in interpolation bounds')
         exit()
