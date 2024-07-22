@@ -140,7 +140,7 @@ def bilinearinterpolation(s0, s1, s2, s3, sI, args, connection):
     for val in interpolatedProbs:
         print(val)
     # Write interpolated vals to file for testing
-    fileName = f'Actual{args.interpsitename}{args.period}.csv'
+    fileName = f'{args.interpsitename}{args.period}Hazard.csv'
     # '/Users/ameliakratzer/codescripts/sources/Pasadena/tests' for computer
     # filePath = os.path.join('/scratch1/10000/ameliakratzer14', args.output)
     filePath = os.path.join(args.output, fileName)
