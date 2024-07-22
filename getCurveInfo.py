@@ -140,15 +140,17 @@ def bilinearinterpolation(s0, s1, s2, s3, sI, args, connection):
     for val in interpolatedProbs:
         print(val)
     # Write interpolated vals to file for testing
-    fileName = f'Actual{args.interpsitename}.csv'
+    fileName = f'Actual{args.interpsitename}{args.period}.csv'
     # '/Users/ameliakratzer/codescripts/sources/Pasadena/tests' for computer
-    filePath = os.path.join('/scratch1/10000/ameliakratzer14', args.output)
+    # filePath = os.path.join('/scratch1/10000/ameliakratzer14', args.output)
+    filePath = os.path.join(args.output, fileName)
     with open(filePath, 'w', newline='') as file:
         write = csv.writer(file)
         write.writerow(['XVals', 'InterpVals'])
         for xVal, interpVal in zip(xCoords, interpolatedProbs):
             write.writerow([xVal, interpVal])
-    plotInterpolated(xCoords, sI, interpolatedProbs, args, connection)
+    # Remove plotting for now
+    # plotInterpolated(xCoords, sI, interpolatedProbs, args, connection)
     
 def main(argv=sys.argv):
     # Create comma-separated list of sites from arg
