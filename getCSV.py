@@ -28,5 +28,5 @@ for site in sites:
                 x1, y1 = getUTM(siteO)
                 if disFormula(x0,y0,x1,y1) > 14.5:
                 # Good practice to have break statements but with need to break out of all loops
-                    print(False)
+                    print(f'{siteO, siteM} False')
 print(True)
