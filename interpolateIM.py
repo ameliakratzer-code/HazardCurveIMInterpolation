@@ -119,7 +119,8 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     sortedL.append(p4)
     interpIMVals = interpolate(sortedL, xVals)
     # Write (event, IM) values to file, user types entire file path
-    filePath = args.output + '.csv'
+    fileName = f'{args.interpsitename}{args.period}.csv'
+    filePath = os.path.join(args.output, fileName)
     # Open file in write mode
     with open(filePath, 'w', newline='') as file:
         write = csv.writer(file)
@@ -128,8 +129,8 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
             write.writerow([event, IMVal])
     print('Data downloaded')
     # Scatterplot of data
-    interpScatterplot(p4.valsToInterp, interpIMVals)
-    print('Scatterplot plotted')
+    # interpScatterplot(p4.valsToInterp, interpIMVals)
+    # print('Scatterplot plotted')
     # Print out percent error and create a histogram for each event
     """ listDifferences = []
     for i in range(len(interpIMVals)):
