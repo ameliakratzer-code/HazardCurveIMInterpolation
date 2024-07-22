@@ -26,7 +26,7 @@ for site in sites:
             if siteO != siteM:
                 x0, y0 = getUTM(siteM)
                 x1, y1 = getUTM(siteO)
-                if disFormula(x0,y0,x1,y1) > 14.5:
+                if disFormula(x0,y0,x1,y1) > 14500:
                 # Good practice to have break statements but with need to break out of all loops
                     print(f'{siteO, siteM} False')
 print(True)
