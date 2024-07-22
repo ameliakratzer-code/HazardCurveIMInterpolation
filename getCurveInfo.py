@@ -44,7 +44,7 @@ def downloadHazardCurve(nameSite, args, connection):
     for row in result:
         xCoords.append(row[2])
         yCoords.append(row[3])
-    plotHazardCurve(xCoords, yCoords, nameSite, args)
+    #plotHazardCurve(xCoords, yCoords, nameSite, args)
     cursor.close()
     return xCoords, yCoords
     
