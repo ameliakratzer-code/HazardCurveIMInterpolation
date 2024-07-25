@@ -59,7 +59,7 @@ def plotHazardCurve(xVals, yVals, nameSite, args):
         if not os.path.exists(directory):
             os.makedirs(directory)
         fileName = f'{nameSite}' + 'per' + str(args.period) + '.png'
-        plt.title(f'{nameSite}, 2 sec RotD50')
+        plt.title(f'{nameSite}, {args.period} sec RotD50')
         path = os.path.join(directory, fileName)
         #directory + '/' + fileName
         plt.savefig(path)
@@ -97,7 +97,7 @@ def plotInterpolated(xCoords, sI, interpolatedProbs, args, connection):
     # Plotting of overlayed curve - do not need for now
     plotHazardCurve(xCoords,interpolatedProbs, sI+'Interpolated', args)
     plotFeatures()
-    plt.title(f'Overlayed {sI}, 2 sec RotD50')
+    plt.title(f'Overlayed {sI}, {args.period} sec RotD50')
     plt.plot(xActual, yActual, color='green', linewidth = 2, label = "Actual", marker='^')
     plt.plot(xActual, interpolatedProbs, color='pink', linewidth = 2, label = 'Interpolated', marker='^')
     plt.legend()
