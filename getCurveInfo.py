@@ -95,15 +95,15 @@ def plotInterpolated(xCoords, sI, interpolatedProbs, args, connection):
     avgDiff = sum(listDifferences) / len(listDifferences)
     print(f'\nMaxdiff: {round(maxDiff, 1)}%, avgDiff: {round(avgDiff,1)}%\n')
     # Plotting of overlayed curve - do not need for now
-    # plotHazardCurve(xCoords,interpolatedProbs, sI+' Interpolated', args)
-    # plotFeatures()
-    # plt.title(f'Overlayed {sI}, 2 sec RotD50')
-    # plt.plot(xActual, yActual, color='green', linewidth = 2, label = "Actual", marker='^')
-    # plt.plot(xActual, interpolatedProbs, color='pink', linewidth = 2, label = 'Interpolated', marker='^')
-    # plt.legend()
+    plotHazardCurve(xCoords,interpolatedProbs, sI+' Interpolated', args)
+    plotFeatures()
+    plt.title(f'Overlayed {sI}, 2 sec RotD50')
+    plt.plot(xActual, yActual, color='green', linewidth = 2, label = "Actual", marker='^')
+    plt.plot(xActual, interpolatedProbs, color='pink', linewidth = 2, label = 'Interpolated', marker='^')
+    plt.legend()
     # ({args.output} + '/' + 'Overlayed' + '.png')
-    # path = os.path.join(args.output, 'Overlayed' + '.png')
-    # plt.savefig(path)
+    path = os.path.join(args.output, '/Overlayed' + '.png')
+    plt.savefig(path)
 
 def linearinterpolation(s0, s1, sI, args, connection):
     # Prob values for two known sites
@@ -150,7 +150,7 @@ def bilinearinterpolation(s0, s1, s2, s3, sI, args, connection):
         for xVal, interpVal in zip(xCoords, interpolatedProbs):
             write.writerow([xVal, interpVal])
     # Remove plotting for now
-    # plotInterpolated(xCoords, sI, interpolatedProbs, args, connection)
+    plotInterpolated(xCoords, sI, interpolatedProbs, args, connection)
     
 def main(argv=sys.argv):
     # Create comma-separated list of sites from arg
