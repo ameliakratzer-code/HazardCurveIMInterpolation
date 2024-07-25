@@ -95,7 +95,7 @@ def plotInterpolated(xCoords, sI, interpolatedProbs, args, connection):
     avgDiff = sum(listDifferences) / len(listDifferences)
     print(f'\nMaxdiff: {round(maxDiff, 1)}%, avgDiff: {round(avgDiff,1)}%\n')
     # Plotting of overlayed curve - do not need for now
-    plotHazardCurve(xCoords,interpolatedProbs, sI+' Interpolated', args)
+    plotHazardCurve(xCoords,interpolatedProbs, sI+'Interpolated', args)
     plotFeatures()
     plt.title(f'Overlayed {sI}, 2 sec RotD50')
     plt.plot(xActual, yActual, color='green', linewidth = 2, label = "Actual", marker='^')
