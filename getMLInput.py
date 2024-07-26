@@ -3,7 +3,7 @@ import sys
 import sqlite3
 from utils import getUTM, disFormula
 
-# Only argument is filePath (on computer: Desktop/nameOfFile)
+# Only argument is filePath (must run on Frontera to connect to DB)
 outputPath = sys.argv[1]
 connection = sqlite3.connect('/scratch1/00349/scottcal/CS_interpolation/study_22_12_lf_indexed.sqlite')
 # Create list of all site combinations
