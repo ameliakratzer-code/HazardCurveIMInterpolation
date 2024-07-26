@@ -8,13 +8,13 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 import numpy as np
 
-# One command line argument: name of folder where want output files to go
+# Two command line arguments: name of folder, name of files 
 
 # 1) Preprocessing
 # a) read and normalize data
 probCols = ['LBProb','RBProb','RTProb','LTProb', 'simVal']
 # On Frontera: /scratch1/10000/ameliakratzer14/data1c
-df = pd.read_csv('/Users/ameliakratzer/Desktop/LinInterpolation/ML/input.csv')
+df = pd.read_csv('/Users/ameliakratzer/Desktop/LinInterpolation/ML/inputa.csv')
 # Take log of probabilities
 df[probCols] = np.log10(df[probCols])
 Xscaler = MinMaxScaler()
@@ -75,7 +75,7 @@ history = model.fit(X_train, y_train, batch_size=BATCH_SIZE, epochs=EPOCHS, vali
 # Visualize data with tensorBoard
 score = model.evaluate(X_test,y_test,verbose=0)
 print(f'Test loss: {score}')
-model.save(sys.argv[1] + '/model4.h5')
+model.save(sys.argv[1] + f'/model{sys.argv[2]}.h5')
 # Create plot of error
 plt.figure(1)
 plt.plot(history.history['loss'], color = 'green', label = 'Training Loss')
@@ -84,7 +84,7 @@ plt.title('Training versus Validation Loss')
 plt.xlabel('Epoch')
 plt.ylabel('Loss')
 plt.legend()
-plt.savefig(sys.argv[1] + '/error4.png')
+plt.savefig(sys.argv[1] + f'/error{sys.argv[2]}.png')
 plt.close()
 # Create plot of network outputs versus actual for validation data
 yPredictionListNorm = model.predict(X_test)
@@ -97,4 +97,4 @@ plt.scatter(ySimList, yPredictionList, color='blue')
 plt.title('Simulated versus Interpolated Values')
 plt.xlabel('Simulated')
 plt.ylabel('Interpolated')
-plt.savefig(sys.argv[1] + '/simActual4.png')
+plt.savefig(sys.argv[1] + f'/simActual{sys.argv[2]}.png')
