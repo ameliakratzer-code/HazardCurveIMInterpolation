@@ -5,6 +5,7 @@ import tensorflow as tf
 import pandas as pd
 import sys
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 import numpy as np
 
@@ -88,4 +89,22 @@ plt.scatter(ySimList, yPredictionList, color='blue')
 plt.title('Simulated versus Interpolated Values')
 plt.xlabel('Simulated')
 plt.ylabel('Interpolated')
+plt.xscale('log')
+plt.yscale('log')
+# y = x line
+#x_limits = plt.gca().get_xlim()
+#y_limits = plt.gca().get_ylim()
+#min_val = min(x_limits[0], y_limits[0])
+#max_val = max(x_limits[1], y_limits[1])
+#plt.plot([min_val, max_val], [min_val, max_val], color='red', linestyle='--', label='y = x')
+#plt.xlim(x_limits)
+#plt.ylim(y_limits)
+# line of best fit
+X = np.log10(ySimList).reshape(-1, 1)
+y = np.log10(yPredictionList)
+model = LinearRegression()
+model.fit(X, y)
+y_fit = model.predict(X)
+# Plot line of best fit
+plt.plot(ySimList, np.power(10, y_fit), color='green', linestyle='-', label='Line of Best Fit')
 plt.savefig(sys.argv[1] + f'/simActual{sys.argv[2]}.png')
