@@ -32,33 +32,23 @@ y_test = Yscaler.transform(y_testU.values.reshape(-1,1)).ravel()
 
 # 2) Network topology
 # Batch size = number of samples fed to neural network at once before weights updated
-BATCH_SIZE = 32
+BATCH_SIZE = 16
 # Epochs = number of complete passes through training set - 1 epoch = about 3 batch sizes
-EPOCHS = 50
+EPOCHS = 35
 INPUT_SIZE = 8
 OUTPUT_SIZE = 1
 # Create my model
 model = tf.keras.models.Sequential()
 # Implicitely defines input layer with first hidden layer
-model.add(tf.keras.layers.Dense(32, activation='softplus', input_shape=(INPUT_SIZE,)))
+model.add(tf.keras.layers.Dense(32, activation='softplus', input_shape=(INPUT_SIZE,), kernel_regularizer=tf.keras.regularizers.l2(0.0035)))
 # Hidden layers: [32,64,128,64,32]
-model.add(tf.keras.layers.Dense(64))
+model.add(tf.keras.layers.Dense(64, kernel_regularizer=tf.keras.regularizers.l2(0.0035)))
 model.add(tf.keras.layers.BatchNormalization())
 model.add(tf.keras.layers.Activation('softplus'))
-
 # Changed from 128 to 32 for three layers
-model.add(tf.keras.layers.Dense(32))
+model.add(tf.keras.layers.Dense(32, kernel_regularizer=tf.keras.regularizers.l2(0.0035)))
 model.add(tf.keras.layers.BatchNormalization())
 model.add(tf.keras.layers.Activation('softplus'))
-
-#model.add(tf.keras.layers.Dense(64))
-#model.add(tf.keras.layers.BatchNormalization())
-#model.add(tf.keras.layers.Activation('softplus'))
-
-#model.add(tf.keras.layers.Dense(32))
-#model.add(tf.keras.layers.BatchNormalization())
-#model.add(tf.keras.layers.Activation('softplus'))
-
 # Output layer
 model.add(tf.keras.layers.Dense(OUTPUT_SIZE , activation='sigmoid')) 
 # Prints out layer type, output shape, parameters, connections
@@ -75,7 +65,6 @@ history = model.fit(X_train, y_train, batch_size=BATCH_SIZE, epochs=EPOCHS, vali
 # Visualize data with tensorBoard
 score = model.evaluate(X_test,y_test,verbose=0)
 print(f'Test loss: {score}')
-model.save(sys.argv[1] + f'/model{sys.argv[2]}.h5')
 # Create plot of error
 plt.figure(1)
 plt.plot(history.history['loss'], color = 'green', label = 'Training Loss')
