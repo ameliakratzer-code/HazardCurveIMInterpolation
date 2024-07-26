@@ -56,7 +56,9 @@ model.summary()
 
 # 3) Training
 # Adam optimizer adapts learning rates for you, so no need to define a scheduler
-model.compile(optimizer = 'adam', loss='mean_squared_error')
+optimize = tf.keras.optimizers.Adam(learning_rate=0.0016)
+# 'adam'
+model.compile(optimizer = optimize, loss='mean_squared_error')
 # Train the model using training data
 # Capture the loss and val_loss statistics with history variable
 history = model.fit(X_train, y_train, batch_size=BATCH_SIZE, epochs=EPOCHS, validation_data=(X_test,y_test))
