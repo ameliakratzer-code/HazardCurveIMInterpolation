@@ -49,7 +49,7 @@ model.add(tf.keras.layers.Dense(51 , activation='sigmoid'))
 model.compile(optimizer='adam', loss='mse')
 
 # Train the model
-history = model.fit(X_train, y_train, epochs=50, batch_size=32, validation_split=0.2)
+history = model.fit(X_train, y_train, epochs=50, batch_size=32, validation_data=(X_test,y_test))
 
 # Evaluate the model
 score = model.evaluate(X_test,y_test,verbose=0)
