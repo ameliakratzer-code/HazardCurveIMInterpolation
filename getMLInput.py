@@ -29,12 +29,15 @@ sites = [('s034','s078','s080','s036','s035'),('s076','s119','s121','s078','OSI'
 with open(outputPath, 'w', newline='') as file:
     write = csv.writer(file)
     # Headers
-    write.writerow(['LBProb', 'RBProb', 'RTProb', 'LTProb', 'simVal', 'd1', 'd2', 'd3', 'd4', 'interpSiteName'])
+    write.writerow(['LBProb', 'RBProb', 'RTProb', 'LTProb', 'simVal', 'd1', 'd2', 'd3', 'd4', 'interpSiteName', 'Vs30LB', 'Vs30RB', 'Vs30RT', 'Vs30LT', 'Vs30Sim'
+    'Z1LB', 'Z1RB', 'Z1RT', 'Z1LT', 'Z1Sim', 'Z25LB', 'Z25RB', 'Z25RT', 'Z25LT', 'Z25Sim']
+    )
     # Have list of groups of sites we are using [(s0, s1, s2, s3, interpsite), (s0, s1, s2, s3, interpsite)]
     for group in sites:
         xInterpSite, yInterpSite = getUTM(group[4])
         probVals = []
         distanceVals = []
+        Vs30Vals, Z1Vals, Z25Vals = [], [], []
         cursor = connection.cursor()
         for i in range(5):
             q1 = '''SELECT CyberShake_Runs.Run_ID FROM CyberShake_Sites
@@ -64,8 +67,22 @@ with open(outputPath, 'w', newline='') as file:
                 x, y = getUTM(group[i])
                 d = disFormula(x,y,xInterpSite,yInterpSite)
                 distanceVals.append(d)
+            # Get velocity vals
+            q3 = '''
+            SELECT R.Model_Vs30, R.Z1_0, R.Z2_5 FROM CyberShake_Runs R, Studies T, CyberShake_Sites S
+            WHERE T.Study_Name = 'Study 22.12 LF'
+            AND T.Study_ID = R.Study_ID
+            AND S.CS_Site_ID = R.Site_ID
+            AND S.CS_Short_Name = ?
+        '''
+            cursor.execute(q3, (group[i],))
+            result = cursor.fetchone()
+            sIVs30, sIZ1, sIZ2 = result[0], result[1], result[2]
+            Vs30Vals.append(sIVs30)
+            Z1Vals.append(sIZ1)
+            Z25Vals.append(sIZ2)
         # Write vals for this group to file
-        write.writerow(probVals + distanceVals + [group[4]])
+        write.writerow(probVals + distanceVals + [group[4]] + Vs30Vals + Z1Vals + Z25Vals)
     
             
 
