@@ -42,10 +42,10 @@ with open(outputPath, 'w', newline='') as file:
     yList = []
     write = csv.writer(file)
     for inputSite in ['LB', 'RB', 'RT', 'LT']:
-        for x in xValsList:
-            probsList.append(f'{inputSite}{x}')
-    for x in xValsList:
-        yList.append(f'simVal{x}')
+        for i in range(len(xValsList)):
+            probsList.append(f'{inputSite}{i}')
+    for i in range(len(xValsList)):
+        yList.append(f'simVal{i}')
     write.writerow(probsList + ['d1', 'd2', 'd3', 'd4'] + yList)
     for group in sites:
         xInterpSite, yInterpSite = getUTM(group[4])
