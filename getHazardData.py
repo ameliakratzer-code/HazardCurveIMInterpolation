@@ -75,8 +75,8 @@ with open(outputPath, 'w', newline='') as file:
                 cursor.execute(q2, (runID, period, xVal))
                 result = cursor.fetchone()
                 siteProbsAll.append(result[0])
-            # Only calculate distances one time total for all groups
-            if i != 4 and group == sites[0]:
+            # Only calculate distances once per group
+            if i != 4:
                 x, y = getUTM(group[i])
                 d = disFormula(x,y,xInterpSite,yInterpSite)
                 distanceVals.append(d)
