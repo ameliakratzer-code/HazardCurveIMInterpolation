@@ -15,14 +15,14 @@ import numpy as np
 # a) read and normalize data
 probCols = ['LBProb','RBProb','RTProb','LTProb', 'simVal']
 # On Frontera: /scratch1/10000/ameliakratzer14/data1c
-df = pd.read_csv('/Users/ameliakratzer/Desktop/LinInterpolation/ML/inputa.csv')
+df = pd.read_csv('/Users/ameliakratzer/Desktop/LinInterpolation/ML/inputWithVel.csv')
 # Take log of probabilities
 df[probCols] = np.log10(df[probCols])
 Xscaler = MinMaxScaler()
 Yscaler = MinMaxScaler()
 # b) split data into training and testing
 # X = independent variable (inputs), y = dependent variable (value to predict)
-X = df.drop(columns=['simVal','interpSiteName'])
+X = df.drop(columns=['simVal','interpSiteName','Z1LB', 'Z1RB', 'Z1RT', 'Z1LT', 'Z1Sim', 'Z25LB', 'Z25RB', 'Z25RT', 'Z25LT', 'Z25Sim'])
 y = df['simVal']
 X_trainU, X_testU, y_trainU, y_testU = train_test_split(X, y, test_size=0.2, random_state=42)
 # Transform the data
