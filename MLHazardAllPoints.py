@@ -6,9 +6,7 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import sys
 
-# Example setup
-# X_train should be of shape (num_samples, num_features)
-# y_train should be of shape (num_samples, 51)
+
 df = pd.read_csv('/Users/ameliakratzer/Desktop/LinInterpolation/ML/bigHazardModel.csv')
 # Take log of probabilities
 disCols = ['d1', 'd2', 'd3', 'd4']
@@ -33,12 +31,19 @@ y_train = Yscaler.fit_transform(y_trainU.values.reshape(-1,51))
 y_test = Yscaler.transform(y_testU.values.reshape(-1,51))
 
 # Define the model
-model = tf.keras.Sequential([
-    tf.keras.layers.Dense(32, activation='relu', input_shape=(208,)),
-    tf.keras.layers.Dense(64, activation='relu'),
-    tf.keras.layers.Dense(32, activation='relu'),
-    tf.keras.layers.Dense(51)
-])
+model = tf.keras.models.Sequential()
+
+model.add(tf.keras.layers.Dense(32, activation='softplus', input_shape=(208,)))
+
+model.add(tf.keras.layers.Dense(64))
+model.add(tf.keras.layers.BatchNormalization())
+model.add(tf.keras.layers.Activation('softplus'))
+
+model.add(tf.keras.layers.Dense(32))
+model.add(tf.keras.layers.BatchNormalization())
+model.add(tf.keras.layers.Activation('softplus'))
+
+model.add(tf.keras.layers.Dense(51 , activation='sigmoid')) 
 
 # Compile the model
 model.compile(optimizer='adam', loss='mse')
@@ -64,8 +69,6 @@ yPredictionListLog = Yscaler.inverse_transform(yPredictionListNorm.reshape(-1,51
 yPredictionList = np.power(10, yPredictionListLog) - 1e-8
 ySimListLog = Yscaler.inverse_transform(y_test.reshape(-1,51)).ravel()
 ySimList = np.power(10, ySimListLog) - 1e-8
-print(ySimList)
-print(yPredictionList)
 # Plot actual hazard curve versus simulated hazard curve
 xValsList = [
     1.00E-04, 1.30E-04, 1.60E-04, 2.00E-04, 2.50E-04, 3.20E-04, 4.00E-04, 5.00E-04, 
