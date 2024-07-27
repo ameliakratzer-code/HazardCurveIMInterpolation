@@ -15,7 +15,7 @@ disCols = ['d1', 'd2', 'd3', 'd4']
 dfRemaining = df.drop(columns=disCols)
 # Including 0 values in model for now
 # Want to avoid issues with log10(0) since prob is 0 for some x values
-dfRemaining = np.log(dfRemaining + 1e-8)
+dfRemaining = np.log10(dfRemaining + 1e-8)
 dfCombined = pd.concat([dfRemaining, df[disCols]], axis = 1)
 Xscaler = MinMaxScaler()
 Yscaler = MinMaxScaler()
@@ -34,10 +34,10 @@ y_test = Yscaler.transform(y_testU.values.reshape(-1,51))
 
 # Define the model
 model = tf.keras.Sequential([
-    tf.keras.layers.Dense(64, activation='relu', input_shape=(208,)),
-    tf.keras.layers.Dense(128, activation='relu'),
+    tf.keras.layers.Dense(32, activation='relu', input_shape=(208,)),
     tf.keras.layers.Dense(64, activation='relu'),
-    tf.keras.layers.Dense(51)  # Output layer for 51 probability values
+    tf.keras.layers.Dense(32, activation='relu'),
+    tf.keras.layers.Dense(51)
 ])
 
 # Compile the model
@@ -61,15 +61,31 @@ plt.savefig(sys.argv[1] + f'/error{sys.argv[2]}.png')
 plt.close()
 yPredictionListNorm = model.predict(X_test)
 yPredictionListLog = Yscaler.inverse_transform(yPredictionListNorm.reshape(-1,51)).ravel()
-yPredictionList = np.power(10, yPredictionListLog)
+yPredictionList = np.power(10, yPredictionListLog) - 1e-8
 ySimListLog = Yscaler.inverse_transform(y_test.reshape(-1,51)).ravel()
-ySimList = np.power(10, ySimListLog)
+ySimList = np.power(10, ySimListLog) - 1e-8
+print(ySimList)
+print(yPredictionList)
+# Plot actual hazard curve versus simulated hazard curve
+xValsList = [
+    1.00E-04, 1.30E-04, 1.60E-04, 2.00E-04, 2.50E-04, 3.20E-04, 4.00E-04, 5.00E-04, 
+    6.30E-04, 7.90E-04, 0.001, 0.00126, 0.00158, 0.002, 0.00251, 0.00316, 0.00398, 
+    0.00501, 0.00631, 0.00794, 0.01, 0.01259, 0.01585, 0.01995, 0.02512, 0.03162, 
+    0.03981, 0.05012, 0.0631, 0.07943, 0.1, 0.12589, 0.15849, 0.19953, 0.25119, 
+    0.31623, 0.39811, 0.50119, 0.63096, 0.79433, 1, 1.25893, 1.58489, 1.99526, 
+    2.51189, 3.16228, 3.98107, 5.01187, 6.30957, 7.94328, 10
+]
+# Hazard curve plot
 plt.figure(2)
-plt.scatter(ySimList, yPredictionList, color='blue')
-plt.title('Simulated versus Interpolated Values')
-plt.xlabel('Simulated')
-plt.ylabel('Interpolated')
-plt.xscale('log')
+plt.xscale('linear')
+plt.xlim(0, 2)
+plt.ylim(1e-6,1)
 plt.yscale('log')
+plt.xlabel('Accel (cm/s\u00B2)')
+plt.ylabel('Prob (1/yr)')
+plt.title('Simulated versus interpolated hazard curve')
+plt.grid(axis = 'y')
+plt.plot(xValsList, ySimList[:51], color='green', linewidth = 2, label = "Simulated", marker='^')
+plt.plot(xValsList, yPredictionList[:51], color='pink', linewidth = 2, label = 'Interpolated', marker='^')
 plt.savefig(sys.argv[1] + f'/simActual{sys.argv[2]}.png')
-plt.close()
+
