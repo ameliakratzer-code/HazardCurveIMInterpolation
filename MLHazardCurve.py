@@ -22,7 +22,7 @@ Xscaler = MinMaxScaler()
 Yscaler = MinMaxScaler()
 # b) split data into training and testing
 # X = independent variable (inputs), y = dependent variable (value to predict)
-X = df.drop(columns=['simVal','interpSiteName','Z1LB', 'Z1RB', 'Z1RT', 'Z1LT', 'Z1Sim', 'Z25LB', 'Z25RB', 'Z25RT', 'Z25LT', 'Z25Sim'])
+X = df.drop(columns=['simVal','interpSiteName','Z1LB', 'Z1RB', 'Z1RT', 'Z1LT', 'Z1Sim'])
 y = df['simVal']
 X_trainU, X_testU, y_trainU, y_testU = train_test_split(X, y, test_size=0.2, random_state=42)
 # Transform the data
@@ -32,11 +32,11 @@ y_train = Yscaler.fit_transform(y_trainU.values.reshape(-1,1)).ravel()
 y_test = Yscaler.transform(y_testU.values.reshape(-1,1)).ravel()
 
 # 2) Network topology
-# Batch size = number of samples fed to neural network at once before weights updated
+# Batch size = number of samples fed to neural network at once before weights updated (1 sample has 18 input features)
 BATCH_SIZE = 16
-# Epochs = number of complete passes through training set - 1 epoch = about 3 batch sizes
+# Epochs = number of complete passes through training set - 1 epoch = about 7 batch sizes
 EPOCHS = 35
-INPUT_SIZE = 8
+INPUT_SIZE = 18
 OUTPUT_SIZE = 1
 # Create my model
 model = tf.keras.models.Sequential()
