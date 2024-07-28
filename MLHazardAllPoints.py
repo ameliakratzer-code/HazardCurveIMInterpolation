@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import sys
 
-df = pd.read_csv('/Users/ameliakratzer/Desktop/LinInterpolation/ML/bigHazardModel.csv')
+df = pd.read_csv('/Users/ameliakratzer/Desktop/LinInterpolation/ML/dataML.csv')
 # Take log of probabilities
 disCols = ['d1', 'd2', 'd3', 'd4']
 dfRemaining = df.drop(columns=disCols)
