@@ -6,7 +6,6 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import sys
 
-
 df = pd.read_csv('/Users/ameliakratzer/Desktop/LinInterpolation/ML/bigHazardModel.csv')
 # Take log of probabilities
 disCols = ['d1', 'd2', 'd3', 'd4']
@@ -24,6 +23,7 @@ X = df.loc[:, ~df.columns.str.startswith('sim')]
 # y is all probs that start with sim
 y = df.loc[:, df.columns.str.startswith('sim')]
 X_trainU, X_testU, y_trainU, y_testU = train_test_split(X, y, test_size=0.2, random_state=42)
+print(X_trainU, X_testU, y_trainU, y_testU)
 # Transform the data
 X_train = Xscaler.fit_transform(X_trainU)
 X_test = Xscaler.transform(X_testU)

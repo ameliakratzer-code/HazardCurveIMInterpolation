@@ -7,7 +7,6 @@ import sys
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
-import numpy as np
 
 # Two command line arguments: name of folder, name of files 
 
