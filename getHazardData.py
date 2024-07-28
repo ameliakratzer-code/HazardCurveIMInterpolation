@@ -46,7 +46,7 @@ with open(outputPath, 'w', newline='') as file:
             probsList.append(f'{inputSite}{i}')
     for i in range(len(xValsList)):
         yList.append(f'simVal{i}')
-    write.writerow(probsList + ['d1', 'd2', 'd3', 'd4'] + yList)
+    write.writerow(probsList + ['d1', 'd2', 'd3', 'd4'] + yList + ['interpsiteName'])
     for group in sites:
         xInterpSite, yInterpSite = getUTM(group[4])
         siteProbsAll = []
@@ -81,6 +81,6 @@ with open(outputPath, 'w', newline='') as file:
                 d = disFormula(x,y,xInterpSite,yInterpSite)
                 distanceVals.append(d)
         # Right now probs list has all probs for s1 at each x value, all probs for s2 at each x value - fine to group by site
-        write.writerow(siteProbsAll[:-51] + distanceVals + siteProbsAll[-51:])
+        write.writerow(siteProbsAll[:-51] + distanceVals + siteProbsAll[-51:] + group[4])
 cursor.close()
 connection.close()
