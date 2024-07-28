@@ -19,11 +19,10 @@ Yscaler = MinMaxScaler()
 
 # b) split data into training and testing
 # X is all probs and distances that do not start with sim
-X = df.loc[:, ~df.columns.str.startswith('sim')]
+X = dfCombined.loc[:, ~dfCombined.columns.str.startswith('sim')]
 # y is all probs that start with sim
-y = df.loc[:, df.columns.str.startswith('sim')]
+y = dfCombined.loc[:, dfCombined.columns.str.startswith('sim')]
 X_trainU, X_testU, y_trainU, y_testU = train_test_split(X, y, test_size=0.2, random_state=42)
-print(X_trainU, X_testU, y_trainU, y_testU)
 # Transform the data
 X_train = Xscaler.fit_transform(X_trainU)
 X_test = Xscaler.transform(X_testU)
