@@ -81,6 +81,6 @@ with open(outputPath, 'w', newline='') as file:
                 d = disFormula(x,y,xInterpSite,yInterpSite)
                 distanceVals.append(d)
         # Right now probs list has all probs for s1 at each x value, all probs for s2 at each x value - fine to group by site
-        write.writerow(siteProbsAll[:-51] + distanceVals + siteProbsAll[-51:] + group[4])
+        write.writerow(siteProbsAll[:-51] + distanceVals + siteProbsAll[-51:] + [group[4]])
 cursor.close()
 connection.close()
