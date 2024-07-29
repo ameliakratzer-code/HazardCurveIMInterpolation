@@ -5,6 +5,8 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import sys
+import csv
+import os
 
 df = pd.read_csv('/Users/ameliakratzer/Desktop/LinInterpolation/ML/dataML.csv')
 # Take log of probabilities
@@ -16,6 +18,7 @@ dfRemaining = np.log10(dfRemaining + 1e-8)
 dfCombined = pd.concat([dfRemaining, df[disCols], df['interpsiteName']], axis = 1)
 Xscaler = MinMaxScaler()
 Yscaler = MinMaxScaler()
+path = '/Users/ameliakratzer/Desktop'
 
 # b) split data into training and testing
 # X is all probs and distances that do not start with sim
@@ -64,7 +67,9 @@ plt.title('Training versus Validation Loss')
 plt.xlabel('Epoch')
 plt.ylabel('Loss')
 plt.legend()
-plt.savefig(sys.argv[1] + f'/error{sys.argv[2]}.png')
+# Make the folder directory to use for all plots
+os.makedirs(path + f'/{sys.argv[1]}')
+plt.savefig(path + f'/{sys.argv[1]}/error.png')
 plt.close()
 yPredictionListNorm = model.predict(X_test)
 yPredictionListLog = Yscaler.inverse_transform(yPredictionListNorm.reshape(-1,51)).ravel()
@@ -80,19 +85,42 @@ xValsList = [
     0.31623, 0.39811, 0.50119, 0.63096, 0.79433, 1, 1.25893, 1.58489, 1.99526, 
     2.51189, 3.16228, 3.98107, 5.01187, 6.30957, 7.94328, 10
 ]
-# Hazard curve plot
-print(testSites)
-plt.figure(2)
-plt.xscale('linear')
-plt.xlim(0, 2)
-plt.ylim(1e-6,1)
-plt.yscale('log')
-plt.xlabel('Accel (cm/s\u00B2)')
-plt.ylabel('Prob (1/yr)')
-plt.title('Simulated versus interpolated hazard curve')
-plt.grid(axis = 'y')
-plt.plot(xValsList, ySimList[:51], color='green', linewidth = 2, label = "Simulated", marker='^')
-plt.plot(xValsList, yPredictionList[:51], color='pink', linewidth = 2, label = 'Interpolated', marker='^')
-plt.legend()
-plt.savefig(sys.argv[1] + f'/simActual{sys.argv[2]}.png')
+with open(path + f'/{sys.argv[1]}/percentDiff.csv', mode='w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerow(['Max Diff', 'Avg Diff', 'interpsiteName'])
+    totalMax = 0
+    totalAvg = 0
+    # Hazard curve plots and percent difference csv
+    for i in range(len(testSites)):
+        listDifferences = []
+        plt.figure()
+        plt.xscale('linear')
+        plt.xlim(0, 2)
+        plt.ylim(1e-6,1)
+        plt.yscale('log')
+        plt.xlabel('Accel (cm/s\u00B2)')
+        plt.ylabel('Prob (1/yr)')
+        plt.title(f'Hazard curves {testSites[i]}, 2 sec RotD50')
+        plt.grid(axis = 'y')
+        ySim = ySimList[51*i:51*(i+1)]
+        yInterpolated = yPredictionList[51*i:51*(i+1)]
+        plt.plot(xValsList, ySim, color='green', linewidth = 2, label = "Simulated", marker='^')
+        plt.plot(xValsList, yInterpolated, color='pink', linewidth = 2, label = 'Interpolated', marker='^')
+        plt.legend()
+        # Save all files for run to folder on desktop
+        plt.savefig(path + f'/{sys.argv[1]}/{testSites[i]}.png')
+        plt.close()
+        # Get the percent difference information for that site
+        for x in range(len(xValsList)):
+            if ySim[x] >= 1e-6:
+                average = (ySim[x] + yInterpolated[x]) / 2
+                percentDifference = (abs(ySim[x] - yInterpolated[x]) / average) * 100 if ySim[x] != 0 else 0
+                listDifferences.append(percentDifference)
+        maxDiff = max(listDifferences)
+        if maxDiff > totalMax:
+            totalMax = maxDiff
+        avgDiff = sum(listDifferences) / len(listDifferences)
+        totalAvg += avgDiff
+        writer.writerow([maxDiff, avgDiff, testSites[i]])
+print(f'Average avgDiff: {totalAvg / 20}, average maxDiff: {totalMax}')
 
