@@ -9,20 +9,23 @@ import sys
 df = pd.read_csv('/Users/ameliakratzer/Desktop/LinInterpolation/ML/dataML.csv')
 # Take log of probabilities
 disCols = ['d1', 'd2', 'd3', 'd4']
-dfRemaining = df.drop(columns=disCols+['interpSitename'])
+dfRemaining = df.drop(columns=disCols+['interpsiteName'])
 # Including 0 values in model for now
 # Want to avoid issues with log10(0) since prob is 0 for some x values
 dfRemaining = np.log10(dfRemaining + 1e-8)
-dfCombined = pd.concat([dfRemaining, df[disCols]], axis = 1)
+dfCombined = pd.concat([dfRemaining, df[disCols], df['interpsiteName']], axis = 1)
 Xscaler = MinMaxScaler()
 Yscaler = MinMaxScaler()
 
 # b) split data into training and testing
 # X is all probs and distances that do not start with sim
-X = dfCombined.loc[:, ~dfCombined.columns.str.startswith('sim')]
+X = dfCombined.loc[:, ~dfCombined.columns.str.startswith('sim') & ~dfCombined.columns.str.startswith('interp')]
 # y is all probs that start with sim
-y = dfCombined.loc[:, dfCombined.columns.str.startswith('sim')]
+y = dfCombined.loc[:, dfCombined.columns.str.startswith('sim') | dfCombined.columns.str.startswith('interp')]
 X_trainU, X_testU, y_trainU, y_testU = train_test_split(X, y, test_size=0.2, random_state=42)
+testSites = y_testU['interpsiteName'].tolist()
+y_trainU = y_trainU.drop(columns=['interpsiteName'])
+y_testU = y_testU.drop(columns=['interpsiteName'])
 # Transform the data
 X_train = Xscaler.fit_transform(X_trainU)
 X_test = Xscaler.transform(X_testU)
@@ -78,6 +81,7 @@ xValsList = [
     2.51189, 3.16228, 3.98107, 5.01187, 6.30957, 7.94328, 10
 ]
 # Hazard curve plot
+print(testSites)
 plt.figure(2)
 plt.xscale('linear')
 plt.xlim(0, 2)
@@ -89,5 +93,6 @@ plt.title('Simulated versus interpolated hazard curve')
 plt.grid(axis = 'y')
 plt.plot(xValsList, ySimList[:51], color='green', linewidth = 2, label = "Simulated", marker='^')
 plt.plot(xValsList, yPredictionList[:51], color='pink', linewidth = 2, label = 'Interpolated', marker='^')
+plt.legend()
 plt.savefig(sys.argv[1] + f'/simActual{sys.argv[2]}.png')
 
