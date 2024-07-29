@@ -38,20 +38,21 @@ y_test = Yscaler.transform(y_testU.values.reshape(-1,51))
 # Define the model
 model = tf.keras.models.Sequential()
 
-model.add(tf.keras.layers.Dense(32, activation='softplus', input_shape=(208,)))
+model.add(tf.keras.layers.Dense(32, activation='softplus', input_shape=(208,), kernel_regularizer=tf.keras.regularizers.l2(0.005)))
 
-model.add(tf.keras.layers.Dense(64))
+model.add(tf.keras.layers.Dense(64, kernel_regularizer=tf.keras.regularizers.l2(0.005)))
 model.add(tf.keras.layers.BatchNormalization())
 model.add(tf.keras.layers.Activation('softplus'))
 
-model.add(tf.keras.layers.Dense(32))
+model.add(tf.keras.layers.Dense(32, kernel_regularizer=tf.keras.regularizers.l2(0.005)))
 model.add(tf.keras.layers.BatchNormalization())
 model.add(tf.keras.layers.Activation('softplus'))
 
 model.add(tf.keras.layers.Dense(51 , activation='sigmoid')) 
 
 # Compile the model
-model.compile(optimizer='adam', loss='mse')
+optimize = tf.keras.optimizers.Adam(learning_rate=0.0015)
+model.compile(optimizer=optimize, loss='mse')
 
 # Train the model
 history = model.fit(X_train, y_train, epochs=50, batch_size=32, validation_data=(X_test,y_test))
