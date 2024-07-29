@@ -9,7 +9,7 @@ import sys
 df = pd.read_csv('/Users/ameliakratzer/Desktop/LinInterpolation/ML/dataML.csv')
 # Take log of probabilities
 disCols = ['d1', 'd2', 'd3', 'd4']
-dfRemaining = df.drop(columns=disCols)
+dfRemaining = df.drop(columns=disCols+['interpSitename'])
 # Including 0 values in model for now
 # Want to avoid issues with log10(0) since prob is 0 for some x values
 dfRemaining = np.log10(dfRemaining + 1e-8)
