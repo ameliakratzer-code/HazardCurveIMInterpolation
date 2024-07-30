@@ -21,6 +21,7 @@ def createModel(xtr, xte, ytr, yte, x):
     EPOCHS = 35
     # Input size varies depending if is edge point - 13 compared to 18
     INPUT_SIZE = X_train.shape[1]
+    print(f'Input size: {INPUT_SIZE}')
     OUTPUT_SIZE = 1
     # Create my model
     model = tf.keras.models.Sequential()
