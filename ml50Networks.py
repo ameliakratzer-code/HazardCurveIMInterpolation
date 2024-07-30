@@ -8,6 +8,8 @@ from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 import os
 
+# Create model is called 51 times total, and it will interpolate the value at Xn for the 20 test sites
+# 1st run = have the interpolated points for x0 for the 20 test sites
 def createModel(xtr, xte, ytr, yte):
     X_train = Xscaler.fit_transform(xtr)
     X_test = Xscaler.transform(xte)
@@ -32,13 +34,9 @@ def createModel(xtr, xte, ytr, yte):
     optimize = tf.keras.optimizers.Adam(learning_rate=0.001)
     model.compile(optimizer = optimize, loss='mean_squared_error')
     history = model.fit(X_train, y_train, batch_size=BATCH_SIZE, epochs=EPOCHS, validation_data=(X_test,y_test))
-    # Evaluation - need to decide how to plot results of all the models since 51 interpolations for the 20 test sites are all seperate
-    # Maybe a csv file?
+    # Evaluation
     score = model.evaluate(X_test,y_test,verbose=0)
     print(f'Test loss: {score}')
-
-    
-    
     plt.figure()
     plt.plot(history.history['loss'], color = 'green', label = 'Training Loss')
     plt.plot(history.history['val_loss'], color = 'pink', label = 'Testing Loss')
@@ -50,6 +48,11 @@ def createModel(xtr, xte, ytr, yte):
     os.makedirs(path + f'/{sys.argv[1]}')
     plt.savefig(path + f'/{sys.argv[1]}/error.png')
     plt.close()
+
+
+
+
+
     # Create plot of network outputs versus actual for validation data
     yPredictionListNorm = model.predict(X_test)
     yPredictionListLog = Yscaler.inverse_transform(yPredictionListNorm.reshape(-1,1)).ravel()
