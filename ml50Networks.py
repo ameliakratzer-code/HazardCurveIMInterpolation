@@ -24,11 +24,11 @@ def createModel(xtr, xte, ytr, yte, x):
     OUTPUT_SIZE = 1
     # Create my model
     model = tf.keras.models.Sequential()
-    model.add(tf.keras.layers.Dense(32, activation='softplus', input_shape=(INPUT_SIZE,), kernel_regularizer=tf.keras.regularizers.l2(0.0035)))
-    model.add(tf.keras.layers.Dense(64, kernel_regularizer=tf.keras.regularizers.l2(0.0035)))
+    model.add(tf.keras.layers.Dense(32, activation='softplus', input_shape=(INPUT_SIZE,)))
+    model.add(tf.keras.layers.Dense(64))
     model.add(tf.keras.layers.BatchNormalization())
     model.add(tf.keras.layers.Activation('softplus'))
-    model.add(tf.keras.layers.Dense(32, kernel_regularizer=tf.keras.regularizers.l2(0.0035)))
+    model.add(tf.keras.layers.Dense(32))
     model.add(tf.keras.layers.BatchNormalization())
     model.add(tf.keras.layers.Activation('softplus'))
     model.add(tf.keras.layers.Dense(OUTPUT_SIZE , activation='sigmoid')) 
@@ -46,7 +46,9 @@ def createModel(xtr, xte, ytr, yte, x):
     plt.ylabel('Loss')
     plt.legend()
     # Only arg is name of folder on Desktop
-    os.makedirs(path + f'/{sys.argv[1]}')
+    directory = path + f'/{sys.argv[1]}'
+    if not os.path.exists(directory):
+        os.makedirs(directory)
     plt.savefig(path + f'/{sys.argv[1]}/error{x}.png')
     plt.close()
     # Add vals to dictionary for hazard curve plots
@@ -72,7 +74,7 @@ dfCombined = pd.concat([dfRemaining, df[disCols], df['interpsiteName']], axis = 
 Xscaler = MinMaxScaler()
 Yscaler = MinMaxScaler()
 path = '/Users/ameliakratzer/Desktop'
-X = dfCombined.loc[:, ~dfCombined.columns.str.startswith('sim') & ~dfCombined.columns.str.startswith('interp')]
+X = dfCombined.loc[:, ~dfCombined.columns.str.startswith('interp')]
 y = dfCombined.loc[:, dfCombined.columns.str.startswith('sim') | dfCombined.columns.str.startswith('interp')]
 X_trainU, X_testU, y_trainU, y_testU = train_test_split(X, y, test_size=0.2, random_state=42)
 testSites = y_testU['interpsiteName'].tolist()
