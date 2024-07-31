@@ -7,6 +7,7 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 import os
+import csv
 
 # Create model is called 51 times total, and it will interpolate the value at Xn for the 20 test sites
 # 1st run = have the interpolated points for x0 for the 20 test sites
@@ -21,15 +22,14 @@ def createModel(xtr, xte, ytr, yte, x):
     EPOCHS = 35
     # Input size varies depending if is edge point - 13 compared to 18
     INPUT_SIZE = X_train.shape[1]
-    print(f'Input size: {INPUT_SIZE}')
     OUTPUT_SIZE = 1
     # Create my model
     model = tf.keras.models.Sequential()
-    model.add(tf.keras.layers.Dense(32, activation='softplus', input_shape=(INPUT_SIZE,)))
-    model.add(tf.keras.layers.Dense(64))
+    model.add(tf.keras.layers.Dense(32, activation='softplus', input_shape=(INPUT_SIZE,), kernel_regularizer=tf.keras.regularizers.l2(0.0035)))
+    model.add(tf.keras.layers.Dense(64, kernel_regularizer=tf.keras.regularizers.l2(0.0035)))
     model.add(tf.keras.layers.BatchNormalization())
     model.add(tf.keras.layers.Activation('softplus'))
-    model.add(tf.keras.layers.Dense(32))
+    model.add(tf.keras.layers.Dense(32, kernel_regularizer=tf.keras.regularizers.l2(0.0035)))
     model.add(tf.keras.layers.BatchNormalization())
     model.add(tf.keras.layers.Activation('softplus'))
     model.add(tf.keras.layers.Dense(OUTPUT_SIZE , activation='sigmoid')) 
@@ -100,6 +100,7 @@ for x in range(51):
         X_testUS = X_testU[[f'LB{x-1}', f'LB{x+1}', f'LB{x}', 'd1', f'RB{x-1}', f'RB{x+1}', f'RB{x}', 'd2', f'RT{x-1}', f'RT{x+1}', f'RT{x}', 'd3', f'LT{x-1}', f'LT{x+1}', f'LT{x}', 'd4', f'simVal{x-1}', f'simVal{x+1}']]
         y_trainUS = y_trainU[f'simVal{x}']
         y_testUS = y_testU[f'simVal{x}']
+    print(X_trainUS.shape, X_testUS.shape, y_trainUS.shape, y_testUS.shape)
     createModel(X_trainUS, X_testUS, y_trainUS, y_testUS, x)
 # Time to plot the hazard curves using my dict
 xValsList = [
@@ -110,19 +111,40 @@ xValsList = [
     0.31623, 0.39811, 0.50119, 0.63096, 0.79433, 1, 1.25893, 1.58489, 1.99526, 
     2.51189, 3.16228, 3.98107, 5.01187, 6.30957, 7.94328, 10
 ]
-for key in plotDict:
-    plt.figure()
-    plt.xscale('linear')
-    plt.xlim(0, 2)
-    plt.ylim(1e-6,1)
-    plt.yscale('log')
-    plt.xlabel('Accel (cm/s\u00B2)')
-    plt.ylabel('Prob (1/yr)')
-    plt.title(f'Hazard curves {key}, 2 sec RotD50')
-    plt.grid(axis = 'y')
-    plt.plot(xValsList, plotDict[key][0], color='green', linewidth = 2, label = "Simulated", marker='^')
-    plt.plot(xValsList, plotDict[key][1], color='pink', linewidth = 2, label = 'Interpolated', marker='^')
-    plt.legend()
-    plt.savefig(path + f'/{sys.argv[1]}/{key}.png')
-    plt.close()
-print('Plots plotted')
+with open(path + f'/{sys.argv[1]}/percentDiff.csv', mode='w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerow(['Max Diff', 'Avg Diff', 'interpsiteName'])
+    totalMax = 0
+    totalAvg = 0
+    for key in plotDict:
+        listDifferences = []
+        plt.figure()
+        plt.xscale('linear')
+        plt.xlim(0, 2)
+        plt.ylim(1e-6,1)
+        plt.yscale('log')
+        plt.xlabel('Accel (cm/s\u00B2)')
+        plt.ylabel('Prob (1/yr)')
+        plt.title(f'Hazard curves {key}, 2 sec RotD50')
+        plt.grid(axis = 'y')
+        plt.plot(xValsList, plotDict[key][0], color='green', linewidth = 2, label = "Simulated", marker='^')
+        plt.plot(xValsList, plotDict[key][1], color='pink', linewidth = 2, label = 'Interpolated', marker='^')
+        plt.legend()
+        plt.savefig(path + f'/{sys.argv[1]}/{key}.png')
+        plt.close()
+         # Get the percent difference information for that site
+        for x in range(len(xValsList)):
+            ySim = plotDict[key][0]
+            yInterpolated = plotDict[key][1]
+            if ySim[x] >= 1e-6:
+                average = (ySim[x] + yInterpolated[x]) / 2
+                percentDifference = (abs(ySim[x] - yInterpolated[x]) / average) * 100 if ySim[x] != 0 else 0
+                listDifferences.append(percentDifference)
+        maxDiff = max(listDifferences)
+        if maxDiff > totalMax:
+            totalMax = maxDiff
+        avgDiff = sum(listDifferences) / len(listDifferences)
+        totalAvg += avgDiff
+        writer.writerow([maxDiff, avgDiff, key])
+print(f'Average avgDiff: {totalAvg / 20}, average maxDiff: {totalMax}')
+
