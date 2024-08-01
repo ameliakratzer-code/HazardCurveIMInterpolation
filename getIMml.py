@@ -33,7 +33,9 @@ with open(outputPath, 'w', newline='') as file:
             sharedRups = result
         else:
             sharedRups = list(set(sharedRups) & set(result))
+    print('sharedRups done')
     for site in siteGroup:
+        print(site)
         # Add distances to list
         if site != siteGroup[4]:
             x, y = getUTM(site)
@@ -72,7 +74,7 @@ with open(outputPath, 'w', newline='') as file:
     writer = csv.writer(file)
     # Headers = event IDs
     writer.writerow(['siteName', 'distance'] + eventsList)
-    for site, distance, IMVals in zip(siteGroup, distance, IMs):
-        writer.writerow([site, distance] + IMVals)
+    for i in range(5):
+        writer.writerow([site[i], distance[i]] + IMVals[i])
 cursor.close()
 connection.close()
