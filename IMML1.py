@@ -23,9 +23,10 @@ X_test = Xscaler.transform(X_testU)
 # Change y_trainU temporarily to 2d array for fit transform, then unravel it
 y_train = Yscaler.fit_transform(y_trainU.values.reshape(-1,1)).ravel()
 y_test = Yscaler.transform(y_testU.values.reshape(-1,1)).ravel()
+print(y_train, y_test, X_train, X_test)
 
-BATCH_SIZE = 128
-EPOCHS = 50
+BATCH_SIZE = 800
+EPOCHS = 12
 INPUT_SIZE = 8
 OUTPUT_SIZE = 1
 model = tf.keras.models.Sequential()
@@ -41,7 +42,7 @@ model.add(tf.keras.layers.Activation('softplus'))
 
 model.add(tf.keras.layers.Dense(OUTPUT_SIZE , activation='sigmoid')) 
 
-optimize = tf.keras.optimizers.Adam(learning_rate=0.001)
+optimize = tf.keras.optimizers.Adam(learning_rate=0.0001)
 model.compile(optimizer = optimize, loss='mean_squared_error')
 history = model.fit(X_train, y_train, batch_size=BATCH_SIZE, epochs=EPOCHS, validation_data=(X_test,y_test))
 
