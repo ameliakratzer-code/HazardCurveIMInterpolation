@@ -10,12 +10,10 @@ from sklearn.model_selection import train_test_split
 # Two command line arguments: name of folder, name of files 
 
 df = pd.read_csv('/Users/ameliakratzer/Desktop/LinInterpolation/ML/IMs/COO.csv')
-dfX = df.iloc[:-1]
-dfY = df.iloc[[-1]]
 # X = distances and event IMs
-X = dfX.iloc[:, 1:]
+X = df.drop(columns=['IMInterp'])
 # Y = event IMs for interp site
-y = dfY.iloc[:, 2:]
+y = df['IMInterp']
 # First try without log normalizing the IM vals
 Xscaler = MinMaxScaler()
 Yscaler = MinMaxScaler()
@@ -26,8 +24,8 @@ X_test = Xscaler.transform(X_testU)
 y_train = Yscaler.fit_transform(y_trainU.values.reshape(-1,1)).ravel()
 y_test = Yscaler.transform(y_testU.values.reshape(-1,1)).ravel()
 
-BATCH_SIZE = 16
-EPOCHS = 40
+BATCH_SIZE = 128
+EPOCHS = 50
 INPUT_SIZE = 8
 OUTPUT_SIZE = 1
 model = tf.keras.models.Sequential()
