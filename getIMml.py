@@ -75,6 +75,6 @@ with open(outputPath, 'w', newline='') as file:
     # Headers = event IDs
     writer.writerow(['siteName', 'distance'] + eventsList)
     for i in range(5):
-        writer.writerow([site[i], distance[i]] + IMVals[i])
+        writer.writerow([site[i], distance[i]] + IMs[i])
 cursor.close()
 connection.close()
