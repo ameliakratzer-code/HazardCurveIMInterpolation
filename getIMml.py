@@ -11,11 +11,13 @@ cursor = connection.cursor()
 # Gets all events for this siteGroup
 with open(outputPath, 'w', newline='') as file:
     siteGroup = ('s385','s429','s431','s387','COO')
+    xInterpSite, yInterpSite = getUTM(siteGroup[4])
     # First event in sharedRups
     eventNum = 0
     sharedRups = []
     IMVals = []
     eventsList = []
+    distance = []
     for site in siteGroup[:-1]:
         # Get shared rups
         q0 = '''
@@ -32,6 +34,13 @@ with open(outputPath, 'w', newline='') as file:
         else:
             sharedRups = list(set(sharedRups) & set(result))
     for site in siteGroup:
+        # Add distances to list
+        if site != siteGroup[4]:
+            x, y = getUTM(site)
+            d = disFormula(x,y,xInterpSite,yInterpSite)
+            distance.append(d)
+        # Interp site is 0 distance from itself
+        distance.append(0)
         for (source, rup) in sharedRups:
             q1 = '''
                     SELECT P.IM_Value 
@@ -53,19 +62,17 @@ with open(outputPath, 'w', newline='') as file:
             if site == siteGroup[0]:
                 for i in range(len(result)):
                     eventsList.append((source, rup, i))
-            r = []
-            for val in IMVals:
-                r.append(val[0])
+    r = []
+    for val in IMVals:
+        r.append(val[0])
     IMs = []
     for i in range(0, len(r), len(eventsList)):
         IMs.append(r[i:i+len(eventsList)])
     # Write vals to csv file
     writer = csv.writer(file)
     # Headers = event IDs
-    writer.writerows(['siteName'] + eventsList)
-    # One row = site s385 and all IM vals for the sharedRups
-    for i in range(5):
-        writer.writerows(siteGroup[i] + IMs[i])
-        # 5th column down = y labels for interpsite
+    writer.writerow(['siteName', 'distance'] + eventsList)
+    for site, distance, IMVals in zip(siteGroup, distance, IMs):
+        writer.writerow([site, distance] + IMVals)
 cursor.close()
 connection.close()
