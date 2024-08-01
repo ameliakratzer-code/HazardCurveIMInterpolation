@@ -9,12 +9,13 @@ from sklearn.model_selection import train_test_split
 
 # Two command line arguments: name of folder, name of files 
 
-df = pd.read_csv('/Users/ameliakratzer/Desktop/LinInterpolation/ML/COOEvents.csv')
+df = pd.read_csv('/Users/ameliakratzer/Desktop/LinInterpolation/ML/IMs/COO.csv')
 dfX = df.iloc[:-1]
 dfY = df.iloc[[-1]]
-# X = distances and column 2 (first event IMs)
-X = dfX[:, [1, 2]]
-y = dfY.iloc[:, 2]
+# X = distances and event IMs
+X = dfX.iloc[:, 1:]
+# Y = event IMs for interp site
+y = dfY.iloc[:, 2:]
 # First try without log normalizing the IM vals
 Xscaler = MinMaxScaler()
 Yscaler = MinMaxScaler()

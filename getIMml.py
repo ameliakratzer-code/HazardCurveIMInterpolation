@@ -10,6 +10,9 @@ cursor = connection.cursor()
 
 # Gets all events for this siteGroup
 with open(outputPath, 'w', newline='') as file:
+    writer = csv.writer(file)
+    # Headers
+    writer.writerow(['d1', 'd2', 'd3', 'd4', 'IMLB', 'IMRB', 'IMRT', 'IMLT', 'IMInterp'])
     siteGroup = ('s385','s429','s431','s387','COO')
     xInterpSite, yInterpSite = getUTM(siteGroup[4])
     # First event in sharedRups
@@ -41,8 +44,6 @@ with open(outputPath, 'w', newline='') as file:
             x, y = getUTM(site)
             d = disFormula(x,y,xInterpSite,yInterpSite)
             distance.append(d)
-        # Interp site is 0 distance from itself
-        distance.append(0)
         for (source, rup) in sharedRups:
             q1 = '''
                     SELECT P.IM_Value 
@@ -70,11 +71,7 @@ with open(outputPath, 'w', newline='') as file:
     IMs = []
     for i in range(0, len(r), len(eventsList)):
         IMs.append(r[i:i+len(eventsList)])
-    # Write vals to csv file
-    writer = csv.writer(file)
-    # Headers = event IDs
-    writer.writerow(['siteName', 'distance'] + eventsList)
-    for i in range(5):
-        writer.writerow([siteGroup[i], distance[i]] + IMs[i])
+    for i in range(len(eventsList)):
+        writer.writerow(distance + [IMs[0][i], IMs[1][i], IMs[2][i], IMs[3][i], IMs[4][i]])
 cursor.close()
 connection.close()
