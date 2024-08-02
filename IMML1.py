@@ -26,17 +26,17 @@ y_train = Yscaler.fit_transform(y_trainU.values.reshape(-1,1)).ravel()
 y_test = Yscaler.transform(y_testU.values.reshape(-1,1)).ravel()
 
 BATCH_SIZE = 64
-EPOCHS = 35
+EPOCHS = 25
 INPUT_SIZE = 8
 OUTPUT_SIZE = 1
 model = tf.keras.models.Sequential()
-model.add(tf.keras.layers.Dense(32, activation='softplus', input_shape=(INPUT_SIZE,)))
+model.add(tf.keras.layers.Dense(32, activation='softplus', input_shape=(INPUT_SIZE,), kernel_regularizer=tf.keras.regularizers.l2(0.005)))
 
-model.add(tf.keras.layers.Dense(64))
+model.add(tf.keras.layers.Dense(64, kernel_regularizer=tf.keras.regularizers.l2(0.005)))
 model.add(tf.keras.layers.BatchNormalization())
 model.add(tf.keras.layers.Activation('softplus'))
 
-model.add(tf.keras.layers.Dense(32))
+model.add(tf.keras.layers.Dense(32, kernel_regularizer=tf.keras.regularizers.l2(0.005)))
 model.add(tf.keras.layers.BatchNormalization())
 model.add(tf.keras.layers.Activation('softplus'))
 
