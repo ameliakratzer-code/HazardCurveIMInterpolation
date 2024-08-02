@@ -10,6 +10,7 @@ from sklearn.model_selection import train_test_split
 # Two command line arguments: name of folder, name of files 
 
 df = pd.read_csv('/Users/ameliakratzer/Desktop/LinInterpolation/ML/IMs/COO.csv')
+df = df.head(2000)
 # X = distances and event IMs
 X = df.drop(columns=['IMInterp'])
 # Y = event IMs for interp site
@@ -23,10 +24,9 @@ X_test = Xscaler.transform(X_testU)
 # Change y_trainU temporarily to 2d array for fit transform, then unravel it
 y_train = Yscaler.fit_transform(y_trainU.values.reshape(-1,1)).ravel()
 y_test = Yscaler.transform(y_testU.values.reshape(-1,1)).ravel()
-print(y_train, y_test, X_train, X_test)
 
-BATCH_SIZE = 800
-EPOCHS = 12
+BATCH_SIZE = 64
+EPOCHS = 35
 INPUT_SIZE = 8
 OUTPUT_SIZE = 1
 model = tf.keras.models.Sequential()
@@ -42,7 +42,7 @@ model.add(tf.keras.layers.Activation('softplus'))
 
 model.add(tf.keras.layers.Dense(OUTPUT_SIZE , activation='sigmoid')) 
 
-optimize = tf.keras.optimizers.Adam(learning_rate=0.0001)
+optimize = tf.keras.optimizers.Adam(learning_rate=0.001)
 model.compile(optimizer = optimize, loss='mean_squared_error')
 history = model.fit(X_train, y_train, batch_size=BATCH_SIZE, epochs=EPOCHS, validation_data=(X_test,y_test))
 
@@ -67,12 +67,12 @@ plt.scatter(ySimList, yPredictionList, color='blue')
 plt.title('Simulated versus Interpolated Values')
 plt.xlabel('Simulated')
 plt.ylabel('Interpolated')
-# Line of best fit
+
 model = LinearRegression()
 model.fit(ySimList.reshape(-1,1), yPredictionList)
 y_fit = model.predict(ySimList.reshape(-1,1))
 plt.plot(ySimList, y_fit, color='green', linestyle='-', label='Line of Best Fit')
-# Y = x
+
 x_limits = plt.gca().get_xlim()
 y_limits = plt.gca().get_ylim()
 min_val = min(x_limits[0], y_limits[0])
