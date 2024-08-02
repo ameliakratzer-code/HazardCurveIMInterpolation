@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split
 # Two command line arguments: name of folder, name of files 
 
 df = pd.read_csv('/Users/ameliakratzer/Desktop/LinInterpolation/ML/IMs/COO.csv')
-df = df.head(2000)
+df = df.head(1800)
 # X = distances and event IMs
 X = df.drop(columns=['IMInterp'])
 # Y = event IMs for interp site
