@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 
 # Two command line arguments: name of folder, name of files 
 
-# Changed path to run on Frontera, home path: /Users/ameliakratzer/Desktop/LinInterpolation/ML/IMs/COO.csv'
+# On Frontera: /home1/10000/ameliakratzer14/Pasadena/COO.csv, home path: /Users/ameliakratzer/Desktop/LinInterpolation/ML/IMs/COO.csv'
 df = pd.read_csv('/home1/10000/ameliakratzer14/Pasadena/COO.csv')
 df = df.head(1800)
 # X = distances and event IMs
