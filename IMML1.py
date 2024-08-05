@@ -7,10 +7,10 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 
-# Two command line arguments: name of folder, name of files 
+# Three command line arguments: input file name, name of folder, name of files 
 
 # On Frontera: /home1/10000/ameliakratzer14/Pasadena/COO.csv, home path: /Users/ameliakratzer/Desktop/LinInterpolation/ML/IMs/COO.csv
-df = pd.read_csv('/Users/ameliakratzer/Desktop/LinInterpolation/ML/IMs/COO.csv')
+df = pd.read_csv(sys.argv[1])
 df = df.head(1800)
 # X = distances and event IMs
 X = df.drop(columns=['IMInterp'])
@@ -57,7 +57,7 @@ plt.title('Training versus Validation Loss')
 plt.xlabel('Epoch')
 plt.ylabel('Loss')
 plt.legend()
-plt.savefig(sys.argv[1] + f'/error{sys.argv[2]}.png')
+plt.savefig(sys.argv[2] + f'/error{sys.argv[3]}.png')
 plt.close()
 yPredictionListNorm = model.predict(X_test)
 yPredictionList = Yscaler.inverse_transform(yPredictionListNorm.reshape(-1,1)).ravel()
@@ -82,4 +82,4 @@ plt.plot([min_val, max_val], [min_val, max_val], color='red', linestyle='--', la
 plt.legend()
 plt.xlim(x_limits)
 plt.ylim(y_limits)
-plt.savefig(sys.argv[1] + f'/simActual{sys.argv[2]}.png')
+plt.savefig(sys.argv[2] + f'/simActual{sys.argv[3]}.png')
