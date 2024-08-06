@@ -11,7 +11,6 @@ from sklearn.model_selection import train_test_split
 
 # On Frontera: /home1/10000/ameliakratzer14/Pasadena/COO.csv, home path: /Users/ameliakratzer/Desktop/LinInterpolation/ML/IMs/COO.csv
 df = pd.read_csv(sys.argv[1])
-df = df.head(1800)
 # X = distances and event IMs
 X = df.drop(columns=['IMInterp'])
 # Y = event IMs for interp site
