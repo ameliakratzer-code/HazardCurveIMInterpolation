@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 
 # Three command line arguments: input file name, name of folder, name of files 
 
-# On Frontera: /home1/10000/ameliakratzer14/Pasadena/COO.csv, home path: /Users/ameliakratzer/Desktop/LinInterpolation/ML/IMs/COO.csv
+# On Frontera: /scratch1/10000/ameliakratzer14/Pasadena/aCOO.csv, home path: /Users/ameliakratzer/Desktop/LinInterpolation/ML/IMs/aCOO.csv
 df = pd.read_csv(sys.argv[1])
 # X = distances and event IMs
 X = df.drop(columns=['IMInterp'])
@@ -25,8 +25,8 @@ X_test = Xscaler.transform(X_testU)
 y_train = Yscaler.fit_transform(y_trainU.values.reshape(-1,1)).ravel()
 y_test = Yscaler.transform(y_testU.values.reshape(-1,1)).ravel()
 
-BATCH_SIZE = 64
-EPOCHS = 40
+BATCH_SIZE = 128
+EPOCHS = 30
 INPUT_SIZE = 8
 OUTPUT_SIZE = 1
 model = tf.keras.models.Sequential()
