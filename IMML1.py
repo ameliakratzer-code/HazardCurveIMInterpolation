@@ -25,8 +25,8 @@ X_test = Xscaler.transform(X_testU)
 y_train = Yscaler.fit_transform(y_trainU.values.reshape(-1,1)).ravel()
 y_test = Yscaler.transform(y_testU.values.reshape(-1,1)).ravel()
 
-BATCH_SIZE = 32
-EPOCHS = 20
+BATCH_SIZE = 64
+EPOCHS = 40
 INPUT_SIZE = 8
 OUTPUT_SIZE = 1
 model = tf.keras.models.Sequential()
