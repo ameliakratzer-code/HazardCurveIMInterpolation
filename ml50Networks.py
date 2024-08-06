@@ -46,11 +46,11 @@ def createModel(xtr, xte, ytr, yte, x):
     plt.xlabel('Epoch')
     plt.ylabel('Loss')
     plt.legend()
-    # Only arg is name of folder on Desktop
-    directory = path + f'/{sys.argv[1]}'
+    # Two command line arguments: name of output directory and name of output folder
+    directory = path + f'/{sys.argv[2]}'
     if not os.path.exists(directory):
         os.makedirs(directory)
-    plt.savefig(path + f'/{sys.argv[1]}/error{x}.png')
+    plt.savefig(path + f'/{sys.argv[2]}/error{x}.png')
     plt.close()
     # Add vals to dictionary for hazard curve plots
     yPredictionListNorm = model.predict(X_test)
@@ -74,7 +74,8 @@ dfCombined = pd.concat([dfRemaining, df[disCols], df['interpsiteName']], axis = 
 # Want interpolated data for all x values for same test sites so train test split first
 Xscaler = MinMaxScaler()
 Yscaler = MinMaxScaler()
-path = '/Users/ameliakratzer/Desktop'
+# On computer: '/Users/ameliakratzer/Desktop'
+path = sys.argv[1]
 X = dfCombined.loc[:, ~dfCombined.columns.str.startswith('interp')]
 y = dfCombined.loc[:, dfCombined.columns.str.startswith('sim') | dfCombined.columns.str.startswith('interp')]
 X_trainU, X_testU, y_trainU, y_testU = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -111,7 +112,7 @@ xValsList = [
     0.31623, 0.39811, 0.50119, 0.63096, 0.79433, 1, 1.25893, 1.58489, 1.99526, 
     2.51189, 3.16228, 3.98107, 5.01187, 6.30957, 7.94328, 10
 ]
-with open(path + f'/{sys.argv[1]}/percentDiff.csv', mode='w', newline='') as file:
+with open(path + f'/{sys.argv[2]}/percentDiff.csv', mode='w', newline='') as file:
     writer = csv.writer(file)
     writer.writerow(['Max Diff', 'Avg Diff', 'interpsiteName'])
     totalMax = 0
@@ -130,7 +131,7 @@ with open(path + f'/{sys.argv[1]}/percentDiff.csv', mode='w', newline='') as fil
         plt.plot(xValsList, plotDict[key][0], color='green', linewidth = 2, label = "Simulated", marker='^')
         plt.plot(xValsList, plotDict[key][1], color='pink', linewidth = 2, label = 'Interpolated', marker='^')
         plt.legend()
-        plt.savefig(path + f'/{sys.argv[1]}/{key}.png')
+        plt.savefig(path + f'/{sys.argv[2]}/{key}.png')
         plt.close()
          # Get the percent difference information for that site
         for x in range(len(xValsList)):
