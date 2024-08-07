@@ -144,7 +144,7 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     plt.xlabel('Percent difference')
     plt.ylabel('Frequency')
     # Save histogram to file
-    filePath = args.output + f'\histogram{args.interpsitename}.png'
+    filePath = args.output + f'/histogram{args.interpsitename}.png'
     plt.savefig(filePath)
     plt.close()
     print('Histogram plotted')
@@ -193,7 +193,7 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     mag_scatter(axs[1, 0], bin3x, bin3y, '7.5 < Mag ≤ 8')
     mag_scatter(axs[1, 1], bin4x, bin4y, 'Mag > 8')
     plt.tight_layout()
-    filePath = args.output + '\magnitudeplot.png'
+    filePath = args.output + '/magnitudeplot.png'
     plt.savefig(filePath)
     print('Magnitude subplot plotted')
     cursor.close()
@@ -246,7 +246,7 @@ def interpScatterplot(sim, interp):
     maxVal = max(max(sim), max(interp))
     plt.plot([minVal, maxVal], [minVal, maxVal], linestyle = 'dashed', color='black')
     # User types in full name of output
-    path = args.output + '\plot.png'
+    path = args.output + '/plot.png'
     plt.savefig(path)
     plt.close()
     
