@@ -1,0 +1,16 @@
+import sqlite3
+
+connection = sqlite3.connect('/scratch1/00349/scottcal/CS_interpolation/study_22_12_lf_indexed.sqlite')
+cursor = connection.cursor()
+
+q2 = '''
+                SELECT R.Model_Vs30, R.Z1_0, R.Z2_5 FROM CyberShake_Runs R, Studies T, CyberShake_Sites S
+                WHERE T.Study_Name = 'Study 22.12 LF'
+                AND T.Study_ID = R.Study_ID
+                AND S.CS_Site_ID = R.Site_ID
+                AND S.CS_Short_Name = ?
+            '''
+cursor.execute(q2, ('USC',))
+result = cursor.fetchall()
+print(repr(result[0]))
+print([result[0], result[1], result[2]])
