@@ -27,7 +27,7 @@ cursor = connection.cursor()
 
 for group in sites[:3]:
     print(group)
-    outputPath = f'$SCRATCH/IMMLInputs/{group[4]}.csv'
+    outputPath = f'/scratch1/10000/ameliakratzer14/IMMLInputs/{group[4]}.csv'
     with open(outputPath, 'w', newline='') as file:
         writer = csv.writer(file)
         # Headers
