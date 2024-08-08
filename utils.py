@@ -130,6 +130,8 @@ def interpolate(sortedL, xVals, velYesorNo):
             scales.append(1+scale)
     for i in range(len(xVals)):
         if velYesorNo == True:
+            cursor.close()
+            connection.close()
             R1 = (s0.valsToInterp[i] * scales[0] * (1-xPrime) + s1.valsToInterp[i] * scales[1] * xPrime)
             R2 = (s2.valsToInterp[i] * scales[2] * xPrime + s3.valsToInterp[i] * scales[3] * (1-xPrime))
             interpVal = (R1 * yPrime + R2 * (1-yPrime))
@@ -139,6 +141,4 @@ def interpolate(sortedL, xVals, velYesorNo):
             R2 = (s2.valsToInterp[i] * xPrime + s3.valsToInterp[i] * (1-xPrime))
             interpVal = (R1 * yPrime + R2 * (1-yPrime))
             interpolatedProbs.append(interpVal)
-    cursor.close()
-    connection.close()
     return interpolatedProbs
