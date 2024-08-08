@@ -18,6 +18,8 @@ parser.add_argument('--rupVar')
 parser.add_argument('--interpsitename')
 parser.add_argument('--output')
 parser.add_argument('--period', default=2)
+# Flag to include scaling factors based on the velocity models
+parser.add_argument('-v', '--velocity', action='store_true', help='Include velocity structure information')
 args = parser.parse_args()
 
 # Connect to the database

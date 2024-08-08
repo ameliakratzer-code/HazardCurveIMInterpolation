@@ -13,6 +13,8 @@ def parseArgs(argv):
     parser.add_argument('--interpsitename')
     parser.add_argument('--period', default=2)
     parser.add_argument('--output', default='Sites',help='Enter name of folder you want to store photos in')
+    # Flag to include scaling factors based on the velocity models
+    parser.add_argument('-v', '--velocity', action='store_true', help='Include velocity structure information')
     return parser.parse_args(argv)
 
 def downloadHazardCurve(nameSite, args, connection):
