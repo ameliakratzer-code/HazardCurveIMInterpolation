@@ -13,6 +13,5 @@ q2 = '''
             '''
 cursor.execute(q2, ('USC',))
 result = cursor.fetchone()
-L.extend(result)
-print(L)
+print(type(result[0]))
 
