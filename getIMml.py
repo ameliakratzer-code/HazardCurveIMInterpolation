@@ -4,7 +4,7 @@ import sqlite3
 from utils import getUTM, disFormula
 
 # 1 argument = name of which site list
-listNum = sys.argv[1]
+listNum = int(sys.argv[1])
 if listNum == 1: 
     sites = [('s123','s165','s167','s125','s145'),('s165','s207','s209','s167','s187'),('s159','s201','s203','s161','PDE'),
 ('s195','s234','s236','s197','WSS'),('s197','s236','s238','s199','P20'),('s199','s238','s240','s201','FFI'),('s207','s246','s248','s209','s228'),('s209','s248','s250','s211','ALP'),
