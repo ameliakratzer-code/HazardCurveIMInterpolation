@@ -227,8 +227,8 @@ def interpScatterplot(sim, interp):
     plt.scatter(sim, interp, color='blue', s = size)
     # Set 1 to 1 ration
     plt.gca().set_aspect('equal', adjustable='box')
-    plt.xlabel('Simulated IMs')
-    plt.ylabel('Interpolated IMs')
+    plt.xlabel('Simulated IMs (cm/s\u00B2)')
+    plt.ylabel('Interpolated IMs (cm/s\u00B2)')
     if userMode == Mode.ONE_EVENT:
         plt.title(f'{args.interpsitename} IMs for ({args.source}, {args.rup}, {args.rupVar}), {args.period} sec RotD50')
     elif userMode == Mode.ONE_RUPTURE:
@@ -240,11 +240,12 @@ def interpScatterplot(sim, interp):
     xNumpy, yNumpy = np.array(sim), np.array(interp)
     slope, intercept = np.polyfit(xNumpy, yNumpy, 1)
     lineOfBestFit = slope * xNumpy + intercept
-    plt.plot(sim, lineOfBestFit, color='green', linestyle = 'dashed')
+    plt.plot(sim, lineOfBestFit, color='green', linestyle = 'dashed', label='best fit line')
     # Line y = x
     minVal = min(min(sim), min(interp))
     maxVal = max(max(sim), max(interp))
-    plt.plot([minVal, maxVal], [minVal, maxVal], linestyle = 'dashed', color='black')
+    plt.plot([minVal, maxVal], [minVal, maxVal], linestyle = 'dashed', color='black', label='y = x')
+    plt.legend()
     # User types in full name of output
     path = args.output + f'/{args.interpsitename}{args.period}plot.png'
     plt.savefig(path)
