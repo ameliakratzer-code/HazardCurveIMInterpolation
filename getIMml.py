@@ -25,7 +25,7 @@ sites = [('s034','s078','s080','s036','s035'),('s076','s119','s121','s078','OSI'
 connection = sqlite3.connect('/scratch1/00349/scottcal/CS_interpolation/study_22_12_lf_indexed.sqlite')
 cursor = connection.cursor()
 
-for group in sites[:2]:
+for group in sites[2:]:
     print(group)
     outputPath = f'/scratch1/10000/ameliakratzer14/IMMLInputs/{group[4]}.csv'
     with open(outputPath, 'w', newline='') as file:
