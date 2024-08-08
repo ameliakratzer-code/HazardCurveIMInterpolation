@@ -25,7 +25,7 @@ sites = [('s034','s078','s080','s036','s035'),('s076','s119','s121','s078','OSI'
 connection = sqlite3.connect('/scratch1/00349/scottcal/CS_interpolation/study_22_12_lf_indexed.sqlite')
 cursor = connection.cursor()
 
-for group in sites[:3]:
+for group in sites[:2]:
     print(group)
     outputPath = f'/scratch1/10000/ameliakratzer14/IMMLInputs/{group[4]}.csv'
     with open(outputPath, 'w', newline='') as file:
@@ -98,7 +98,7 @@ for group in sites[:3]:
         for i in range(0, len(r), len(eventsList)):
             IMs.append(r[i:i+len(eventsList)])
         for i in range(len(eventsList)):
-            writer.writerow(distance + + velocityVals + [IMs[0][i], IMs[1][i], IMs[2][i], IMs[3][i], IMs[4][i]])
+            writer.writerow(distance + velocityVals + [IMs[0][i], IMs[1][i], IMs[2][i], IMs[3][i], IMs[4][i]])
 cursor.close()
 connection.close()
 
