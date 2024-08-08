@@ -12,7 +12,6 @@ q2 = '''
                 AND S.CS_Short_Name = ?
             '''
 cursor.execute(q2, ('USC',))
-result = cursor.fetchone()[0]
-print(repr(result))
-L.extend(result)
+result = cursor.fetchone()
+print(result)
 
