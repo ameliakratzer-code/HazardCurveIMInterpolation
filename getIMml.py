@@ -68,8 +68,8 @@ for group in sites[:2]:
                 AND S.CS_Short_Name = ?
             '''
             cursor.execute(q2, (site,))
-            result = cursor.fetchall()
-            velocityVals.extend(result[:3])
+            result = cursor.fetchone()
+            velocityVals.extend(result)
             for (source, rup) in sharedRups:
                 q1 = '''
                         SELECT P.IM_Value 
