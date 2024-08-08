@@ -119,7 +119,7 @@ def bilinearinterpolation(s0, s1, s2, s3, sI):
     listPXY = [p0, p1, p2, p3]
     sortedL = sorted(listPXY, key=lambda site: site.x)
     sortedL.append(p4)
-    interpIMVals = interpolate(sortedL, xVals, args.v)
+    interpIMVals = interpolate(sortedL, xVals, args.velocity)
     # Write (event, IM) values to file, user types entire file path
     fileName = f'{args.interpsitename}{args.period}IM.csv'
     filePath = os.path.join(args.output, fileName)
