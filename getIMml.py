@@ -26,6 +26,7 @@ connection = sqlite3.connect('/scratch1/00349/scottcal/CS_interpolation/study_22
 cursor = connection.cursor()
 
 for group in sites[:3]:
+    print(group)
     outputPath = f'$SCRATCH/IMMLInputs/{group[4]}.csv'
     with open(outputPath, 'w', newline='') as file:
         writer = csv.writer(file)
@@ -52,9 +53,7 @@ for group in sites[:3]:
                 sharedRups = result
             else:
                 sharedRups = list(set(sharedRups) & set(result))
-        print('sharedRups done')
         for site in group:
-            print(site)
             # Add distances to list
             if site != group[4]:
                 x, y = getUTM(site)
