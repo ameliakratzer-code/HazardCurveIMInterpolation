@@ -102,7 +102,6 @@ def interpolate(sortedL, xVals, velYesorNo):
     for site in [s0.name, s1.name, s2.name, s3.name]:
         totalDifference = 0
         if velYesorNo == True:
-            print('hello')
             cursor.execute(q, (site,))
             res = cursor.fetchone()
             Vs30Ratio = sIVs30 / res[0]
@@ -130,8 +129,6 @@ def interpolate(sortedL, xVals, velYesorNo):
             scales.append(1+scale)
     for i in range(len(xVals)):
         if velYesorNo == True:
-            cursor.close()
-            connection.close()
             R1 = (s0.valsToInterp[i] * scales[0] * (1-xPrime) + s1.valsToInterp[i] * scales[1] * xPrime)
             R2 = (s2.valsToInterp[i] * scales[2] * xPrime + s3.valsToInterp[i] * scales[3] * (1-xPrime))
             interpVal = (R1 * yPrime + R2 * (1-yPrime))
