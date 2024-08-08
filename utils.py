@@ -56,7 +56,7 @@ def disFormula(x0, y0, x1, y1):
     d = dsquared**0.5
     return d
 
-def interpolate(sortedL, xVals):
+def interpolate(sortedL, xVals, velYesorNo):
     # Determining S0, S3
     if sortedL[0].y_less_than(sortedL[1]):
         # Download hazard curve of site at L[0]
@@ -82,55 +82,62 @@ def interpolate(sortedL, xVals):
     yPrime = getDistance(s3.x, s3.y, s2.x, s2.y, sortedL[-1].x, sortedL[-1].y) / 10000
     xPrime =  getDistance(s3.x, s3.y, s0.x, s0.y, sortedL[-1].x, sortedL[-1].y) / 10000
     interpolatedProbs = []
-    # Taking into account velocity model
-    connection = sqlite3.connect('/scratch1/00349/scottcal/CS_interpolation/study_22_12_lf_indexed.sqlite')
-    cursor = connection.cursor()
-    scales = []
-    # Get velocity model vals for interp site
-    q = '''
-            SELECT R.Model_Vs30, R.Z1_0, R.Z2_5 FROM CyberShake_Runs R, Studies T, CyberShake_Sites S
-            WHERE T.Study_Name = 'Study 22.12 LF'
-            AND T.Study_ID = R.Study_ID
-            AND S.CS_Site_ID = R.Site_ID
-            AND S.CS_Short_Name = ?
-        '''
-    cursor.execute(q, (sortedL[4].name,))
-    result = cursor.fetchone()
-    sIVs30, sIZ1, sIZ2 = result[0], result[1], result[2]
+    if velYesorNo == True:
+        # Taking into account velocity model
+        connection = sqlite3.connect('/scratch1/00349/scottcal/CS_interpolation/study_22_12_lf_indexed.sqlite')
+        cursor = connection.cursor()
+        scales = []
+        # Get velocity model vals for interp site
+        q = '''
+                SELECT R.Model_Vs30, R.Z1_0, R.Z2_5 FROM CyberShake_Runs R, Studies T, CyberShake_Sites S
+                WHERE T.Study_Name = 'Study 22.12 LF'
+                AND T.Study_ID = R.Study_ID
+                AND S.CS_Site_ID = R.Site_ID
+                AND S.CS_Short_Name = ?
+            '''
+        cursor.execute(q, (sortedL[4].name,))
+        result = cursor.fetchone()
+        sIVs30, sIZ1, sIZ2 = result[0], result[1], result[2]
     # Compare ratios and calculate scale factor for each site
     for site in [s0.name, s1.name, s2.name, s3.name]:
         totalDifference = 0
-        cursor.execute(q, (site,))
-        res = cursor.fetchone()
-        Vs30Ratio = sIVs30 / res[0]
-        Z1Ratio = sIZ1 / res[1]
-        Z2Ratio = sIZ2 / res[2]
-        # Decide if increasing or decreasing ground motions
-        if Vs30Ratio > 1:
-            # Negative contribution to total distance since want to decrease ground motions
-            totalDifference += 1-Vs30Ratio
-        else:
-            totalDifference += Vs30Ratio-1
-        if  Z1Ratio > 1:
-            # Positive contribution to total distance since want to increase ground motions
-            totalDifference += Z1Ratio-1
-        else:
-            totalDifference += 1-Z1Ratio
-        if  Z2Ratio > 1:
-            # Positive contribution to total distance since want to increase ground motions
-            totalDifference += Z2Ratio-1
-        else:
-            totalDifference += 1-Z2Ratio
-        # Modeling after 0.25 scale = 1.5 difference for site s505
-        scaleFactor = 6.5
-        scale = totalDifference / scaleFactor
-        scales.append(1+scale)
-    print(f'Scale factors: {scales}')
+        if velYesorNo == True:
+            cursor.execute(q, (site,))
+            res = cursor.fetchone()
+            Vs30Ratio = sIVs30 / res[0]
+            Z1Ratio = sIZ1 / res[1]
+            Z2Ratio = sIZ2 / res[2]
+            # Decide if increasing or decreasing ground motions
+            if Vs30Ratio > 1:
+                # Negative contribution to total distance since want to decrease ground motions
+                totalDifference += 1-Vs30Ratio
+            else:
+                totalDifference += Vs30Ratio-1
+            if  Z1Ratio > 1:
+                # Positive contribution to total distance since want to increase ground motions
+                totalDifference += Z1Ratio-1
+            else:
+                totalDifference += 1-Z1Ratio
+            if  Z2Ratio > 1:
+                # Positive contribution to total distance since want to increase ground motions
+                totalDifference += Z2Ratio-1
+            else:
+                totalDifference += 1-Z2Ratio
+            # Modeling after 0.25 scale = 1.5 difference for site s505
+            scaleFactor = 6.5
+            scale = totalDifference / scaleFactor
+            scales.append(1+scale)
     for i in range(len(xVals)):
-        R1 = (s0.valsToInterp[i] * scales[0] * (1-xPrime) + s1.valsToInterp[i] * scales[1] * xPrime)
-        R2 = (s2.valsToInterp[i] * scales[2] * xPrime + s3.valsToInterp[i] * scales[3] * (1-xPrime))
-        interpVal = (R1 * yPrime + R2 * (1-yPrime))
-        interpolatedProbs.append(interpVal)
+        if velYesorNo == True:
+            R1 = (s0.valsToInterp[i] * scales[0] * (1-xPrime) + s1.valsToInterp[i] * scales[1] * xPrime)
+            R2 = (s2.valsToInterp[i] * scales[2] * xPrime + s3.valsToInterp[i] * scales[3] * (1-xPrime))
+            interpVal = (R1 * yPrime + R2 * (1-yPrime))
+            interpolatedProbs.append(interpVal)
+        else:
+            R1 = (s0.valsToInterp[i] * (1-xPrime) + s1.valsToInterp[i] * xPrime)
+            R2 = (s2.valsToInterp[i] * xPrime + s3.valsToInterp[i] * (1-xPrime))
+            interpVal = (R1 * yPrime + R2 * (1-yPrime))
+            interpolatedProbs.append(interpVal)
     cursor.close()
     connection.close()
     return interpolatedProbs

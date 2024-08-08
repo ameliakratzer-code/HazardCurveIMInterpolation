@@ -137,7 +137,7 @@ def bilinearinterpolation(s0, s1, s2, s3, sI, args, connection):
     listPXY = [p0, p1, p2, p3]
     sortedL = sorted(listPXY, key=lambda site: site.x)
     sortedL.append(p4)
-    interpolatedProbs = interpolate(sortedL, xCoords)
+    interpolatedProbs = interpolate(sortedL, xCoords, args.v)
     print('\nInterp values')
     for val in interpolatedProbs:
         print(val)
