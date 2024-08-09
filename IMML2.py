@@ -7,6 +7,7 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 import csv
+import joblib
 
 def makeScatterplot(ySimList, yPredictionList):
     plt.scatter(ySimList, yPredictionList, color='blue')
@@ -29,32 +30,15 @@ def makeScatterplot(ySimList, yPredictionList):
     plt.ylim(y_limits)
 
 # Four command line arguments: input file name, name of folder, name of files, 1 if want to save
-
-# On Frontera: /scratch1/10000/ameliakratzer14/IMMLInputs/combined_file.csv, home: /Users/ameliakratzer/Desktop/LinInterpolation/ML/IMs/allSitesIM.csv
-df = pd.read_csv(sys.argv[1], low_memory = False)
-# Need to drop header rows that are in middle of CSV that occured when CAT the files together
-df = df.apply(pd.to_numeric, errors='coerce')
-df = df.dropna()
-df = df.reset_index(drop=True)
-# Starting with 3 mil samples
-df = df.iloc[:3000000]
-# X now includes the velocity metrics
-X = df.drop(columns=['IMInterp'])
-y = df['IMInterp']
-Xscaler = MinMaxScaler()
-Yscaler = MinMaxScaler()
-X_trainU, X_testU, y_trainU, y_testU = train_test_split(X, y, test_size=0.2, random_state=42)
-X_train = Xscaler.fit_transform(X_trainU)
-X_test = Xscaler.transform(X_testU)
-y_train = Yscaler.fit_transform(y_trainU.values.reshape(-1,1)).ravel()
-y_test = Yscaler.transform(y_testU.values.reshape(-1,1)).ravel()
-print('Data cleaned')
-if False:
-    # Transforming inference data too
-    inference_df = pd.read_csv('/scratch1/10000/ameliakratzer14/IMMLInputs/inferenceSites/USC.csv')
-    X_inferenceU = inference_df.drop(columns=['IMInterp'])
-    X_inference = Xscaler.transform(X_inferenceU)
-    simVals = inference_df['IMInterp']
+data = joblib.load('preprocessed_data_and_scalers.pkl')
+X_train = data['X_train']
+X_test = data['X_test']
+y_train = data['y_train']
+y_test = data['y_test']
+Xscaler = data['Xscaler']
+Yscaler = data['Yscaler']
+X_inference = data['X_inference']
+simVals = data['simVals']
 BATCH_SIZE = 128
 EPOCHS = 35
 INPUT_SIZE = 23
@@ -96,23 +80,12 @@ plt.ylabel('Loss')
 plt.legend()
 plt.savefig(sys.argv[2] + f'/error{sys.argv[3]}.png')
 plt.close()
-yPredictionListNorm = model.predict(X_test)
-yPredictionList = Yscaler.inverse_transform(yPredictionListNorm.reshape(-1,1)).ravel()
-ySimList = Yscaler.inverse_transform(y_test.reshape(-1,1)).ravel()
-# Prediction plot
-plt.figure(2)
-makeScatterplot(ySimList, yPredictionList)
-plt.savefig(sys.argv[2] + f'/simActual{sys.argv[3]}.png')
-
 # Inference for USC only
 #change to True when want it to run
-if False:
+if True:
     # Scatterplot
     yInferenceNorm = model.predict(X_inference)
     yInference = Yscaler.inverse_transform(yInferenceNorm.reshape(-1,1).ravel())
-    plt.figure(3)
-    makeScatterplot(simVals, yInference)
-    plt.savefig(sys.argv[2] + '/USCinference.png')
     # Data to use for hazard curve calc
     fileName = f'USCIM.csv'
     filePath = sys.argv[2] + '/USCinference.csv'
@@ -122,4 +95,7 @@ if False:
         for IMVal in yInference:
             # Event number does not really matter
             write.writerow(["(132, 39, 0)", IMVal])
+    plt.figure(2)
+    makeScatterplot(simVals, yInference)
+    plt.savefig(sys.argv[2] + '/USCinference.png')
 
