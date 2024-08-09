@@ -49,7 +49,7 @@ X_test = Xscaler.transform(X_testU)
 y_train = Yscaler.fit_transform(y_trainU.values.reshape(-1,1)).ravel()
 y_test = Yscaler.transform(y_testU.values.reshape(-1,1)).ravel()
 print('Data cleaned')
-if int(sys.argv[4]) == 1:
+if False:
     # Transforming inference data too
     inference_df = pd.read_csv('/scratch1/10000/ameliakratzer14/IMMLInputs/inferenceSites/USC.csv')
     X_inferenceU = inference_df.drop(columns=['IMInterp'])
@@ -83,9 +83,6 @@ model.add(tf.keras.layers.Dense(OUTPUT_SIZE , activation='sigmoid'))
 optimize = tf.keras.optimizers.Adam(learning_rate=0.0001)
 model.compile(optimizer = optimize, loss='mean_squared_error')
 history = model.fit(X_train, y_train, batch_size=BATCH_SIZE, epochs=EPOCHS, validation_data=(X_test,y_test))
-# Save model to use for inference
-if int(sys.argv[4]) == 1:
-    model.save(f'{sys.argv[2]}/myModel{sys.argv[3]}.h5')
 
 score = model.evaluate(X_test,y_test,verbose=0)
 print(f'Test loss: {score}')
@@ -108,7 +105,8 @@ makeScatterplot(ySimList, yPredictionList)
 plt.savefig(sys.argv[2] + f'/simActual{sys.argv[3]}.png')
 
 # Inference for USC only
-if sys.argv[4] == 1:
+#change to True when want it to run
+if False:
     # Scatterplot
     yInferenceNorm = model.predict(X_inference)
     yInference = Yscaler.inverse_transform(yInferenceNorm.reshape(-1,1).ravel())
