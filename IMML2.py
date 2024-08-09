@@ -6,6 +6,27 @@ import sys
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
+import csv
+
+def makeScatterplot(ySimList, yPredictionList):
+    plt.scatter(ySimList, yPredictionList, color='blue')
+    plt.title('Simulated versus Interpolated Values')
+    plt.xlabel('Simulated')
+    plt.ylabel('Interpolated')
+
+    model = LinearRegression()
+    model.fit(ySimList.reshape(-1,1), yPredictionList)
+    y_fit = model.predict(ySimList.reshape(-1,1))
+    plt.plot(ySimList, y_fit, color='green', linestyle='-', label='Line of Best Fit')
+
+    x_limits = plt.gca().get_xlim()
+    y_limits = plt.gca().get_ylim()
+    min_val = min(x_limits[0], y_limits[0])
+    max_val = max(x_limits[1], y_limits[1])
+    plt.plot([min_val, max_val], [min_val, max_val], color='red', linestyle='--', label='y = x')
+    plt.legend()
+    plt.xlim(x_limits)
+    plt.ylim(y_limits)
 
 # Four command line arguments: input file name, name of folder, name of files, 1 if want to save
 
@@ -25,7 +46,12 @@ X_train = Xscaler.fit_transform(X_trainU)
 X_test = Xscaler.transform(X_testU)
 y_train = Yscaler.fit_transform(y_trainU.values.reshape(-1,1)).ravel()
 y_test = Yscaler.transform(y_testU.values.reshape(-1,1)).ravel()
-
+if int(sys.argv[4]) == 1:
+    # Transforming inference data too
+    inference_df = pd.read_csv('/scratch1/10000/ameliakratzer14/IMMLInputs/inferenceSites/USC.csv')
+    X_inferenceU = inference_df.drop(columns=['IMInterp'])
+    X_inference = Xscaler.transform(X_inferenceU)
+    simVals = inference_df['IMInterp']
 BATCH_SIZE = 128
 EPOCHS = 35
 INPUT_SIZE = 23
@@ -75,22 +101,24 @@ yPredictionList = Yscaler.inverse_transform(yPredictionListNorm.reshape(-1,1)).r
 ySimList = Yscaler.inverse_transform(y_test.reshape(-1,1)).ravel()
 # Prediction plot
 plt.figure(2)
-plt.scatter(ySimList, yPredictionList, color='blue')
-plt.title('Simulated versus Interpolated Values')
-plt.xlabel('Simulated')
-plt.ylabel('Interpolated')
-
-model = LinearRegression()
-model.fit(ySimList.reshape(-1,1), yPredictionList)
-y_fit = model.predict(ySimList.reshape(-1,1))
-plt.plot(ySimList, y_fit, color='green', linestyle='-', label='Line of Best Fit')
-
-x_limits = plt.gca().get_xlim()
-y_limits = plt.gca().get_ylim()
-min_val = min(x_limits[0], y_limits[0])
-max_val = max(x_limits[1], y_limits[1])
-plt.plot([min_val, max_val], [min_val, max_val], color='red', linestyle='--', label='y = x')
-plt.legend()
-plt.xlim(x_limits)
-plt.ylim(y_limits)
+makeScatterplot(ySimList, yPredictionList)
 plt.savefig(sys.argv[2] + f'/simActual{sys.argv[3]}.png')
+
+# Inference for USC only
+if sys.argv[4] == 1:
+    # Scatterplot
+    yInferenceNorm = model.predict(X_inference)
+    yInference = Yscaler.inverse_transform(yInferenceNorm.reshape(-1,1).ravel())
+    plt.figure(3)
+    makeScatterplot(simVals, yInference)
+    plt.savefig(sys.argv[2] + '/USCinference.png')
+    # Data to use for hazard curve calc
+    fileName = f'USCIM.csv'
+    filePath = sys.argv[2] + '/USCinference.csv'
+    with open(filePath, 'w', newline='') as file:
+        write = csv.writer(file)
+        write.writerow(['Event', 'IMVal'])
+        for IMVal in yInference:
+            # Event number does not really matter
+            write.writerow(["(132, 39, 0)", IMVal])
+
