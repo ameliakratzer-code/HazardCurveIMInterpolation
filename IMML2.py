@@ -35,7 +35,9 @@ df = pd.read_csv(sys.argv[1], low_memory = False)
 # Need to drop header rows that are in middle of CSV that occured when CAT the files together
 df = df.apply(pd.to_numeric, errors='coerce')
 df = df.dropna()
-df_clean = df.reset_index(drop=True)
+df = df.reset_index(drop=True)
+# Starting with 3 mil samples
+df = df.iloc[:3000000]
 # X now includes the velocity metrics
 X = df.drop(columns=['IMInterp'])
 y = df['IMInterp']
