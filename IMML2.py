@@ -46,6 +46,7 @@ X_train = Xscaler.fit_transform(X_trainU)
 X_test = Xscaler.transform(X_testU)
 y_train = Yscaler.fit_transform(y_trainU.values.reshape(-1,1)).ravel()
 y_test = Yscaler.transform(y_testU.values.reshape(-1,1)).ravel()
+print('Data cleaned')
 if int(sys.argv[4]) == 1:
     # Transforming inference data too
     inference_df = pd.read_csv('/scratch1/10000/ameliakratzer14/IMMLInputs/inferenceSites/USC.csv')
