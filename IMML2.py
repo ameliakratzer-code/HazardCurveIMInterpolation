@@ -16,8 +16,8 @@ def makeScatterplot(ySimList, yPredictionList):
     plt.ylabel('Interpolated')
 
     model = LinearRegression()
-    model.fit(ySimList.reshape(-1,1), yPredictionList)
-    y_fit = model.predict(ySimList.reshape(-1,1))
+    model.fit(ySimList, yPredictionList)
+    y_fit = model.predict(ySimList)
     plt.plot(ySimList, y_fit, color='green', linestyle='-', label='Line of Best Fit')
 
     x_limits = plt.gca().get_xlim()
