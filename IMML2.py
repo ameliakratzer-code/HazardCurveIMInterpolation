@@ -7,7 +7,7 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 
-# Three command line arguments: input file name, name of folder, name of files 
+# Four command line arguments: input file name, name of folder, name of files, 1 if want to save
 
 # On Frontera: /scratch1/10000/ameliakratzer14/IMMLInputs/combined_file.csv, home: /Users/ameliakratzer/Desktop/LinInterpolation/ML/IMs/allSitesIM.csv
 df = pd.read_csv(sys.argv[1])
@@ -50,6 +50,9 @@ model.add(tf.keras.layers.Dense(OUTPUT_SIZE , activation='sigmoid'))
 optimize = tf.keras.optimizers.Adam(learning_rate=0.0001)
 model.compile(optimizer = optimize, loss='mean_squared_error')
 history = model.fit(X_train, y_train, batch_size=BATCH_SIZE, epochs=EPOCHS, validation_data=(X_test,y_test))
+# Save model to use for inference
+if int(sys.argv[4]) == 1:
+    model.save(f'{sys.argv[2]}/myModel{sys.argv[3]}.h5')
 
 score = model.evaluate(X_test,y_test,verbose=0)
 print(f'Test loss: {score}')
