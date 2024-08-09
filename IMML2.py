@@ -20,7 +20,7 @@ Yscaler = data['Yscaler']
 X_inference = data['X_inference']
 simVals = data['simVals']
 print(simVals)
-BATCH_SIZE = 64
+BATCH_SIZE = 1000
 EPOCHS = 10
 INPUT_SIZE = 23
 OUTPUT_SIZE = 1
@@ -47,7 +47,6 @@ model.add(tf.keras.layers.Dense(OUTPUT_SIZE , activation='sigmoid'))
 
 optimize = tf.keras.optimizers.Adam(learning_rate=0.001)
 model.compile(optimizer = optimize, loss='mean_squared_error')
-early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
 history = model.fit(X_train, y_train, batch_size=BATCH_SIZE, epochs=EPOCHS, validation_data=(X_test,y_test))
 
 score = model.evaluate(X_test,y_test,verbose=0)
