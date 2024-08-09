@@ -85,7 +85,7 @@ plt.close()
 if True:
     # Scatterplot
     yInferenceNorm = model.predict(X_inference)
-    yInference = Yscaler.inverse_transform(yInferenceNorm.reshape(-1,1).ravel())
+    yInference = Yscaler.inverse_transform(yInferenceNorm.reshape(-1,1)).ravel()
     # Data to use for hazard curve calc
     fileName = f'USCIM.csv'
     filePath = sys.argv[2] + '/USCinference.csv'
