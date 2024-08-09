@@ -83,6 +83,7 @@ plt.close()
 # Inference for USC only
 #change to True when want it to run
 if True:
+    i = 0
     # Scatterplot
     yInferenceNorm = model.predict(X_inference)
     yInference = Yscaler.inverse_transform(yInferenceNorm.reshape(-1,1)).ravel()
@@ -94,7 +95,8 @@ if True:
         write.writerow(['Event', 'IMVal'])
         for IMVal in yInference:
             # Event number does not really matter
-            write.writerow(["(132, 39, 0)", IMVal])
+            write.writerow([f"(132, 39, {i})", IMVal])
+            i += 1
     plt.figure(2)
     makeScatterplot(simVals, yInference)
     plt.savefig(sys.argv[2] + '/USCinference.png')
