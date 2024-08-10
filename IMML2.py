@@ -73,16 +73,5 @@ if True:
 plt.figure(2)
 plt.scatter(simVals[:1000], yInference[:1000])
 
-model = LinearRegression()
-model.fit(simVals[:1000], yInference[:1000])
-y_fit = model.predict(simVals.reshape(-1,1))
-plt.plot(simVals[:1000], y_fit, color='green', linestyle='-', label='Line of Best Fit')
-
-x_limits = plt.gca().get_xlim()
-y_limits = plt.gca().get_ylim()
-min_val = min(x_limits[0], y_limits[0])
-max_val = max(x_limits[1], y_limits[1])
-plt.plot([min_val, max_val], [min_val, max_val], color='red', linestyle='--', label='y = x')
-plt.legend()
 plt.savefig(sys.argv[2] + f'/simVActual{sys.argv[3]}.png')
 
