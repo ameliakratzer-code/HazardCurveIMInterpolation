@@ -20,18 +20,18 @@ Xscaler = data['Xscaler']
 Yscaler = data['Yscaler']
 X_inference = data['X_inference']
 simVals = data['simVals']
-BATCH_SIZE = 1500
+BATCH_SIZE = 800
 EPOCHS = 20
 INPUT_SIZE = 23
 OUTPUT_SIZE = 1
 model = tf.keras.models.Sequential()
-model.add(tf.keras.layers.Dense(32, activation='softplus', input_shape=(INPUT_SIZE,), kernel_regularizer=tf.keras.regularizers.l2(0.01)))
+model.add(tf.keras.layers.Dense(32, activation='softplus', input_shape=(INPUT_SIZE,), kernel_regularizer=tf.keras.regularizers.l2(0.005)))
 
-model.add(tf.keras.layers.Dense(64, kernel_regularizer=tf.keras.regularizers.l2(0.01)))
+model.add(tf.keras.layers.Dense(64, kernel_regularizer=tf.keras.regularizers.l2(0.005)))
 model.add(tf.keras.layers.BatchNormalization())
 model.add(tf.keras.layers.Activation('softplus'))
 
-model.add(tf.keras.layers.Dense(128, kernel_regularizer=tf.keras.regularizers.l2(0.01)))
+model.add(tf.keras.layers.Dense(128, kernel_regularizer=tf.keras.regularizers.l2(0.005)))
 model.add(tf.keras.layers.BatchNormalization())
 model.add(tf.keras.layers.Activation('softplus'))
 
@@ -70,4 +70,19 @@ if True:
             # Event number does not really matter
             write.writerow([f"(132, 39, {i})", IMVal])
             i += 1
+plt.figure(2)
+plt.scatter(simVals[:1000], yInference[:1000])
+
+model = LinearRegression()
+model.fit(simVals[:1000], yInference[:1000])
+y_fit = model.predict(simVals.reshape(-1,1))
+plt.plot(simVals[:1000], y_fit, color='green', linestyle='-', label='Line of Best Fit')
+
+x_limits = plt.gca().get_xlim()
+y_limits = plt.gca().get_ylim()
+min_val = min(x_limits[0], y_limits[0])
+max_val = max(x_limits[1], y_limits[1])
+plt.plot([min_val, max_val], [min_val, max_val], color='red', linestyle='--', label='y = x')
+plt.legend()
+plt.savefig(sys.argv[2] + f'/simVActual{sys.argv[3]}.png')
 
