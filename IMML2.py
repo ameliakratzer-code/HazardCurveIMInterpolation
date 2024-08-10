@@ -19,7 +19,6 @@ Xscaler = data['Xscaler']
 Yscaler = data['Yscaler']
 X_inference = data['X_inference']
 simVals = data['simVals']
-print(simVals)
 BATCH_SIZE = 1000
 EPOCHS = 10
 INPUT_SIZE = 23
@@ -45,7 +44,7 @@ model.add(tf.keras.layers.Activation('softplus'))
 
 model.add(tf.keras.layers.Dense(OUTPUT_SIZE , activation='sigmoid')) 
 
-optimize = tf.keras.optimizers.Adam(learning_rate=0.001)
+optimize = tf.keras.optimizers.Adam(learning_rate=0.0001)
 model.compile(optimizer = optimize, loss='mean_squared_error')
 history = model.fit(X_train, y_train, batch_size=BATCH_SIZE, epochs=EPOCHS, validation_data=(X_test,y_test))
 
