@@ -11,7 +11,7 @@ import joblib
 
 # Four command line arguments: input file name, name of folder, name of files
 # preprocessed_data_and_scalers.pkl on Frontera
-data = joblib.load('/Users/ameliakratzer/Desktop/preprocessed_data_and_scalers.pkl')
+data = joblib.load('/Users/ameliakratzer/Desktop/LinInterpolation/preprocessed_data_and_scalers.pkl')
 X_train = data['X_train']
 X_test = data['X_test']
 y_train = data['y_train']
@@ -72,6 +72,5 @@ if True:
             i += 1
 plt.figure(2)
 plt.scatter(simVals[:1000], yInference[:1000])
-
 plt.savefig(sys.argv[2] + f'/simVActual{sys.argv[3]}.png')
 
