@@ -20,32 +20,24 @@ Xscaler = data['Xscaler']
 Yscaler = data['Yscaler']
 X_inference = data['X_inference']
 simVals = data['simVals']
-BATCH_SIZE = 1000
-EPOCHS = 10
+BATCH_SIZE = 1500
+EPOCHS = 20
 INPUT_SIZE = 23
 OUTPUT_SIZE = 1
 model = tf.keras.models.Sequential()
-model.add(tf.keras.layers.Dense(32, activation='softplus', input_shape=(INPUT_SIZE,), kernel_regularizer=tf.keras.regularizers.l2(0.005)))
+model.add(tf.keras.layers.Dense(32, activation='softplus', input_shape=(INPUT_SIZE,), kernel_regularizer=tf.keras.regularizers.l2(0.01)))
 
-model.add(tf.keras.layers.Dense(64, kernel_regularizer=tf.keras.regularizers.l2(0.005)))
+model.add(tf.keras.layers.Dense(64, kernel_regularizer=tf.keras.regularizers.l2(0.01)))
 model.add(tf.keras.layers.BatchNormalization())
 model.add(tf.keras.layers.Activation('softplus'))
 
-model.add(tf.keras.layers.Dense(128, kernel_regularizer=tf.keras.regularizers.l2(0.005)))
-model.add(tf.keras.layers.BatchNormalization())
-model.add(tf.keras.layers.Activation('softplus'))
-
-model.add(tf.keras.layers.Dense(64, kernel_regularizer=tf.keras.regularizers.l2(0.005)))
-model.add(tf.keras.layers.BatchNormalization())
-model.add(tf.keras.layers.Activation('softplus'))
-
-model.add(tf.keras.layers.Dense(32, kernel_regularizer=tf.keras.regularizers.l2(0.005)))
+model.add(tf.keras.layers.Dense(128, kernel_regularizer=tf.keras.regularizers.l2(0.01)))
 model.add(tf.keras.layers.BatchNormalization())
 model.add(tf.keras.layers.Activation('softplus'))
 
 model.add(tf.keras.layers.Dense(OUTPUT_SIZE , activation='sigmoid')) 
 
-optimize = tf.keras.optimizers.Adam(learning_rate=0.0001)
+optimize = tf.keras.optimizers.Adam(learning_rate=0.00001)
 model.compile(optimizer = optimize, loss='mean_squared_error')
 history = model.fit(X_train, y_train, batch_size=BATCH_SIZE, epochs=EPOCHS, validation_data=(X_test,y_test))
 
@@ -68,11 +60,9 @@ if True:
     # Scatterplot
     yInferenceNorm = model.predict(X_inference)
     yInference = Yscaler.inverse_transform(yInferenceNorm.reshape(-1,1)).ravel()
-    print(yInference[:100])
-    print(simVals[:100])
     # Data to use for hazard curve calc
     fileName = f'USCIM.csv'
-    filePath = sys.argv[2] + '/USCinference.csv'
+    filePath = sys.argv[2] + '/USCinference1.csv'
     with open(filePath, 'w', newline='') as file:
         write = csv.writer(file)
         write.writerow(['Event', 'IMVal'])
