@@ -56,6 +56,7 @@ if True:
     X_inference = Xscaler.transform(X_inferenceU)
     simVals = inference_df['IMInterp']
 
+# preprocessed_data_and_scalers.pkl for first 3 mil lines (5 sites) of giant file
 joblib.dump({
     'X_train': X_train,
     'X_test': X_test,
