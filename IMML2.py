@@ -7,6 +7,7 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.linear_model import LinearRegression
 import csv
 import joblib
+import pandas as pd
 
 # Three command line arguments: input file name, name of folder, name of files
 # preprocessed_data_and_scalers.pkl on Frontera, USC_preprocessed_data.pkl for USC
@@ -20,7 +21,7 @@ Yscaler = data['Yscaler']
 X_inference = data['X_inference']
 simVals = data['simVals']
 BATCH_SIZE = 800
-EPOCHS = 20
+EPOCHS = 1
 INPUT_SIZE = 23
 OUTPUT_SIZE = 1
 model = tf.keras.models.Sequential()
@@ -67,7 +68,7 @@ if True:
         write = csv.writer(file)
         write.writerow(['Event', 'IMVal'])
         for IMVal in yInference:
-            # Event number does not really matter
+            # Event number does matter for hazard curve calc code so need to use correctEvent.py to get
             write.writerow([f"(132, 39, {i})", IMVal])
             i += 1
 plt.figure(2)
@@ -78,18 +79,18 @@ plt.title('Simulated versus Interpolated Values')
 plt.xlabel('Simulated')
 plt.ylabel('Interpolated')
 
-# model = LinearRegression()
-# model.fit(x.reshape(-1,1), y)
-# y_fit = model.predict(x.reshape(-1,1))
-# plt.plot(x, y_fit, color='green', linestyle='-', label='Line of Best Fit')
+model = LinearRegression()
+model.fit(x.reshape(-1,1), y)
+y_fit = model.predict(x.reshape(-1,1))
+plt.plot(x, y_fit, color='green', linestyle='-', label='Line of Best Fit')
 
-# x_limits = plt.gca().get_xlim()
-# y_limits = plt.gca().get_ylim()
-# min_val = min(x_limits[0], y_limits[0])
-# max_val = max(x_limits[1], y_limits[1])
-# plt.plot([min_val, max_val], [min_val, max_val], color='red', linestyle='--', label='y = x')
-# plt.legend()
-# plt.xlim(x_limits)
-# plt.ylim(y_limits)
+x_limits = plt.gca().get_xlim()
+y_limits = plt.gca().get_ylim()
+min_val = min(x_limits[0], y_limits[0])
+max_val = max(x_limits[1], y_limits[1])
+plt.plot([min_val, max_val], [min_val, max_val], color='red', linestyle='--', label='y = x')
+plt.legend()
+plt.xlim(x_limits)
+plt.ylim(y_limits)
 plt.savefig(sys.argv[2] + f'/simVActual{sys.argv[3]}.png')
 
