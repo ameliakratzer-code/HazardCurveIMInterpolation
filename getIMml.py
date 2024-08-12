@@ -54,6 +54,7 @@ with open(outputPath, 'w', newline='') as file:
     # Headers
     writer.writerow(['d1', 'd2', 'd3', 'd4', 's1v', 's1z1', 's1z2', 's2v', 's2z1', 's2z2', 's3v', 's3z1', 's3z2', 's4v', 's4z1', 's4z2', 'sIv', 'sIz1', 'sIz2', 'IMLB', 'IMRB', 'IMRT', 'IMLT', 'IMInterp'])
     for group in sites:
+        print(group)
         #outputPath = f'/scratch1/10000/ameliakratzer14/IMMLInputs/{group[4]}.csv'
         xInterpSite, yInterpSite = getUTM(group[4])
         sharedRups = []
