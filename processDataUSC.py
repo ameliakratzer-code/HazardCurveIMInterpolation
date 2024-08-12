@@ -30,7 +30,7 @@ def makeScatterplot(ySimList, yPredictionList):
 
 # One command line argument = name of input file
 
-# On Frontera: /scratch1/10000/ameliakratzer14/IMMLInputs/5USCsites.csv
+# On Frontera: /scratch1/10000/ameliakratzer14/IMMLInputs/USCMLInput.csv
 df = pd.read_csv(sys.argv[1])
 # X now includes the velocity metrics
 X = df.drop(columns=['IMInterp'])

@@ -48,80 +48,80 @@ sites = [('s347','s389','s391','s349','LADT'), ('s387','s431','s433','s389','STN
 connection = sqlite3.connect('/scratch1/00349/scottcal/CS_interpolation/study_22_12_lf_indexed.sqlite')
 cursor = connection.cursor()
 
-outputPath = f'/scratch1/10000/ameliakratzer14/IMMLInputs/5USCsites.csv'
+outputPath = f'/scratch1/10000/ameliakratzer14/IMMLInputs/USCMLInput.csv'
 with open(outputPath, 'w', newline='') as file:
     writer = csv.writer(file)
     # Headers
     writer.writerow(['d1', 'd2', 'd3', 'd4', 's1v', 's1z1', 's1z2', 's2v', 's2z1', 's2z2', 's3v', 's3z1', 's3z2', 's4v', 's4z1', 's4z2', 'sIv', 'sIz1', 'sIz2', 'IMLB', 'IMRB', 'IMRT', 'IMLT', 'IMInterp'])
-for group in sites:
-    #outputPath = f'/scratch1/10000/ameliakratzer14/IMMLInputs/{group[4]}.csv'
-    xInterpSite, yInterpSite = getUTM(group[4])
-    sharedRups = []
-    IMVals = []
-    eventsList = []
-    distance = []
-    velocityVals = []
-    for site in group[:-1]:
-        # Get shared rups
-        q0 = '''
-                    SELECT C.Source_ID, C.Rupture_ID
-                    FROM CyberShake_Site_Ruptures C, CyberShake_Sites S
-                    WHERE C.CS_Site_ID = S.CS_Site_ID
-                    AND C.ERF_ID = 36
-                    AND S.CS_Short_Name = ?;
-            '''
-        cursor.execute(q0, (site,))
-        result = cursor.fetchall()
-        if sharedRups == []:
-            sharedRups = result
-        else:
-            sharedRups = list(set(sharedRups) & set(result))
-    for site in group:
-        # Add distances to list
-        if site != group[4]:
-            x, y = getUTM(site)
-            d = disFormula(x,y,xInterpSite,yInterpSite)
-            distance.append(d)
-        # Add velocities to list
-        q2 = '''
-                SELECT R.Model_Vs30, R.Z1_0, R.Z2_5 FROM CyberShake_Runs R, Studies T, CyberShake_Sites S
-                WHERE T.Study_Name = 'Study 22.12 LF'
-                AND T.Study_ID = R.Study_ID
-                AND S.CS_Site_ID = R.Site_ID
-                AND S.CS_Short_Name = ?
-            '''
-        cursor.execute(q2, (site,))
-        result = cursor.fetchone()
-        velocityVals.extend(result)
-        for (source, rup) in sharedRups:
-            q1 = '''
-                        SELECT P.IM_Value 
-                        FROM CyberShake_Sites S, CyberShake_Runs R, PeakAmplitudes P, Studies T, IM_Types I
-                        WHERE S.CS_Short_Name = ?
-                        AND S.CS_Site_ID = R.Site_ID
-                        AND R.Study_ID = T.Study_ID
-                        AND T.Study_Name = 'Study 22.12 LF'
-                        AND R.Run_ID = P.Run_ID
-                        AND I.IM_Type_Component = 'RotD50'
-                        AND I.IM_Type_Value = 2
-                        AND I.IM_Type_ID = P.IM_Type_ID
-                        AND P.Source_ID = ?
-                        AND P.Rupture_ID = ?
-                        '''
-            cursor.execute(q1, (site, source, rup))
+    for group in sites:
+        #outputPath = f'/scratch1/10000/ameliakratzer14/IMMLInputs/{group[4]}.csv'
+        xInterpSite, yInterpSite = getUTM(group[4])
+        sharedRups = []
+        IMVals = []
+        eventsList = []
+        distance = []
+        velocityVals = []
+        for site in group[:-1]:
+            # Get shared rups
+            q0 = '''
+                        SELECT C.Source_ID, C.Rupture_ID
+                        FROM CyberShake_Site_Ruptures C, CyberShake_Sites S
+                        WHERE C.CS_Site_ID = S.CS_Site_ID
+                        AND C.ERF_ID = 36
+                        AND S.CS_Short_Name = ?;
+                '''
+            cursor.execute(q0, (site,))
             result = cursor.fetchall()
-            IMVals.extend(result)
-            if site == group[0]:
-                for i in range(len(result)):
-                    eventsList.append((source, rup, i))
-    r = []
-    for val in IMVals:
-        r.append(val[0])
-    IMs = []
-    for i in range(0, len(r), len(eventsList)):
-        IMs.append(r[i:i+len(eventsList)])
-    for i in range(len(eventsList)):
-        writer.writerow(distance + velocityVals + [IMs[0][i], IMs[1][i], IMs[2][i], IMs[3][i], IMs[4][i]])
+            if sharedRups == []:
+                sharedRups = result
+            else:
+                sharedRups = list(set(sharedRups) & set(result))
+        for site in group:
+            # Add distances to list
+            if site != group[4]:
+                x, y = getUTM(site)
+                d = disFormula(x,y,xInterpSite,yInterpSite)
+                distance.append(d)
+            # Add velocities to list
+            q2 = '''
+                    SELECT R.Model_Vs30, R.Z1_0, R.Z2_5 FROM CyberShake_Runs R, Studies T, CyberShake_Sites S
+                    WHERE T.Study_Name = 'Study 22.12 LF'
+                    AND T.Study_ID = R.Study_ID
+                    AND S.CS_Site_ID = R.Site_ID
+                    AND S.CS_Short_Name = ?
+                '''
+            cursor.execute(q2, (site,))
+            result = cursor.fetchone()
+            velocityVals.extend(result)
+            for (source, rup) in sharedRups:
+                q1 = '''
+                            SELECT P.IM_Value 
+                            FROM CyberShake_Sites S, CyberShake_Runs R, PeakAmplitudes P, Studies T, IM_Types I
+                            WHERE S.CS_Short_Name = ?
+                            AND S.CS_Site_ID = R.Site_ID
+                            AND R.Study_ID = T.Study_ID
+                            AND T.Study_Name = 'Study 22.12 LF'
+                            AND R.Run_ID = P.Run_ID
+                            AND I.IM_Type_Component = 'RotD50'
+                            AND I.IM_Type_Value = 2
+                            AND I.IM_Type_ID = P.IM_Type_ID
+                            AND P.Source_ID = ?
+                            AND P.Rupture_ID = ?
+                            '''
+                cursor.execute(q1, (site, source, rup))
+                result = cursor.fetchall()
+                IMVals.extend(result)
+                if site == group[0]:
+                    for i in range(len(result)):
+                        eventsList.append((source, rup, i))
+        r = []
+        for val in IMVals:
+            r.append(val[0])
+        IMs = []
+        for i in range(0, len(r), len(eventsList)):
+            IMs.append(r[i:i+len(eventsList)])
+        for i in range(len(eventsList)):
+            writer.writerow(distance + velocityVals + [IMs[0][i], IMs[1][i], IMs[2][i], IMs[3][i], IMs[4][i]])
 cursor.close()
 connection.close()
 
