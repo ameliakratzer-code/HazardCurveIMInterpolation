@@ -82,7 +82,7 @@ plt.ylabel('Interpolated')
 model = LinearRegression()
 model.fit(np.array(x).reshape(-1,1), y)
 y_fit = model.predict(np.array(x).reshape(-1,1))
-plt.plot(x, y_fit, color='green', linestyle='-', label='Line of Best Fit')
+plt.plot(np.array(x), y_fit, color='green', linestyle='-', label='Line of Best Fit')
 
 x_limits = plt.gca().get_xlim()
 y_limits = plt.gca().get_ylim()
