@@ -91,5 +91,5 @@ plt.ylabel('Interpolated')
 # plt.legend()
 # plt.xlim(x_limits)
 # plt.ylim(y_limits)
-# plt.savefig(sys.argv[2] + f'/simVActual{sys.argv[3]}.png')
+plt.savefig(sys.argv[2] + f'/simVActual{sys.argv[3]}.png')
 
