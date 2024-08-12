@@ -9,9 +9,9 @@ from sklearn.model_selection import train_test_split
 import csv
 import joblib
 
-# Four command line arguments: input file name, name of folder, name of files
-# preprocessed_data_and_scalers.pkl on Frontera
-data = joblib.load('preprocessed_data_and_scalers.pkl')
+# Three command line arguments: input file name, name of folder, name of files
+# preprocessed_data_and_scalers.pkl on Frontera, USC_preprocessed_data.pkl for USC
+data = joblib.load('USC_preprocessed_data.pkl')
 X_train = data['X_train']
 X_test = data['X_test']
 y_train = data['y_train']

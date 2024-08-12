@@ -30,14 +30,8 @@ def makeScatterplot(ySimList, yPredictionList):
 
 # One command line argument = name of input file
 
-# On Frontera: /scratch1/10000/ameliakratzer14/IMMLInputs/combined_file.csv, home: /Users/ameliakratzer/Desktop/LinInterpolation/ML/IMs/allSitesIM.csv
-df = pd.read_csv(sys.argv[1], low_memory = False)
-# Need to drop header rows that are in middle of CSV that occured when CAT the files together
-df = df.apply(pd.to_numeric, errors='coerce')
-df = df.dropna()
-df = df.reset_index(drop=True)
-# Starting with 3 mil samples
-df = df.iloc[:3000000]
+# On Frontera: /scratch1/10000/ameliakratzer14/IMMLInputs/5USCsites.csv
+df = pd.read_csv(sys.argv[1])
 # X now includes the velocity metrics
 X = df.drop(columns=['IMInterp'])
 y = df['IMInterp']
@@ -66,4 +60,4 @@ joblib.dump({
     'Yscaler': Yscaler,
     'X_inference': X_inference,
     'simVals': simVals
-}, 'preprocessed_data_and_scalers.pkl')
+}, 'USC_preprocessed_data.pkl')
