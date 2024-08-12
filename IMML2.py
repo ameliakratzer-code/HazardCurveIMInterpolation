@@ -5,7 +5,6 @@ import pandas as pd
 import sys
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import train_test_split
 import csv
 import joblib
 
@@ -40,6 +39,7 @@ model.add(tf.keras.layers.Dense(OUTPUT_SIZE , activation='sigmoid'))
 optimize = tf.keras.optimizers.Adam(learning_rate=0.00001)
 model.compile(optimizer = optimize, loss='mean_squared_error')
 history = model.fit(X_train, y_train, batch_size=BATCH_SIZE, epochs=EPOCHS, validation_data=(X_test,y_test))
+model.save(sys.argv[2] + f'/model{sys.argv[3]}.h5')
 
 score = model.evaluate(X_test,y_test,verbose=0)
 print(f'Test loss: {score}')
@@ -62,7 +62,7 @@ if True:
     yInference = Yscaler.inverse_transform(yInferenceNorm.reshape(-1,1)).ravel()
     # Data to use for hazard curve calc
     fileName = f'USCIM.csv'
-    filePath = sys.argv[2] + '/USCinference1.csv'
+    filePath = sys.argv[2] + f'/USCinference{sys.argv[3]}.csv'
     with open(filePath, 'w', newline='') as file:
         write = csv.writer(file)
         write.writerow(['Event', 'IMVal'])
@@ -71,6 +71,25 @@ if True:
             write.writerow([f"(132, 39, {i})", IMVal])
             i += 1
 plt.figure(2)
-plt.scatter(simVals[:1000], yInference[:1000])
-plt.savefig(sys.argv[2] + f'/simVActual{sys.argv[3]}.png')
+x = simVals[:]
+y = yInference[:]
+plt.scatter(x, y)
+plt.title('Simulated versus Interpolated Values')
+plt.xlabel('Simulated')
+plt.ylabel('Interpolated')
+
+# model = LinearRegression()
+# model.fit(x.reshape(-1,1), y)
+# y_fit = model.predict(x.reshape(-1,1))
+# plt.plot(x, y_fit, color='green', linestyle='-', label='Line of Best Fit')
+
+# x_limits = plt.gca().get_xlim()
+# y_limits = plt.gca().get_ylim()
+# min_val = min(x_limits[0], y_limits[0])
+# max_val = max(x_limits[1], y_limits[1])
+# plt.plot([min_val, max_val], [min_val, max_val], color='red', linestyle='--', label='y = x')
+# plt.legend()
+# plt.xlim(x_limits)
+# plt.ylim(y_limits)
+# plt.savefig(sys.argv[2] + f'/simVActual{sys.argv[3]}.png')
 
