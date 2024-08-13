@@ -44,13 +44,15 @@ from utils import getUTM, disFormula
 # ('s273', 's309', 's311', 's275', 'HLL'),('s472', 's512', 's514', 's474', 'BRE'),('s435', 's476', 's478', 's437', 'RIO')]
 
 # Five sites all in basin and 5 sites not in basin
-sites = [('s347','s389','s391','s349','LADT'), ('s387','s431','s433','s389','STNI'), ('s238','s275','s277','s240','P2'), ('s347','s389','s391','s349','P10'), ('s234','s271','s273','s236','P23'),
-('s636','s678','s680','s638','PLS'), ('s591','s632','s634','s593','STG'), ('s720','s764','s766','s722','s765'), ('s443','s484','s486','s445','s465'), ('s439','s480','s482','s441','SGCD')]
+sites = [('s387','s431','s433','s389','s410'),('s387','s431','s433','s389','STNI'),
+('s389','s433','s435','s391','P12'),('s397','s441','s443','s399','PACI'),('s429','s470','s472','s431','s451'),('s431','s472','s474','s433','s453'),('s435','s476','s478','s437','EMCH'),('s437','s478','s480','s439','SGRTT'),
+('s439','s480','s482','s441','SGCD'), ('s688','s730','s732','s690','s689'), ('s552','s593','s595','s554','SABD'),('s558','s599','s601','s560','CHN'),('s560','s601','s603','s562','PDU'),('s564','s605','s607','s566','s586'),
+('s591','s632','s634','s593','STG')]
 
 connection = sqlite3.connect('/scratch1/00349/scottcal/CS_interpolation/study_22_12_lf_indexed.sqlite')
 cursor = connection.cursor()
 
-outputPath = f'/scratch1/10000/ameliakratzer14/IMMLInputs/10sitesInput.csv'
+outputPath = f'/scratch1/10000/ameliakratzer14/IMMLInputs/15sitesInput.csv'
 with open(outputPath, 'w', newline='') as file:
     writer = csv.writer(file)
     # Headers

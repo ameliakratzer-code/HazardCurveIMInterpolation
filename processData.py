@@ -12,6 +12,7 @@ import joblib
 
 # On Frontera: /scratch1/10000/ameliakratzer14/IMMLInputs/combined_file.csv, home: /Users/ameliakratzer/Desktop/LinInterpolation/ML/IMs/allSitesIM.csv
 df = pd.read_csv(sys.argv[1], low_memory = False)
+df = df[:]
 # Need to drop header rows that are in middle of CSV that occured when CAT the files together
 df = df.apply(pd.to_numeric, errors='coerce')
 df = df.dropna()
