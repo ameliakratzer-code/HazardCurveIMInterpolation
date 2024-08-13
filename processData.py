@@ -50,4 +50,4 @@ joblib.dump({
     'simVals': simVals,
     's505X_inference': s505X_inference,
     's505simVals': s505simVals
-}, 'all_data_processed.pkl')
+}, '/scratch1/10000/ameliakratzer14/all_data_processed.pkl')
