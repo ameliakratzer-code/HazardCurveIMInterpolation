@@ -103,8 +103,8 @@ x = simVals[:]
 y = yInference[:]
 s505x = s505simVals
 s505y = s505X_inference
-USCPlotName = 'USCInference.png'
-s505PlotName = 's505Inference.png'
+USCPlotName = 'USCInference'
+s505PlotName = 's505Inference'
 makeInferencePlot(x, y, USCPlotName)
 makeInferencePlot(s505x, s505y, s505PlotName)
 
