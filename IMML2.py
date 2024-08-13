@@ -88,7 +88,6 @@ if True:
     yInferenceNorm = model.predict(X_inference)
     yInference = Yscaler.inverse_transform(yInferenceNorm.reshape(-1,1)).ravel()
     # Data to use for hazard curve calc
-    fileName = f'USCIM.csv'
     filePath = sys.argv[2] + f'/USCinference{sys.argv[3]}.csv'
     with open(filePath, 'w', newline='') as file:
         write = csv.writer(file)
@@ -97,15 +96,23 @@ if True:
             # Event number does matter for hazard curve calc code so need to use correctEvent.py to get
             write.writerow([f"(132, 39, {i})", IMVal])
             i += 1
+    i = 0
+    s505yNorm = model.predict(s505X_inference)
+    s505yInference = Yscaler.inverse_transform(s505yNorm.reshape(-1,1)).ravel()
+    filePath = sys.argv[2] + f'/s505inference.csv'
+    with open(filePath, 'w', newline='') as file:
+        write = csv.writer(file)
+        write.writerow(['Event', 'IMVal'])
+        for val in s505yInference:
+            write.writerow([f"(132, 39, {i})", val])
+            i += 1
 
 # Plot inference sights
 x = simVals[:]
 y = yInference[:]
-s505x = s505simVals
-s505y = s505X_inference
 USCPlotName = 'USCInference'
 s505PlotName = 's505Inference'
 makeInferencePlot(x, y, USCPlotName)
-makeInferencePlot(s505x, s505y, s505PlotName)
+makeInferencePlot(s505simVals, s505yInference, s505PlotName)
 
 
