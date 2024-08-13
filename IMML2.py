@@ -46,7 +46,8 @@ X_inference = data['X_inference']
 simVals = data['simVals']
 s505X_inference = data['s505X_inference']
 s505simVals = data['s505simVals']
-BATCH_SIZE = 1000
+# 1000 Batch size and learning rate 0.000001 for all sites
+BATCH_SIZE = 800
 EPOCHS = 20
 INPUT_SIZE = 23
 OUTPUT_SIZE = 1
@@ -63,7 +64,7 @@ model.add(tf.keras.layers.Activation('softplus'))
 
 model.add(tf.keras.layers.Dense(OUTPUT_SIZE , activation='sigmoid')) 
 
-optimize = tf.keras.optimizers.Adam(learning_rate=0.000001)
+optimize = tf.keras.optimizers.Adam(learning_rate=0.00001)
 model.compile(optimizer = optimize, loss='mean_squared_error')
 history = model.fit(X_train, y_train, batch_size=BATCH_SIZE, epochs=EPOCHS, validation_data=(X_test,y_test))
 model.save(sys.argv[2] + f'/model{sys.argv[3]}.h5')
