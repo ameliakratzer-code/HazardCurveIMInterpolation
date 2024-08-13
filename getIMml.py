@@ -44,7 +44,7 @@ from utils import getUTM, disFormula
 # ('s273', 's309', 's311', 's275', 'HLL'),('s472', 's512', 's514', 's474', 'BRE'),('s435', 's476', 's478', 's437', 'RIO')]
 
 # Five sites all in basin and 5 sites not in basin
-sites = [('s347','s389','s391','s349','LADT'), ('s387','s431','s433','s389','STNI'), ('s238','s275','s277','s240','P2'), ('s347','s389','s391','s349','P10'), ('s234','s271','s273','s236','P23')
+sites = [('s347','s389','s391','s349','LADT'), ('s387','s431','s433','s389','STNI'), ('s238','s275','s277','s240','P2'), ('s347','s389','s391','s349','P10'), ('s234','s271','s273','s236','P23'),
 ('s636','s678','s680','s638','PLS'), ('s591','s632','s634','s593','STG'), ('s720','s764','s766','s722','s765'), ('s443','s484','s486','s445','s465'), ('s439','s480','s482','s441','SGCD')]
 
 connection = sqlite3.connect('/scratch1/00349/scottcal/CS_interpolation/study_22_12_lf_indexed.sqlite')
