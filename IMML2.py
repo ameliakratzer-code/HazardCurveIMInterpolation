@@ -34,6 +34,7 @@ def makeInferencePlot(x, y, name):
 
 # Three command line arguments: input file name, name of folder, name of files
 # preprocessed_data_and_scalers.pkl on Frontera, USC_preprocessed_data.pkl for USC
+# /scratch1/10000/ameliakratzer14/all_data_processed.pkl for all data
 data = joblib.load('/scratch1/10000/ameliakratzer14/preprocessed_data_and_scalers.pkl')
 X_train = data['X_train']
 X_test = data['X_test']
@@ -43,8 +44,8 @@ Xscaler = data['Xscaler']
 Yscaler = data['Yscaler']
 X_inference = data['X_inference']
 simVals = data['simVals']
-s505X_inference = data['s505X_inference']
-s505simVals = data['s505simVals']
+# s505X_inference = data['s505X_inference']
+# s505simVals = data['s505simVals']
 BATCH_SIZE = 800
 EPOCHS = 20
 INPUT_SIZE = 23
@@ -100,11 +101,11 @@ if True:
 # Plot inference sights
 x = simVals[:]
 y = yInference[:]
-s505x = s505simVals
-s505y = s505X_inference
+# s505x = s505simVals
+# s505y = s505X_inference
 USCPlotName = 'USCInference.png'
 s505PlotName = 's505Inference.png'
 makeInferencePlot(x, y, USCPlotName)
-makeInferencePlot(s505x, s505y, s505PlotName)
+# makeInferencePlot(s505x, s505y, s505PlotName)
 
 
