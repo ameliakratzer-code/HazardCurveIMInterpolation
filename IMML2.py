@@ -100,7 +100,7 @@ if True:
     i = 0
     s505yNorm = model.predict(s505X_inference)
     s505yInference = Yscaler.inverse_transform(s505yNorm.reshape(-1,1)).ravel()
-    filePath = sys.argv[2] + f'/s505inference.csv'
+    filePath = sys.argv[2] + f'/s505inference{sys.argv[3]}.csv'
     with open(filePath, 'w', newline='') as file:
         write = csv.writer(file)
         write.writerow(['Event', 'IMVal'])
