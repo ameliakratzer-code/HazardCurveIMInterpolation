@@ -35,7 +35,8 @@ def makeInferencePlot(x, y, name):
 # Three command line arguments: input file name, name of folder, name of files
 # preprocessed_data_and_scalers.pkl on Frontera, USC_preprocessed_data.pkl for USC
 # /scratch1/10000/ameliakratzer14/all_data_processed.pkl for all data
-data = joblib.load('/scratch1/10000/ameliakratzer14/twentyFive_sites.pkl')
+# /scratch1/10000/ameliakratzer14/twentyFive_sites.pkl for 25 sites
+data = joblib.load('/scratch1/10000/ameliakratzer14/all_data_processed.pkl')
 X_train = data['X_train']
 X_test = data['X_test']
 y_train = data['y_train']
