@@ -47,20 +47,22 @@ simVals = data['simVals']
 s505X_inference = data['s505X_inference']
 s505simVals = data['s505simVals']
 # 1000 Batch size and learning rate 0.000001 for all sites
+# 8/14: decrease l2 regularization to 0.001, changed to Relu from softplus, added weight initializer
 BATCH_SIZE = 800
 EPOCHS = 20
 INPUT_SIZE = 23
 OUTPUT_SIZE = 1
+initializer = tf.keras.initializers.HeNormal()
 model = tf.keras.models.Sequential()
-model.add(tf.keras.layers.Dense(32, activation='softplus', input_shape=(INPUT_SIZE,), kernel_regularizer=tf.keras.regularizers.l2(0.005)))
+model.add(tf.keras.layers.Dense(32, activation='relu', input_shape=(INPUT_SIZE,), kernel_initializer=initializer, kernel_regularizer=tf.keras.regularizers.l2(0.001)))
 
-model.add(tf.keras.layers.Dense(64, kernel_regularizer=tf.keras.regularizers.l2(0.005)))
+model.add(tf.keras.layers.Dense(64, kernel_initializer=initializer, kernel_regularizer=tf.keras.regularizers.l2(0.001)))
 model.add(tf.keras.layers.BatchNormalization())
-model.add(tf.keras.layers.Activation('softplus'))
+model.add(tf.keras.layers.Activation('relu'))
 
-model.add(tf.keras.layers.Dense(128, kernel_regularizer=tf.keras.regularizers.l2(0.005)))
+model.add(tf.keras.layers.Dense(128, kernel_initializer=initializer, kernel_regularizer=tf.keras.regularizers.l2(0.001)))
 model.add(tf.keras.layers.BatchNormalization())
-model.add(tf.keras.layers.Activation('softplus'))
+model.add(tf.keras.layers.Activation('relu'))
 
 model.add(tf.keras.layers.Dense(OUTPUT_SIZE , activation='sigmoid')) 
 
