@@ -1,3 +1,5 @@
+These codes were designed to interpolate two CyberShake data products, hazard curves and intensity measures, using both bilinear interpolation and machine learning methods. With these interpolations, the goal is to avoid having to run computationally intensive CyberShake simulations for all sites of interest.
+
 File Descriptions
 
 1. Bilinear interpolation hazard curve
